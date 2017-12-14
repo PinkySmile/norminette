@@ -39,11 +39,11 @@ char	*load_file(char *path)
 
 void	mistake_line(int size, char *line, int col, int ln)
 {
-	int	col_c = 0;
+	int	col_c = 1;
 	int	chars = 0;
 	int	ik = 0;
 
-	chars = my_printf("[%i:%i]-->", ln, col + 1);
+	chars = my_printf("[%i:%i]-->", ln, col);
 	for (int i = 0; line[i]; i++) {
 		if (line[i] != '\t')
 			col_c++;
@@ -54,10 +54,10 @@ void	mistake_line(int size, char *line, int col, int ln)
 		my_printf("%c\033[0m", line[i]);
 	}
 	my_printf("\n");
-	for (int i = 0; i < chars; i++)
+	for (int i = 1; i < chars; i++)
 		my_printf(" ");
 	for (int jo = 0; jo < col && line[ik]; jo++) {
-		if (line[ik] != '\t')
+if(line[ik] != '\t')
 			my_printf(" ");
 		else {
 			jo = jo + 8 - (jo % 8) - 1;
@@ -81,24 +81,34 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
 
         for (int i = 0; file[i]; i++) {
 		col++;
+		if (flags->d)
+			my_printf("[%i, %i]\n", ln, col);
 		if (file[i] == '\t') {
 			col += 7;
 			character +=  8 - (col % 8);
 			col -= col % 8;
+			if (flags->d)
+				my_printf("Found \\t : [%i, %i]\n", ln, col);
 		} else if (file[i] == '\n') {
 			col--;
+			if (flags->d)
+				my_printf("Found \\n : [%i, %i]\n", ln, col);
 			if (col > 80) {
+				if (flags->d)
+					my_printf("Too long line %i\n", col);
 				my_printf("\033[31;1m%s [line %i]", path, ln);
 				my_printf("\033[0m : too long line ");
 				my_printf("(\033[31;1m%i\033[0m)\n", col);
 				buffer = malloc(col + 1);
 				sub_strings(file, line_beg, i, buffer);
 				if (flags->v)
-					mistake_line(col - 80, buffer, 80, ln);
+					mistake_line(col - 80, buffer, 81, ln);
 				mistakes[5]++;
 				free(buffer);
-			}	
+			}
 			line_beg = i + 1;
+			if (flags->d)
+				my_printf("Set begin of line %i\n", line_beg);
 			ln++;
 			character = 0;
 			col = 0;
@@ -109,6 +119,11 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
 		my_printf("\033[0m : too long line ");
 		my_printf("(\033[31;1m%i\033[0m)\n", col);
 		mistakes[5]++;
+		buffer = malloc(col + 1);
+		sub_strings(file, line_beg, col + line_beg, buffer);
+		if (flags->v)
+			mistake_line(col - 80, buffer, 81, ln);
+        	free(buffer);
 	}
 }
 
@@ -130,7 +145,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				bu = malloc(c - i + 2);
 				sub_strings(file, i + 1, c, bu);
 				for (spaces = 0; file[jl + spaces] == ' '; spaces++);
-				mistake_line(spaces, bu, col - 1, ln);
+				mistake_line(spaces, bu, col, ln);
 				free(bu);
 			}
 			jl = -2;
@@ -143,7 +158,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			if (flags->v) {
 				bu = malloc(i + 1);
 				sub_strings(file, i + 1, i - jl, bu);
-			        mistake_line((jl - i - 1) * 8, bu, -1, ln);
+			        mistake_line((jl - i - 1) * 8, bu, 0, ln);
 				free(bu);
 			}
 			jl = -2;
@@ -170,7 +185,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	start = 0;
 	int	end = 0;
 	int	comment = 0;
-
+	//sdqdzq
 	for (int i = 0; file[i]; i++) {
 		cond3 = !q && !s_q && comment == 0;
 		if ( cond3 && file[i] == '/' && file[i + 1] == '/')
@@ -213,8 +228,16 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	        if (bracket > 0 && cond3)
 			if (file[i] == '/' && (file[i+1] == '/' || file[i+1] == '*')) {
 				my_printf("\033[31;1m%s [%i:%i]", path, ln, col);
-				my_printf("\033[0m: comment in a function\n");
+				my_printf("\033[0m : comment in a function\n");
 				mistakes[8]++;
+				for (start = i; file[start] != '\n'; start--);
+				for (end = start + 1; file[end] != '\n' && file[end]; end++);
+				if (flags->v) {
+					bu = malloc(end - start + 10);
+					sub_strings(file, start + 1, end, bu);
+					mistake_line(2, bu, col, ln);
+					free(bu);
+				}
 			}
 		cond = i > 0 && (file[i - 1] != '\\' || file[i - 2] == '\\');
 		if (comment == 0 && !q && file[i] == '\'' && cond)

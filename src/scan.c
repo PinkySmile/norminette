@@ -34,7 +34,7 @@ char    *find_path(char *path, char *file_name)
 	return (file_path);
 }
 
-int	is_file_useless(char *path, char *name)
+int	is_file_useless(char *path, char *name, flag *flags)
 {
 	struct stat	info;
 	int		cond = 1;
@@ -42,16 +42,30 @@ int	is_file_useless(char *path, char *name)
 
 	stat(path, &info);
 	cond = name[my_strlen(name) - 1] == '~';
+	if (flags->d)
+		my_printf("*~ : %s\n", cond ? "TRUE" : "FALSE");
         cond = (name[0] == '.' && name[1] == '#') || cond;
+	if (flags->d)
+		my_printf(".#* : %s\n", cond ? "TRUE" : "FALSE");
 	cond = name[0] == '#' || cond;
+	if (flags->d)
+		my_printf("#* : %s\n", cond ? "TRUE" : "FALSE");
 	cond = info.st_size == 0 || cond;
+	if (flags->d)
+		my_printf("size is null : %s\n", cond ? "TRUE" : "FALSE");
 	cond = info.st_size >= 10000 || cond;
+	if (flags->d)
+		my_printf("size is too high : %s\n", cond ? "TRUE" : "FALSE");
 	cond2 = name[my_strlen(name) - 1] == 'o';
 	cond2 = name[my_strlen(name) - 1] == 'a' || cond2;
 	cond = (name[my_strlen(name) - 2] == '.' && cond2) || cond;
+	if (flags->d)
+		my_printf("*.a/*.o : %s\n", cond ? "TRUE" : "FALSE");
 	cond2 = (name[my_strlen(name) - 3] == 'c');
 	cond2 = (name[my_strlen(name) - 4] == 'g' && cond2);
 	cond = (name[my_strlen(name) - 5] == '.' && cond2) || cond;
+	if (flags->d)
+		my_printf("*.gcno/*.gcda : %s\n", cond ? "TRUE" : "FALSE");
 	return (cond);
 }
 
@@ -88,7 +102,7 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 		file_path = find_path(path, file->d_name);
 		if (flags->f)
 			verify_name(file_path, file->d_name, mistakes, flags);
-		if (flags->f && is_file_useless(file_path, file->d_name)) {
+		if (flags->f && is_file_useless(file_path, file->d_name, flags)) {
 			mistakes[0]++;
 			if (flags->f) {
 				my_printf("\033[31m\033[1mFichier inutile ");
@@ -141,6 +155,9 @@ void	display_result(int *mistakes, flag *flags)
 	int	type[3] = {0, 0, 0};
 	int	style_mark = 0;
 
+	if (flags->d)
+		for (int i = 0; style_names[i]; i++)
+			my_printf("%s : %i\n", style_names[i], mistakes[i]);
 	for (int i = 0; style_names[i]; i++)
 		if (mistakes[i]) {
 		        my_printf("\n\033[31;1m%s\033[0m", style_names[i]);

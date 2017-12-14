@@ -57,8 +57,7 @@ char	**parse_args(int argc, char **args)
 		if (args[i][0] != '-') {
 			dirs[pos++] = args[i];
 			got_an_arg = 1;
-		} else
-			dirs[i - 1] = 0;
+		}		
 	if (!got_an_arg) {
 		dirs[0] = ".";
 		dirs[1] = 0;
@@ -76,12 +75,16 @@ int	main(int argc, char **args)
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;
 	for (int i = 0; dirs[i] != 0; i++) {
+		if (flags.d)
+			my_printf("Entering %s\n", dirs[i]);
 		if (is_dir(dirs[i]))
 			scan_folder(dirs[i], &flags, mistakes);
 		else
 			scan_file(dirs[i], &flags, mistakes);
 	}
         free(dirs);
+	if (flags.d)
+		my_printf("Displaying result\n");
 	display_result(mistakes, &flags);
 	return (0);
 }
