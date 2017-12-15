@@ -50,6 +50,7 @@ void	show_address(char *address);
 void	showmem_chars(char const *str, int size, int *sizes);
 int	showmem_values(char const *str, int size, int buffer);
 int	my_putnbr_base(unsigned int nbr, char const *base);
+char	*my_putnbrbase(unsigned int nbr, char const *base);
 int	check_end(int *array, int size);
 int	compare_strings(char const *str, char const *str2);
 char	*sub_strings(char const *str, int start, int end, char *to_return);

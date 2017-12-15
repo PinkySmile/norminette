@@ -12,7 +12,9 @@ SRC =	src/main.c \
 	src/flags.c \
 	src/scan_file.c \
 	src/sub_strings.c \
-	src/compare_strings.c
+	src/compare_strings.c \
+	src/my_showstr.c \
+	src/my_putnbr_base.c \
 
 OBJ =	$(SRC:.c=.o)
 

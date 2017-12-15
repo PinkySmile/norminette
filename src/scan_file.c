@@ -244,7 +244,9 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		        cond = cond && file[i + strlen(words[k])] == '(';
 			if (flags->d) {
 				printf("[%i, %i]:Searching for '%s'", ln, col, words[k]);
-				printf(" and got '%S' with", (wchar_t *)buffer);
+				printf("and got '");
+				my_showstr(buffer);
+				printf("' with");
 				printf("%s after", !cond ? "out any '('" : " a '('");
 			}
 		        cond2 = i > 0 && file[i - 1] == '\n';
@@ -286,7 +288,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	        if (bracket > 0 && cond3) {
 			if (flags->d) {
 				printf("[%i, %i]:Searching for comments.", ln, col);
-				printf(" Found '%c%c'\n", file[i], file[i + 1]);
+				printf(" Found '");
+				sub_strings(file, i, i + 2, buffer);
+				my_showstr(buffer);
+				printf("'\n");
 			}
 			if (file[i] == '/' && (file[i + 1] == '/' || file[i + 1] == '*')) {
 				printf("\033[31;1m%s [%i:%i]", path, ln, col);
