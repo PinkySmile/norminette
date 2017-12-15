@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <stdio.h>
 
 int     find_type(mode_t mode)
 {
@@ -76,7 +77,7 @@ int	main(int argc, char **args)
 		mistakes[i] = 0;
 	for (int i = 0; dirs[i] != 0; i++) {
 		if (flags.d)
-			my_printf("Entering %s\n", dirs[i]);
+			printf("Entering %s\n", dirs[i]);
 		if (is_dir(dirs[i]))
 			scan_folder(dirs[i], &flags, mistakes);
 		else
@@ -84,7 +85,7 @@ int	main(int argc, char **args)
 	}
         free(dirs);
 	if (flags.d)
-		my_printf("Displaying result\n");
+		printf("Displaying result\n");
 	display_result(mistakes, &flags);
 	return (0);
 }

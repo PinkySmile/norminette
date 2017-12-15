@@ -11,16 +11,14 @@ SRC =	src/main.c \
 	src/scan.c \
 	src/flags.c \
 	src/scan_file.c \
+	src/sub_strings.c \
+	src/compare_strings.c
 
 OBJ =	$(SRC:.c=.o)
 
 INC =	-Iinclude \
-	-Ilib/my/includes
 
-LIB =	./lib/my/libmy.a
-
-LDFLAGS = -Llib/my\
-	  -lmy
+LDFLAGS = 
 
 CFLAGS= $(INC) \
 	-W \
@@ -34,18 +32,14 @@ RULE =	all
 
 all:    $(NAME)
 
-$(LIB):
-	$(MAKE) -C lib/my $(RULE)
 
-$(NAME):$(OBJ) $(LIB)
+$(NAME):$(OBJ)
 	$(CC) -o $(NAME) $(OBJ) $(LDFLAGS)
 
 clean:
-	$(MAKE) -C lib/my clean
 	$(RM) $(OBJ)
 
 fclean:	clean
-	$(MAKE) -C lib/my fclean
 	$(RM) $(NAME)
 
 re:	fclean all
