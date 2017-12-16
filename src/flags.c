@@ -21,6 +21,8 @@ void	display_help(char *prog_name, int fr)
 		printf("\t-f :\tChange la langue en français\n\n");
 		printf("\t-h :\tAffiche cette page d'aide\n\n");
 		printf("\t-n :\tAffiche le nom des fichiers scannés\n\n");
+		printf("\t-u :\tCherche les fichiers inutiles dans le repo et\n");
+		printf("\tles noms invalides\n\n");
 		printf("\t-v :\tAffiche la ligne contenant l'erreur et met en\n");
 		printf("\t\tvaleur l'erreur\n\n");
 		printf("RAPPORTER UN BUG :\n");
@@ -50,6 +52,7 @@ void	display_help(char *prog_name, int fr)
 		printf("\t-f :\tChange the main language to french\n\n");
 		printf("\t-h :\tDisplay this help page\n\n");
 		printf("\t-n :\tDisplays the scanned files' names\n\n");
+		printf("\t-u :\tFinds unseless files and invalid file names\n\n");
 		printf("\t-v :\tDisplays the entire line and where the mistake\n");
 		printf("\t\tis in it\n");
 		printf("REPORT A BUG :\n");

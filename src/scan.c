@@ -102,9 +102,9 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 	}
         for (file = readdir(folder); file != 0; file = readdir(folder)) {
 		file_path = find_path(path, file->d_name);
-		if (flags->f)
+		if (flags->u)
 			verify_name(file_path, file->d_name, mistakes, flags);
-		if (flags->f && is_file_useless(file_path, file->d_name, flags)) {
+		if (flags->u && is_file_useless(file_path, file->d_name, flags)) {
 			mistakes[0]++;
 			if (flags->f) {
 				printf("\033[31m\033[1mFichier inutile ");
