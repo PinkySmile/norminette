@@ -45,29 +45,29 @@ int	is_file_useless(char *path, char *name, flag *flags)
 	stat(path, &info);
 	cond = name[strlen(name) - 1] == '~';
 	if (flags->d)
-		printf("*~ : %s\n", cond ? "TRUE" : "FALSE");
+		printf("\n%s:\n*~ : %s\n", path, name[strlen(name) - 1] == '~' ? "TRUE" : "FALSE");
         cond = (name[0] == '.' && name[1] == '#') || cond;
 	if (flags->d)
-		printf(".#* : %s\n", cond ? "TRUE" : "FALSE");
+		printf(".#* : %s\n", (name[0] == '.' && name[1] == '#') ? "TRUE" : "FALSE");
 	cond = name[0] == '#' || cond;
 	if (flags->d)
-		printf("#* : %s\n", cond ? "TRUE" : "FALSE");
+		printf("#* : %s\n", name[0] == '#' ? "TRUE" : "FALSE");
 	cond = info.st_size == 0 || cond;
 	if (flags->d)
-		printf("size is null : %s\n", cond ? "TRUE" : "FALSE");
+		printf("size is null : %s\n", info.st_size == 0 ? "TRUE" : "FALSE");
 	cond = info.st_size >= 10000 || cond;
 	if (flags->d)
-		printf("size is too high : %s\n", cond ? "TRUE" : "FALSE");
+		printf("size is too high : %s\n", info.st_size >= 10000 ? "TRUE" : "FALSE");
 	cond2 = name[strlen(name) - 1] == 'o';
 	cond2 = name[strlen(name) - 1] == 'a' || cond2;
 	cond = (name[strlen(name) - 2] == '.' && cond2) || cond;
 	if (flags->d)
-		printf("*.a/*.o : %s\n", cond ? "TRUE" : "FALSE");
+		printf("*.a/*.o : %s\n", name[strlen(name) - 2] == '.' && cond2 ? "TRUE" : "FALSE");
 	cond2 = (name[strlen(name) - 3] == 'c');
 	cond2 = (name[strlen(name) - 4] == 'g' && cond2);
 	cond = (name[strlen(name) - 5] == '.' && cond2) || cond;
 	if (flags->d)
-		printf("*.gcno/*.gcda : %s\n", cond ? "TRUE" : "FALSE");
+		printf("*.gcno/*.gcda : %s\n", name[strlen(name) - 5] == '.' && cond2 ? "TRUE" : "FALSE");
 	return (cond);
 }
 
