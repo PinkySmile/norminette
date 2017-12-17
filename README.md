@@ -13,6 +13,8 @@ DESCRIPTION :
 
 	-h :	Affiche cette page d'aide
 
+	-u :	Finds unseless files and invalid file names
+
 	-n :	Affiche le nom des fichiers scannés
 
 	-v :	Affiche la ligne contenant l'erreur et met en
