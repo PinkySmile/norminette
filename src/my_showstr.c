@@ -30,7 +30,7 @@ int	my_showstr(char const *str)
 			chars_displayed += printf("\\");
 			chars_displayed += display_missing_zeros(str[i]);
 			nbr = my_putnbrbase(str[i], "01234567");
-			chars_displayed += printf(nbr);
+			chars_displayed += printf("%s", nbr);
 		} else
 			chars_displayed += printf("%c", str[i]);
 	}
