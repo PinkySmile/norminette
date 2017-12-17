@@ -6,18 +6,18 @@
 */
 
 const char	*style_names[] = {
-	"O1",			/*0  : garbage files		*/
-	"O3",			/*1  : > 5 fcts			*/
-	"O4",			/*2  : files names		*/
+	"O1",			/*0  : garbage files				*/
+	"O3",			/*1  : > 5 fcts					*/
+	"O4",			/*2  : files names				*/
 	"G1",			//3  : epi header
 	"G2",			//4  : empty lines between fcts
-	"F3",			/*5  : too long line		*/
-	"F4",			/*6  : too long function	*/
+	"F3",			/*5  : too long line				*/
+	"F4",			/*6  : too long function			*/
 	"F5",			//7  : fct > 4 args
-	"F6",			/*8  : comment in fct		*/
+	"F6",			/*8  : comment in fct				*/
 	"L1",			//9  : +1 action per line
 	"L2",			//10 : indentation
-	"L3",			/*11 :				*/
+	"L3",			/*11 : space after key words and operators	*/
 	"L4",			//12 : brackets
 	"L5",			//13 : 
 	"L6",			//14 : 
@@ -45,7 +45,7 @@ const char	*style_description[] = {
 	"comment inside a function.",
 	"a line correspond to more than one statement",
 	"bad indentation on start of a line",
-	"",
+	"operators should be isolated by spaces and a space should follow 'if', 'for', 'return' and 'while'",
 	"curly brackets misplaced",
 	"",
 	"",
