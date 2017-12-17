@@ -27,7 +27,7 @@ char	*getsig_name(int sig_ID)
 
 void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 {
-	printf("\n\n\n\nOops !\nSomething went wrong...\n");
+	printf("\n\nOops !\nSomething went wrong...\n");
 	printf("Program killed by signal %i (%s)", sig_ID, getsig_name(sig_ID));
 	printf(" dumping core\n");
 	if (infos->si_errno)
