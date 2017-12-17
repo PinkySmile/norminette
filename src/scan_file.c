@@ -85,17 +85,17 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
 	if (flags->d)
 		printf("Finding to long lines\n");
         for (int i = 0; file[i]; i++) {
-		col++;
+		if (file[i] > 32)
+			col++;
 		if (flags->d)
 			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
 		if (file[i] == '\t') {
-			col += 7;
+			col += 8;
 			character +=  8 - (col % 8);
 			col -= col % 8;
 			if (flags->d)
 				printf("Found \\t : [%i, %i]\n", ln, col);
 		} else if (file[i] == '\n') {
-			col--;
 			if (flags->d)
 				printf("Found \\n : [%i, %i]\n", ln, col);
 			if (col > 80) {
@@ -107,7 +107,7 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
 				else
 					printf("\033[0m : too long line ");
 				printf("(\033[31;1m%i\033[0m)\n", col);
-				buffer = malloc(col + 1);
+				buffer = malloc(i - line_beg + 1);
 				sub_strings(file, line_beg, i, buffer);
 				if (flags->v)
 					mistake_line(col - 80, buffer, 80, ln);
