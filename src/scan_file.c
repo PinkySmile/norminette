@@ -87,7 +87,7 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
         for (int i = 0; file[i]; i++) {
 		col++;
 		if (flags->d)
-			printf("[%i, %i]:Loop start\n", ln, col);
+			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
 		if (file[i] == '\t') {
 			col += 7;
 			character +=  8 - (col % 8);
@@ -152,7 +152,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 		printf("[%i]:Checking ind\n", col);
         for (int jl = i + 1; jl != -1 && file[jl]; jl++) {
 		if (flags->d)
-			printf("[%i]:Loop start\n", col);
+			printf("[%i]:Loop start '%c' (%i)\n", col, file[jl] > 31 ? file[jl] : 0, file[jl]);
 		if (file[jl] == ' ') {
 			if (flags->d)
 				printf("[%i]:Found a space\n", col);
@@ -230,7 +230,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	for (int i = 0 ; file[i] ; i++) {
 		cond3 = !q && !s_q && comment == 0;
 		if (flags->d)
-			printf("[%i, %i]:Loop start '%c (%i)'\n", ln, col, file[i], file[i]);
+			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
 		if (cond3 && file[i] == '/' && file[i + 1] == '/') {
 			comment = 1;
 			if (flags->d)
@@ -283,6 +283,25 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				}
 				mistakes[11]++;
 			}
+		}
+		if ((unsigned char)file[i] < 32 && !space(file[i])) {
+		        printf("\033[31;1m%s [%i:%i]", path, ln, col - cond);
+			cond = file[i] == '\t' ? 8 - col % 8 : 1;
+			if (flags->f) {
+				printf("\033[0m : '%c' (ASCII %i) égaré", file[i] != 13 ? file[i] : 0, file[i]);
+				printf(" dans le programme \n");
+			} else {
+			        printf("\033[0m : Trailing '%c' (ASCII %i)\n", file[i] != 13 ? file[i] : 0, file[i]);
+			}
+			for (start = i; start >= 0 && file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(cond, bu,  col, ln);
+				free(bu);
+			}
+			mistakes[19]++;
 		}
 		if (cond3 && file[i] == ';' && file[i - 1] == ' ') {
 		        printf("\033[31;1m%s [%i:%i]", path, ln, col + 1);
