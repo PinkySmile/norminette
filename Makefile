@@ -15,6 +15,7 @@ SRC =	src/main.c \
 	src/compare_strings.c \
 	src/my_showstr.c \
 	src/my_putnbr_base.c \
+	src/catch_sig.c \
 
 OBJ =	$(SRC:.c=.o)
 

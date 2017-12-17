@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <signal.h>
+#include <string.h>
 #include <stdio.h>
 
 int     find_type(mode_t mode)
@@ -67,12 +69,27 @@ char	**parse_args(int argc, char **args)
 	return (dirs);
 }
 
+void	set_sigaction(void)
+{
+	struct sigaction	action;
+
+	memset(&action, '\0', sizeof(action));
+	action.sa_sigaction = &catch_sig;
+	action.sa_flags = SA_SIGINFO;
+	for (int i = 1; i < 32; i++)
+		if (i != SIGSTOP && i != SIGKILL && i != SIGINT)
+			sigaction(i, &action, 0);
+}
+
 int	main(int argc, char **args)
 {
-	flag	flags = get_flags(argc, args);
-	char	**dirs = parse_args(argc, args);
+	flag	flags;
+	char	**dirs = 0;
 	int	mistakes[40];
 
+	set_sigaction();
+	flags = get_flags(argc, args);
+	dirs = parse_args(argc, args);
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;
 	for (int i = 0; dirs[i] != 0; i++) {

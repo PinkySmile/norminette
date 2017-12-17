@@ -6,6 +6,7 @@
 */
 
 #include "structs.h"
+#include <signal.h>
 
 #ifndef _FUNCTION_H_
 #define _FUNCTION_H_
@@ -17,5 +18,6 @@ int	is_dir(char *path);
 void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags);
 void	scan_h_file(char *path, int *mistakes, flag *flags);
 void	display_result(int *mistakes, flag *flags);
+void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr);
 
 #endif

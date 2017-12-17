@@ -110,7 +110,7 @@ void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
 				buffer = malloc(col + 1);
 				sub_strings(file, line_beg, i, buffer);
 				if (flags->v)
-					mistake_line(col - 80, buffer, 81, ln);
+					mistake_line(col - 80, buffer, 80, ln);
 				mistakes[5]++;
 				free(buffer);
 			}
@@ -200,6 +200,11 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 	}
 }
 
+int	space(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n');
+}
+
 void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -217,13 +222,15 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	start = 0;
 	int	end = 0;
 	int	comment = 0;
+	int	begin_of_line = 1;
+	int	declaring_var = 0;
 
 	if (flags->d)
 		printf("Beggining of buffer\n");
-	for (int i = 0; file[i]; i++) {
+	for (int i = 0 ; file[i] ; i++) {
 		cond3 = !q && !s_q && comment == 0;
 		if (flags->d)
-			printf("[%i, %i]:Loop start\n", ln, col);
+			printf("[%i, %i]:Loop start '%c (%i)'\n", ln, col, file[i], file[i]);
 		if (cond3 && file[i] == '/' && file[i + 1] == '/') {
 			comment = 1;
 			if (flags->d)
@@ -238,7 +245,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->d)
 				printf("[%i, %i]:End of multilines comments\n", ln, col);
 		}
-		for (int k = 0; words[k]; k++) {
+		for (int k = 0; words[k] && cond3; k++) {
 			sub_strings(file, i, i + strlen(words[k]), buffer);
 			cond = (i + strlen(words[k])) < strlen(file);
 		        cond = cond && file[i + strlen(words[k])] == '(';
@@ -277,13 +284,60 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				mistakes[11]++;
 			}
 		}
+		if (cond3 && file[i] == ';' && file[i - 1] == ' ') {
+		        printf("\033[31;1m%s [%i:%i]", path, ln, col + 1);
+			if (flags->f) {
+				printf("\033[0m : Point virgule isolé ");
+				printf("des autres éléments\n");
+			} else {
+				printf("\033[0m : Semicolon isolated from ");
+				printf("other tokens\n");
+			}
+			for (start = i; file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(2, bu, col - 1, ln);
+				free(bu);
+			}
+			mistakes[21]++;
+		}
 		if (file[i] == '\n') {
 			if (bracket > 0)
 				line++;
 			ln++;
 			check_ind(file, mistakes, path, ln, i, flags);
 			col = 0;
+			begin_of_line = 1;
+			declaring_var = 1;
 			comment = comment == 1 ? 0 : comment;
+		} else if(!space(file[i]))
+			begin_of_line =	0;
+		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
+			declaring_var = 0;
+		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1])) {
+		        printf("\033[31;1m%s [%i:%i]", path, ln, col - cond);
+			cond = file[i] == '\t' ? 8 - col % 8 : 1;
+			if (flags->f) {
+				bu = file[i] == ' ' ? "Espace" : bu;
+				bu = file[i] == '\t' ? "Tabulation" : bu;
+				printf("\033[0m : %s égaré", bu);
+				printf(" dans le programme \n");
+			} else {
+				bu = file[i] == ' ' ? "space" : bu;
+				bu = file[i] == '\t' ? "tab" : bu;
+				printf("\033[0m : Trailing %s\n", bu);
+			}
+			for (start = i; file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(cond, bu,  col, ln);
+				free(bu);
+			}
+			mistakes[19]++;
 		}
 	        if (bracket > 0 && cond3) {
 			if (flags->d) {
@@ -366,7 +420,7 @@ void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 		printf("Tracking other styles errors\n");
 	find_long_fct(file_content, mistakes, path, key_words, flags);
 	if (flags->d)
-		printf("File %s scanned !\n", path);
+		printf("File %s scanned !\n\n", path);
         free(file_content);
 }
 

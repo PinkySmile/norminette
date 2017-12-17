@@ -30,6 +30,7 @@ const char	*style_names[] = {
 	"implicit_T007",	//21 : semicolon isolated
 	"implicit_T010",	//22 : l or o 
 	"V1",			//23 :
+	"F2",			//24 : function's name invalid
 	0
 };
 
@@ -58,6 +59,7 @@ const char	*style_description[] = {
 	"semicolon is isolated from other tokens",
 	"identifier should not be composed of only 'l' and 'o'",
 	"",
+	"function should be in english, according to the snake_case convention",
 	0
 };
 
@@ -93,5 +95,6 @@ const int	style_type[] = {
 	0,
 	0,
 	0,
-	0
+	0,
+	2
 };
