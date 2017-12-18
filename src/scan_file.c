@@ -81,6 +81,7 @@ void	verif_fct_name(char *name, flag *flags, char *file_name, int *mistakes)
         for (int i = 0; name[i]; i++) {
                 cond = name[i] == '_' || name[i] == '.';
                 cond = cond || compare_strings(name, "Makefile");
+		cond = cond || (name[i] >= '0' && name[i] <= '9');
                 if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
                         mistakes[24]++;
                         if (flags->f)
