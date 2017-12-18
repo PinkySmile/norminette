@@ -96,5 +96,6 @@ const int	style_type[] = {
 	0,
 	0,
 	0,
+	2,
 	2
 };
