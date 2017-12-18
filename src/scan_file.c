@@ -93,72 +93,6 @@ void	verif_fct_name(char *name, flag *flags, char *file_name, int *mistakes)
         }
 }
 
-void	find_long_lines(char *file, int *mistakes, char *path, flag *flags)
-{
-	int	ln = 1;
-	int	col = 0;
-	int	character = 0;
-	char	*buffer = 0;
-	int	line_beg = 0;
-
-	if (flags->d)
-		printf("Finding to long lines\n");
-        for (int i = 0; file[i]; i++) {
-		if (file[i] >= 32)
-			col++;
-		if (flags->d)
-			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
-		if (file[i] == '\t') {
-			col += 8;
-			character +=  8 - (col % 8);
-			col -= col % 8;
-			if (flags->d)
-				printf("Found \\t : [%i, %i]\n", ln, col);
-		} else if (file[i] == '\n') {
-			if (flags->d)
-				printf("Found \\n : [%i, %i]\n", ln, col);
-			if (col > 80) {
-				if (flags->d)
-					printf("Too long line %i\n", col);
-				printf("\033[31;1m%s [line %i]", path, ln);
-				if (flags->f)
-					printf("\033[0m : ligne trop longue ");
-				else
-					printf("\033[0m : too long line ");
-				printf("(\033[31;1m%i\033[0m)\n", col);
-				buffer = malloc(i - line_beg + 1);
-				sub_strings(file, line_beg, i, buffer);
-				if (flags->v)
-					mistake_line(col - 80, buffer, 80, ln);
-				mistakes[5]++;
-				free(buffer);
-			}
-			line_beg = i + 1;
-			if (flags->d)
-				printf("Set begin of line %i\n", line_beg);
-			ln++;
-			character = 0;
-			col = 0;
-		}
-	}
-	if (col > 80) {
-		printf("\033[31;1m%s [line %i]", path, ln);
-		if (flags->f)
-			printf("\033[0m : ligne trop longue ");
-		else
-			printf("\033[0m : too long line ");
-		printf("(\033[31;1m%i\033[0m)\n", col);
-		mistakes[5]++;
-		buffer = malloc(col + 1);
-		sub_strings(file, line_beg, col + line_beg, buffer);
-		if (flags->v)
-			mistake_line(col - 80, buffer, 81, ln);
-        	free(buffer);
-	}
-	if (flags->d)
-		printf("End of buffer\n");
-}
-
 void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags, char *fct_name, char *fct)
 {
 	int	col = 0;
@@ -568,9 +502,9 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				line = 0;
         		}
 		}
-		if (file[i] != '\t')
+		if (file[i] >= 32)
 			col++;
-		else
+		else if (file[i] == '\t')
 			col = (col + 8) - (col % 8);
 	}
 	if (function > 5) {
