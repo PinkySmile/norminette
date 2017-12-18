@@ -223,11 +223,15 @@ int	space(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-char	*get_function_name(char *file, flag *flags)
+char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *path)
 {
 	int	i = 0;
 	int	beg = 0;
 	char	*name = 0;
+	int	end = 0;
+	int	args_nbr = 1;
+	char	*void_ = "void";
+	int	col = 0;
 
 	file++;
 	if (*file == '#') {
@@ -241,30 +245,86 @@ char	*get_function_name(char *file, flag *flags)
 			printf("%c", file[j]);
 		printf("\n");
 	}
-	for (beg = 0; file[beg] && !space(file[beg]); beg++)
+	for (beg = 0; file[beg] && !space(file[beg]); beg++) {
+		col++;
+		if (file[beg] == '\t')
+			col += 7 - col % 8;
 		if (flags->d)
 			printf("Skipping 1 %c\n", file[beg]);
+	}
 	if (file[beg] == '\n') {
 		if (flags->d)
 			printf("End of line\n\n");
 		return (0);
 	}
-	for (; file[beg] && (space(file[beg]) || file[beg] == '*'); beg++)
+	for (; file[beg] && (space(file[beg]) || file[beg] == '*'); beg++) {
+		col++;
+		if (file[beg] == '\t')
+			col += 7 - col % 8;
 		if (flags->d)
 			printf("Skipping 2 %c\n", *file);
-	for (; file[i + beg] && file[i + beg] != '\n' && file[i + beg] != '(' && file[i + beg] != ';'; i++)
+	}
+	for (; file[i + beg] && file[i + beg] != '\n' && file[i + beg] != '(' && file[i + beg] != ';'; i++) {
+		col++;
+		if (file[beg] == '\t')
+			col += 7 - col % 8;
 		if (flags->d)
 			printf("Skipping 3 %c\n", file[i]);
+	}
 	if (file[i + beg] != '(')
 		return (0);
+	for (int j = 0; file[i + beg + j] && file[i + beg + j] != ')'; j++)
+		if (file[i + beg + j] == ',')
+			args_nbr++;
+	if (file[i + beg] && file[i + beg + 1] == ')')
+		args_nbr = 0;
 	name = malloc(i + 1);
 	sub_strings(file, beg, beg + i, name);
 	for (int j = 0; name[j]; j++)
 		if (name[j] <= 32)
 			for (int k = j; name[k]; k++)
 				name[k] = name[k + 1];
+	if (args_nbr == 0) {
+		for (; space(name[i + beg + args_nbr]) && name[i + beg + args_nbr]; args_nbr++);
+		for (int j = args_nbr; void_[j - args_nbr] && name[i + beg + j]; j++)
+			if (void_[j - args_nbr] != name[i + beg + j]) {
+				printf("\033[31;1m%s [%i:%i]in function '%s'", path, ln, col + 1, name);
+				if (flags->f) {
+					printf("\033[0m : 'void' attendu pour une fonction");
+					printf(" ne prenant aucun argument\n");
+				} else {
+					printf("\033[0m : 'void' expected ");
+					printf("for a function that takes no argument\n");
+				}
+			        for (end = 0; file[end] != '\n' && file[end]; end++);
+				if (flags->v) {
+					void_ = malloc(end + 10);
+					sub_strings(file, 0, end, void_);
+					mistake_line(strlen(name), void_, col - strlen(name) + 1, ln);
+					free(void_);
+				}
+				mistakes[7]++;
+			}
+	} else if (args_nbr > 4) {
+		printf("\033[31;1m%s [%i:%i]", path, ln, col + 1);
+		if (flags->f) {
+			printf("\033[0m : trop d'arguments pour la fonction '%s'", name);
+			printf(" (4 maximum mais \033[31;1m%i\033[0m trouvées)", args_nbr);
+		} else {
+			printf("\033[0m : too many arguments for function '%s'", name);
+			printf(" (4 max but \033[31;1m%i\033[0m found)\n", args_nbr);
+		}
+		for (end = 0; file[end] != '\n' && file[end]; end++);
+		if (flags->v) {
+			void_ = malloc(end + 10);
+			sub_strings(file, 0, end, void_);
+			mistake_line(strlen(name), void_, col - strlen(name) + 1, ln);
+			free(void_);
+		}
+		mistakes[7]++;
+	}
 	if (flags->d)
-		printf("\n");
+		printf("Found %i arguments for function %s\n\n", args_nbr, name);
 	return (name);
 }
 
@@ -299,7 +359,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
 				printf("[%i, %i]:Trying to find function's name\n", ln, col);
-			bu = get_function_name(file + i, flags);
+			bu = get_function_name(file + i, flags, mistakes, ln + 1, path);
 			if (flags->d)
 				printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
 			if (bu != 0) {
