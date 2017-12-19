@@ -87,7 +87,7 @@ void	display_path(char *path)
 			printf("\033[0m\033[1m%c", path[i]);
 			slash++;
 		} else if (slash == max_slash)
-			printf("\033[33;1m%c", path[i]);
+			printf("\033[36;1m%c", path[i]);
 		else
 			printf("\033[34;1m%c", path[i]);
 	printf("\033[0m");

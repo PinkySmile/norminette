@@ -80,10 +80,11 @@ void	verify_name(char *file, char *name, int *mistakes, flag *flags)
 		cond = cond || compare_strings(name, "Makefile");
 		if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
 			mistakes[2]++;
+			display_path(file);
 			if (flags->f)
-				printf("\033[31;1m%s: Nom invalide\n", file);
+				printf(": Nom invalide\n");
 		        else
-				printf("\033[31;1m%s: Invalid name\n", file);
+				printf(": Invalid name\n");
 		        break;
 		}
 	}
@@ -107,11 +108,13 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 		if (flags->u && is_file_useless(file_path, file->d_name, flags)) {
 			mistakes[0]++;
 			if (flags->f) {
-				printf("\033[31m\033[1mFichier inutile ");
-				printf("'%s' trouvé\033[0m\n", file_path);
+				printf("\033[31m\033[1mFichier inutile '");
+				display_path(file_path);
+				printf("' trouvé\033[0m\n");
 			} else {
-				printf("\033[31m\033[1mUseless file ");
-				printf("'%s' found\033[0m\n", file_path);
+				printf("\033[31m\033[1mUseless file '");
+				display_path(file_path);
+				printf("' found\033[0m\n");
 			}
 		}
 	        if (file->d_name[0] != '.' && is_dir(file_path))
@@ -145,10 +148,15 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 		perror(" ");
 		return;
 	}
-	if (flags->n)
-		printf("\033[33;1mReading file %s\033[0m\n", path);
+	if (flags->n) {
+		printf("\033[33;1mReading file \033[0m");
+		display_path(path);
+		printf("\n");
+	}
 	if (info.st_size >= 500000) {
-	        printf("\033[0mLarge file found (%s) : \033[31;1m%li\033[0m MB\nDo you really want to load it ? [Y/n]\n", path, info.st_size / 1000);
+	        printf("\033[0mLarge file found (\n");
+		display_path(path);
+		printf(") : \033[31;1m%li\033[0m MB\nDo you really want to load it ? [Y/n]\n", info.st_size / 1000);
 		answer[0] = 'a';
 	}
 	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n")) {
