@@ -257,7 +257,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 	        printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
 		if (flags->f) {
 			printf(" : trop d'arguments pour la fonction '%s'", name);
-			printf(" (4 maximum mais \033[31;1m%i\033[0m trouvées)", args_nbr);
+			printf(" (4 maximum mais \033[31;1m%i\033[0m trouvées)\n", args_nbr);
 		} else {
 			printf(" : too many arguments for function '%s'", name);
 			printf(" (4 max but \033[31;1m%i\033[0m found)\n", args_nbr);
@@ -352,12 +352,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if(compare_strings(buffer, words[k]) && cond) {
 				display_path(path);
 				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
-				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 				if (flags->f) {
-					printf("\033[0m : espace manquant ");
+					printf("\033[0m: espace manquant ");
 					printf("après le mot clé '%s'\n", words[k]);
 				} else {
-					printf("\033[0m : space missing after ");
+					printf("\033[0m: space missing after ");
 					printf("key word '%s'\n", words[k]);
 				}
 				for (start = i; file[start] != '\n'; start--);
@@ -375,12 +375,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
-			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 			if (flags->f) {
-				printf("\033[0m : '%c' (ASCII %i) égaré", file[i] != 13 ? file[i] : 0, file[i]);
+				printf("\033[0m: '%c' (ASCII %i) égaré", file[i] != 13 ? file[i] : 0, file[i]);
 				printf(" dans le programme \n");
 			} else {
-			        printf("\033[0m : Trailing '%c' (ASCII %i)\n", file[i] != 13 ? file[i] : 0, file[i]);
+			        printf("\033[0m: Trailing '%c' (ASCII %i)\n", file[i] != 13 ? file[i] : 0, file[i]);
 			}
 			for (start = i; start >= 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
@@ -395,12 +395,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		if (cond3 && file[i] == ';' && file[i - 1] == ' ') {
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
-			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 			if (flags->f) {
-				printf("\033[0m : Point virgule isolé ");
+				printf("\033[0m: Point virgule isolé ");
 				printf("des autres éléments\n");
 			} else {
-				printf("\033[0m : Semicolon isolated from ");
+				printf("\033[0m: Semicolon isolated from ");
 				printf("other tokens\n");
 			}
 			for (start = i; file[start] != '\n'; start--);
@@ -419,11 +419,11 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
                                         printf("Too long line %i\n", col);
 				display_path(path);
 				printf(" [line:\033[32;1m%i\033[0m]", ln);
-				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
                                 if (flags->f)
-                                        printf("\033[0m : ligne trop longue ");
+                                        printf("\033[0m: ligne trop longue ");
                                 else
-                                        printf("\033[0m : too long line ");
+                                        printf("\033[0m: too long line ");
                                 printf("(\033[31;1m%i\033[0m)\n", col);
 				if (flags->v) {
 					for (start = i - 1; file[start] && file[start] != '\n'; start--);
@@ -449,17 +449,17 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1])) {
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
-			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 			cond = file[i] == '\t' ? 8 - col % 8 : 1;
 			if (flags->f) {
 				bu = file[i] == ' ' ? "Espace" : bu;
 				bu = file[i] == '\t' ? "Tabulation" : bu;
-				printf("\033[0m : %s égaré", bu);
+				printf("\033[0m: %s égaré", bu);
 				printf(" dans le programme \n");
 			} else {
 				bu = file[i] == ' ' ? "space" : bu;
 				bu = file[i] == '\t' ? "tab" : bu;
-				printf("\033[0m : Trailing %s\n", bu);
+				printf("\033[0m: Trailing %s\n", bu);
 			}
 			for (start = i; file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
@@ -482,12 +482,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (file[i] == '/' && (file[i + 1] == '/' || file[i + 1] == '*')) {
 				display_path(path);
 				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
-				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 				if (flags->f) {
-					printf("\033[0m : commentaire dans une ");
+					printf("\033[0m: commentaire dans une ");
 					printf(" fonction\n");
 				} else
-					printf("\033[0m : comment in a function\n");
+					printf("\033[0m: comment in a function\n");
 				mistakes[8]++;
 				for (start = i; file[start] != '\n'; start--);
 				for (end = start + 1; file[end] != '\n' && file[end]; end++);
@@ -516,12 +516,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (line > 20) {
 					display_path(path);
 					printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
-					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 					if (flags->f)
-						printf("\033[0m : fonction trop longue ");
+						printf("\033[0m: fonction trop longue ");
 					else
-						printf("\033[0m : too long function ");
-					printf("(\033[31;1m%i\033[0m)\n", line);
+						printf("\033[0m: too long function ");
+					printf("(\033[31;1m%i\033[0m)%s", line, flags->v ? "\n\n\n" : "\n");
 					mistakes[6]++;
 				}
 				free(fct_name);
@@ -538,10 +538,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		display_path(path);
 		if (flags->f) {
 			printf(" : Plus de 5 fonctions");
-			printf(" dans un fichier (\033[31;1m%i\033[0m)\n", function);
+			printf(" dans un fichier (\033[31;1m%i\033[0m)%s", function, flags->v ? "\n\n\n" : "\n");
 		} else {
 			printf(" : More than 5 functions");
-			printf(" in a single file (\033[31;1m%i\033[0m)\n", function);
+			printf(" in a single file (\033[31;1m%i\033[0m)%s", function, flags->v ? "\n\n\n" : "\n");
 		}
 		mistakes[1] += function - 5;
 	}

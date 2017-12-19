@@ -82,9 +82,9 @@ void	verify_name(char *file, char *name, int *mistakes, flag *flags)
 			mistakes[2]++;
 			display_path(file);
 			if (flags->f)
-				printf(": Nom invalide\n");
+				printf(": Nom invalide%s", flags->v ? "\n\n\n" : "\n");
 		        else
-				printf(": Invalid name\n");
+				printf(": Invalid name%s", flags->v ? "\n\n\n" : "\n");
 		        break;
 		}
 	}
@@ -110,11 +110,11 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 			if (flags->f) {
 				printf("\033[31m\033[1mFichier inutile '");
 				display_path(file_path);
-				printf("' trouvé\033[0m\n");
+				printf("' trouvé\033[0m%s", flags->v ? "\n\n\n" : "\n");
 			} else {
 				printf("\033[31m\033[1mUseless file '");
 				display_path(file_path);
-				printf("' found\033[0m\n");
+				printf("' found\033[0m%s", flags->v ? "\n\n\n" : "\n");
 			}
 		}
 	        if (file->d_name[0] != '.' && is_dir(file_path))
@@ -154,7 +154,7 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 		printf("\n");
 	}
 	if (info.st_size >= 500000) {
-	        printf("\033[0mLarge file found (\n");
+	        printf("\033[0mLarge file found (");
 		display_path(path);
 		printf(") : \033[31;1m%li\033[0m MB\nDo you really want to load it ? [Y/n]\n", info.st_size / 1000);
 		answer[0] = 'a';
