@@ -54,8 +54,13 @@ char	**parse_args(int argc, char **args)
 
 	if (argc != 1) {
 		dirs = malloc(sizeof(*dirs) * argc);
-	} else
+		for (int i = 0; i < argc; i++)
+			dirs[i] = 0;
+	} else {
 		dirs = malloc(sizeof(*dirs) * 2);
+		for (int i = 0; i < 2; i++)
+			dirs[i] = 0;
+	}
 	for (int i = 1; i < argc; i++)
 		if (args[i][0] != '-') {
 			dirs[pos++] = args[i];

@@ -136,6 +136,7 @@ int	is_file_c(char *path)
 void	scan_file(char *path, flag *flags, int *mistakes)
 {
 	struct stat	info;
+	char		answer[3] = "Y\n";
 
 	if (!is_file_c(path)) {
 	        return;
@@ -146,10 +147,23 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	}
 	if (flags->n)
 		printf("\033[33;1mReading file %s\033[0m\n", path);
-	if (path[strlen(path) - 1] == 'c')
-		scan_c_file(path, mistakes, key_words, flags);
-	else
-		scan_h_file(path, mistakes, flags);
+	if (info.st_size >= 500000) {
+	        printf("\033[0mLarge file found (%s) : \033[31;1m%li\033[0m MB\nDo you really want to load it ? [Y/n]\n", path, info.st_size / 1000);
+		answer[0] = 'a';
+	}
+	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n")) {
+		for (int i = 0; i < 3; i++)
+			answer[i] = 0;
+		read(0, answer, 2);
+		if (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n"))
+			printf("Please answer 'Y' or 'n'\n");
+	}
+	if (compare_strings(answer, "Y\n")) {
+		if (path[strlen(path) - 1] == 'c')
+			scan_c_file(path, mistakes, key_words, flags);
+		else
+			scan_h_file(path, mistakes, flags);
+	}
 }
 
 void	display_result(int *mistakes, flag *flags)
