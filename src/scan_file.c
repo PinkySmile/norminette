@@ -49,24 +49,25 @@ void	mistake_line(int size, char *line, int col, int ln)
 		col = 0;
 	chars = printf("[%i:%i]-->", ln, col);
 	for (int i = 0; line[i]; i++) {
-		if (line[i] != '\t')
-			col_c++;
-		else
+		if (line[i] == '\t')
 			col_c = (col_c + 8) - (col_c % 8);
+		else if (line[i] >= 32)
+			col_c++;
 		if (col_c > col && col_c <= col + size)
 			printf("\033[95;1m");
-		printf("%c\033[0m", line[i]);
+		else
+			printf("\033[0m");
+		printf("%c", line[i]);
 	}
-	printf("\n");
+	printf("\033[0m\n");
 	for (int i = 0; i < chars; i++)
 		printf(" ");
 	for (int jo = 0; jo < col && line[ik]; jo++) {
-		if (line[ik] != '\t')
-			printf(" ");
-		else {
+		if (line[ik] == '\t') {
 			jo = jo + 8 - (jo % 8) - 1;
 			printf("\t");
-		}
+		} else if (line[ik] >= 32)
+			printf(" ");
 		ik++;
 	}
 	printf("\033[95;1m^");
