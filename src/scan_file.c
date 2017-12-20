@@ -43,10 +43,8 @@ void	mistake_line(int size, char *line, int col, int ln)
 {
 	int	col_c = 0;
 	int	chars = 0;
-	int	ik = 0;
+	int	arrow_displayed = 0;
 
-	if (col == 0)
-		col = 0;
 	chars = printf("[%i:%i]-->", ln, col);
 	for (int i = 0; line[i]; i++) {
 		if (line[i] == '\t')
@@ -59,23 +57,58 @@ void	mistake_line(int size, char *line, int col, int ln)
 			printf("\033[0m");
 		printf("%c", line[i]);
 	}
+	col_c = 0;
 	printf("\033[0m\n");
 	for (int i = 0; i < chars; i++)
 		printf(" ");
-	for (int jo = 0; jo < col - 1 && line[ik]; jo++) {
+	for (int i = 0; line[i]; i++) {
+		if (line[i] == '\t') {
+			if (col_c == col && !arrow_displayed) {
+				arrow_displayed = 1;
+				printf("\033[95;1m^");
+				for (int i = 0; i < (col_c % 8 == 0 ? 8 : col_c) - 1; i++)
+					printf("\033[95;1m~");
+			} else if (col_c > col && col_c < col + size)
+				for (int i = 0; i < (col_c % 8 == 0 ? 8 : col_c); i++)
+					printf("\033[95;1m~");
+			else 
+				printf("\033[0m\t");
+			col_c = (col_c + 8) - (col_c % 8);
+		} else if (line[i] >= 32) {
+			if (col_c == col && !arrow_displayed) {
+				arrow_displayed = 1;
+				printf("\033[95;1m^");
+			} else if (col_c > col && col_c < col + size)
+				printf("\033[95;1m~");
+			else
+				printf("\033[0m ");
+			col_c++;
+		} else {
+			if (col_c == col && !arrow_displayed) {
+				arrow_displayed = 1;
+				printf("\033[95;1m^");
+			} else if (col_c >= col && col_c < col + size)
+				printf("\033[95;1m~");
+			else
+				printf("\033[0m ");
+		}
+	}
+	printf("\n");
+/*	for (int jo = 0; jo < col - 1 && line[ik]; ik++) {
 		if (line[ik] == '\t') {
-			jo = jo + 8 - (jo % 8) - 1;
+			jo = jo + 8 - (jo % 8);
 			printf("\t");
-		} else if (line[ik] < 32)
-			jo--;
-		printf(" ");
+		} else if (line[ik] >= 32) {
+			jo++;
+			printf(" ");
+		}
 		ik++;
 	}
 	printf("\033[95;1m^");
 	for (int jo = 0; jo < size - 1; jo++)
 		printf("~");
 	printf("\n\033[0m");
-}
+*/}
 
 void	display_path(char *path)
 {
@@ -102,7 +135,6 @@ void	verif_fct_name(char *name, flag *flags, char *file_name, int *mistakes)
 
         for (int i = 0; name[i]; i++) {
                 cond = name[i] == '_' || name[i] == '.';
-                cond = cond || compare_strings(name, "Makefile");
 		cond = cond || (name[i] >= '0' && name[i] <= '9');
                 if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
                         mistakes[24]++;
