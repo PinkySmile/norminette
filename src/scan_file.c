@@ -62,12 +62,13 @@ void	mistake_line(int size, char *line, int col, int ln)
 	printf("\033[0m\n");
 	for (int i = 0; i < chars; i++)
 		printf(" ");
-	for (int jo = 0; jo < col && line[ik]; jo++) {
+	for (int jo = 0; jo < col - 1 && line[ik]; jo++) {
 		if (line[ik] == '\t') {
 			jo = jo + 8 - (jo % 8) - 1;
 			printf("\t");
-		} else if (line[ik] >= 32)
-			printf(" ");
+		} else if (line[ik] < 32)
+			jo--;
+		printf(" ");
 		ik++;
 	}
 	printf("\033[95;1m^");
@@ -139,9 +140,9 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		printf(" [line:\033[32;1m%i\033[0m]", ln);
 		printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 		if (flags->f)
-			printf(": Fonction interdite utilisée (\033[31;1m%s\033[0m)\n", name);
+			printf(": fonction interdite utilisée (\033[31;1m%s\033[0m)\n", name);
 		else
-			printf(": Forbidden function used (\033[31;1m%s\033[0m)\n", name);
+			printf(": forbidden function used (\033[31;1m%s\033[0m)\n", name);
 	}
 }
 

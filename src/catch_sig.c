@@ -28,7 +28,7 @@ char	*getsig_name(int sig_ID)
 void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 {
 	if (sig_ID == 2) {
-		printf("Interrupted.\n");
+		printf("\rInterrupted.\n");
 		exit(84);
 	} else {
 		printf("\n\nOops !\nSomething went wrong...\n");

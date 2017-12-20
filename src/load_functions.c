@@ -76,10 +76,14 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 	int	nbr = 0;
 
 	for (int i = 0; file[i]; i++) {
-		cond3 = !q && !s_q && comment == 0;
                 if (flags->d)
                         printf("[line %i:char %i]:Loop start '%c' (%i)\n", ln, i, file[i] > 31 ? file[i] : 0, file[i]);
-                if (cond3 && bracket == 0 && file[i] == '\n') {
+		if (file[i] == '\n') {
+			ln++;
+			comment = comment == 1 ? 0 : comment;
+		}
+		cond3 = !q && !s_q && comment == 0;
+		if (cond3 && bracket == 0 && file[i] == '\n') {
                         if (flags->d)
                                 printf("[line %i]:Trying to find function's name\n", ln);
                         bu = get_name(file + i, flags);
@@ -96,7 +100,13 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 				list->next = 0;
 				nbr++;
 			}
-                }
+                } else if (file[i] == '\n' && flags->d){
+			printf("Didn't try to find name :\t Base condition : %s\n", cond3 ? "TRUE" : "FALSE");
+			printf("\t\t\t\t------->Simple quote : %s\n", s_q ? "TRUE" : "FALSE");
+			printf("\t\t\t\t------->Double quote : %s\n", q ? "TRUE" : "FALSE");
+			printf("\t\t\t\t------->Comments : %i\n", comment);
+			printf("\t\t\t\tBrackets : %i\n", bracket);
+		}
                 if (cond3 && file[i] == '/' && file[i + 1] == '/') {
                         comment = 1;
                         if (flags->d)
