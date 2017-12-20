@@ -122,7 +122,7 @@ flag	get_flags(int argc, char **args)
 			} else if (args[i][j] == 'h')
 				disp = 1;
 			else {
-				printf("%s: Invalid option '%c'\n", args[0], args[i][j]);
+				printf("%s: Invalid option '%c' (ASCII : %i)\n", args[0], args[i][j], (unsigned char)args[i][j]);
 				printf("Use « %s -h » for more informations\n", args[0]);
 				free_list(flags.fcts);
 				exit(84);

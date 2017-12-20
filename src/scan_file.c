@@ -41,12 +41,12 @@ char	*load_file(char *path)
 
 void	mistake_line(int size, char *line, int col, int ln)
 {
-	int	col_c = 1;
+	int	col_c = 0;
 	int	chars = 0;
 	int	ik = 0;
 
 	if (col == 0)
-		col = 1;
+		col = 0;
 	chars = printf("[%i:%i]-->", ln, col);
 	for (int i = 0; line[i]; i++) {
 		if (line[i] != '\t')
@@ -58,7 +58,7 @@ void	mistake_line(int size, char *line, int col, int ln)
 		printf("%c\033[0m", line[i]);
 	}
 	printf("\n");
-	for (int i = 1; i < chars; i++)
+	for (int i = 0; i < chars; i++)
 		printf(" ");
 	for (int jo = 0; jo < col && line[ik]; jo++) {
 		if (line[ik] != '\t')
@@ -165,9 +165,9 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
 			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
 			if (flags->f)
-				printf("\033[0m : erreur d'indentation\n");
+				printf("\033[0m: erreur d'indentation\n");
 			else
-				printf("\033[0m : bad indentation\n");
+				printf("\033[0m: bad indentation\n");
 			for (c = i + 1; file[c] != '\n' && file[c]; c++);
 			if (flags->v) {
 				bu = malloc(c - i + 2);
@@ -412,16 +412,52 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				mistakes[11]++;
 			}
 		}
-		if ((unsigned char)file[i] < 32 && !space(file[i])) {
+		if ((cond3 && file[i] < 32 && !space(file[i])) || file[i] == 127) {
 		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
 			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+			for (int i = 0; i < 7; i++)
+				buffer[i] = 0;
+			if (file[i] == 5) {
+				buffer[0] = 'E';
+				buffer[1] = 'N';
+				buffer[2] = 'Q';
+			} else if (file[i] == 7) {
+				buffer[0] = '\\';
+				buffer[1] = 'a';
+			} else if (file[i] == 8) {
+				buffer[0] = '\\';
+				buffer[1] = 'b';
+			} else if (file[i] == 11) {
+				buffer[0] = '\\';
+				buffer[1] = 'v';
+			} else if (file[i] == 12) {
+				buffer[0] = '\\';
+				buffer[1] = 'f';
+			} else if (file[i] == 13) {
+				buffer[0] = '\\';
+				buffer[1] = 'r';
+			} else if (file[i] == 14) {
+				buffer[0] = 'S';
+				buffer[1] = 'O';
+			} else if (file[i] == 15) {
+				buffer[0] = 'S';
+				buffer[1] = 'I';
+			} else if (file[i] == 127) {
+				buffer[0] = 'D';
+				buffer[1] = 'E';
+				buffer[2] = 'L';
+			} else if (file[i] > 0) {
+				buffer[0] = file[i];
+				buffer[1] = ' ';
+			} else
+				buffer[0] = file[i];
 			if (flags->f) {
-				printf("\033[0m: '%c' (ASCII %i) égaré", file[i] != 13 ? file[i] : 0, file[i]);
-				printf(" dans le programme \n");
+				printf("\033[0m: '\033[31;1m%s\033[0m' ", buffer);
+				printf("(ASCII \033[31;1m%i\033[0m) égaré dans le programme \n", (unsigned char)file[i]);
 			} else {
-			        printf("\033[0m: Trailing '%c' (ASCII %i)\n", file[i] != 13 ? file[i] : 0, file[i]);
+			        printf("\033[0m: Trailing '\033[31;1m%s\033[0m' (ASCII \033[31;1m%i\033[0m)\n", buffer, (unsigned char)file[i]);
 			}
 			for (start = i; start >= 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
@@ -570,7 +606,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				line = 0;
         		}
 		}
-		if (file[i] >= 32)
+		if (file[i] >= 32 || (unsigned char)file[i] == 195)
 			col++;
 		else if (file[i] == '\t')
 			col = (col + 8) - (col % 8);
