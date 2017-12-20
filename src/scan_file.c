@@ -466,12 +466,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
                                 else
                                         printf("\033[0m: too long line ");
                                 printf("(\033[31;1m%i\033[0m)\n", col);
+				mistakes[5]++;
 				if (flags->v) {
 					for (start = i - 1; file[start] && file[start] != '\n'; start--);
 					bu = malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
                                         mistake_line(col - 80, bu, 80, ln);
-					mistakes[5]++;
 					free(bu);
 				}
                         }
