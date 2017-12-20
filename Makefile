@@ -16,6 +16,8 @@ SRC =	src/main.c \
 	src/my_showstr.c \
 	src/my_putnbr_base.c \
 	src/catch_sig.c \
+	src/load_functions.c \
+	src/free_list.c \
 
 OBJ =	$(SRC:.c=.o)
 

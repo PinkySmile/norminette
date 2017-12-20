@@ -6,9 +6,11 @@
 */
 
 #include <stdlib.h>
+#include "functions.h"
 #include "structs.h"
 #include "my.h"
 #include <stdio.h>
+#include <string.h>
 
 void	display_help(char *prog_name, int fr)
 {
@@ -76,10 +78,17 @@ void	display_help(char *prog_name, int fr)
 	exit(0);
 }
 
+void	disp_list(list_t *list)
+{
+	for (; list->next; list = list->next)
+		printf("  -  '%s'\n", (char *)list->data);
+}
+
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0};
+	flag	flags = {0, 0, 0, 0, 0, 0, 0};
 	int	disp = 0;
+	char	*dir = 0;
 
 	for (int i = 1; i < argc; i++)
 		for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
@@ -95,6 +104,18 @@ flag	get_flags(int argc, char **args)
 				flags.u = 1;
 				flags.v = 1;
 				flags.n = 1;
+			} else if (args[i][j] == 'I') {
+				dir = sub_strings(&args[i][j], 1, strlen(&args[i][j]) + 1, malloc(strlen(&args[i][j]) + 1));
+				flags.i_caps = 1;
+				load_functions(dir, &flags);
+				if (flags.d)
+					printf("%i functions are present in the list\n", list_len(flags.fcts));
+				if (flags.d) {
+					printf("All functions found in directory %s : \n", dir);
+					disp_list(flags.fcts);
+				}
+				free(dir);
+				break;
 			} else if (args[i][j] == 'd') {
 				flags.n = 1;
 				flags.d = 1;
@@ -103,6 +124,7 @@ flag	get_flags(int argc, char **args)
 			else {
 				printf("%s: Invalid option '%c'\n", args[0], args[i][j]);
 				printf("Use « %s -h » for more informations\n", args[0]);
+				free_list(flags.fcts);
 				exit(84);
 			}
 	if (disp)

@@ -8,12 +8,20 @@
 #ifndef _STRUCTS_H_
 #define _STRUCTS_H_
 
+typedef struct list_s {
+	void		*data;
+	struct list_s	*next;
+	struct list_s	*prev;
+} list_t;
+
 typedef struct {
 	int	v;
 	int	f;
 	int	n;
 	int	u;
 	int	d;
+	int	i_caps;
+	list_t	*fcts;
 } flag;
 
 #endif

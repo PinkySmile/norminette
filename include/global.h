@@ -31,6 +31,7 @@ const char	*style_names[] = {
 	"implicit_T010",	//22 : l or o 
 	"V1",			//23 :
 	"F2",			//24 : function's name invalid
+	"implicit_F001",	//25 : forbidden fcts
 	0
 };
 
@@ -60,6 +61,7 @@ const char	*style_description[] = {
 	"identifier should not be composed of only 'l' and 'o'",
 	"",
 	"function should be in english, according to the snake_case convention",
+	"forbiden functions used",
 	0
 };
 
@@ -69,6 +71,7 @@ const char	*key_words[] = {
 	"if",
 	"else",
 	"for",
+	"switch",
 	0
 };
 
@@ -96,6 +99,7 @@ const int	style_type[] = {
 	0,
 	0,
 	0,
+	2,
 	2,
 	2
 };

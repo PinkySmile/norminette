@@ -15,6 +15,7 @@
 #include <string.h>
 #include "my.h"
 #include "structs.h"
+#include "functions.h"
 
 char	*load_file(char *path)
 {
@@ -24,12 +25,12 @@ char	*load_file(char *path)
 
 	if (stat(path, &info) < 0) {
 		perror("");
-		exit(84);
+		return (0);
 	}
 	fd = open(path, O_RDONLY);
 	if (fd <= 0) {
 		perror("");
-		exit(84);
+		return (0);
 	}
 	buffer = malloc(info.st_size + 1);
 	read(fd, buffer, info.st_size);
@@ -111,6 +112,36 @@ void	verif_fct_name(char *name, flag *flags, char *file_name, int *mistakes)
                         break;
                 }
         }
+}
+
+int	is_in_list(list_t *list, char *str)
+{
+	for (; list->next; list = list->next)
+		if (compare_strings(str, (char *)list->data))
+			return (1);
+	return (0);
+}
+
+int	is_in_array(char const **array, char *str)
+{
+	for (int i = 0; array[i]; i++)
+		if (compare_strings(str, array[i]))
+			return (1);
+	return (0);
+}
+
+void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, char const **words, char *fct, int ln, char *fct_name)
+{
+	if (!compare_strings(name, "") && !is_in_list(flags->fcts, name) && !is_in_array(words, name)) {
+		display_path(file_name);
+		mistakes[25]++;
+		printf(" [line:\033[32;1m%i\033[0m]", ln);
+		printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+		if (flags->f)
+			printf(": Fonction interdite utilisée (\033[31;1m%s\033[0m)\n", name);
+		else
+			printf(": Forbidden function used (\033[31;1m%s\033[0m)\n", name);
+	}
 }
 
 void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags, char *fct_name, char *fct)
@@ -314,6 +345,16 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = bu;
 				verif_fct_name(bu, flags, path, mistakes);
+			}
+		} else if (cond3 && file[i] == '\n' && flags->i_caps) {
+	        	if (flags->d)
+				printf("[%i, %i]:Trying to find used function name\n", ln, col);
+			bu = get_name(file + i, flags);
+			if (flags->d)
+				printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
+			if (bu != 0) {
+				verif_fct_used(bu, flags, path, mistakes, words, fct, ln, fct_name);
+				free(bu);
 			}
 		}
 		if (cond3 && file[i] == '/' && file[i + 1] == '/') {
@@ -554,6 +595,8 @@ void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 	char	*file_content;
 
 	file_content = load_file(path);
+	if (!file_content)
+		return;
 	find_long_fct(file_content, mistakes, path, key_words, flags);
 	if (flags->d)
 		printf("File %s scanned !\n\n", path);
@@ -565,6 +608,8 @@ void	scan_h_file(char *path, int *mistakes, flag *flags)
 	char	*file_content;
 
 	file_content = load_file(path);
+	if (!file_content)
+		return;
 	find_long_fct(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
 	free(file_content);
 }

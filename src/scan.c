@@ -156,7 +156,7 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	if (info.st_size >= 500000) {
 	        printf("\033[0mLarge file found (");
 		display_path(path);
-		printf(") : \033[31;1m%li\033[0m MB\nDo you really want to load it ? [Y/n]\n", info.st_size / 1000);
+		printf(") : \033[31;1m%.4lf\033[0m MB\nDo you really want to load it ? [Y/n]\n", (double)info.st_size / 1000000);
 		answer[0] = 'a';
 	}
 	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n")) {
