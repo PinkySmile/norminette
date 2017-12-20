@@ -79,11 +79,13 @@ void	set_sigaction(void)
 	struct sigaction	action;
 
 	memset(&action, '\0', sizeof(action));
-	action.sa_sigaction = &catch_sig;
+        action.sa_sigaction = &catch_sig;
 	action.sa_flags = SA_SIGINFO;
-	for (int i = 1; i < 32; i++)
-		if (i != SIGSTOP && i != SIGKILL && i != SIGINT)
-			sigaction(i, &action, 0);
+	sigaction(2, &action, 0);
+	sigaction(4, &action, 0);
+	sigaction(5, &action, 0);
+	sigaction(6, &action, 0);
+	sigaction(11, &action, 0);
 }
 
 int	main(int argc, char **args)

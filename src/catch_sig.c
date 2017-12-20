@@ -19,7 +19,7 @@ char	*getsig_name(int sig_ID)
 		return ("SIGTRAP");
 	case 6:
 		return ("SIGABRT");
-	case 11:
+        case 11:
 		return ("SIGSEGV");
 	}
 	return ("??");
@@ -27,12 +27,17 @@ char	*getsig_name(int sig_ID)
 
 void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 {
-	printf("\n\nOops !\nSomething went wrong...\n");
-	printf("Program killed by signal %i (%s)", sig_ID, getsig_name(sig_ID));
-	printf(" dumping core\n");
-	if (infos->si_errno)
-		printf("\"%s\"\n", strerror(infos->si_errno));
-	printf("Pls report this error\n");
-	(void)ptr;
-	exit(128 + sig_ID);
+	if (sig_ID == 2) {
+		printf("Interrupted.\n");
+		exit(84);
+	} else {
+		printf("\n\nOops !\nSomething went wrong...\n");
+		printf("Program killed by signal %i (%s)", sig_ID, getsig_name(sig_ID));
+		printf(" dumping core\n");
+		if (infos->si_errno)
+			printf("\"%s\"\n", strerror(infos->si_errno));
+		printf("Pls report this error\n");
+		(void)ptr;
+		exit(128 + sig_ID);
+	}
 }
