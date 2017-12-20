@@ -12,69 +12,126 @@
 #include <stdio.h>
 #include <string.h>
 
+void	disp_en_help(char *prog_name)
+{
+	printf("USAGE :\n");
+	printf("\t%s [-vfunahd] [-I<path>] [folders/files]\n\n", prog_name);
+	printf("DESCRIPTION :\n");
+	printf("\t-a :\t\tEnables v, u and n options (like -vun)\n\n");
+	printf("\t-d :\t\tDebug option (don't use it)\n\n");
+	printf("\t-f :\t\tChange the main language to french\n\n");
+	printf("\t-h :\t\tDisplay this help page\n\n");
+	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
+	printf("\t-u :\t\tFinds unseless files and invalid file names\n\n");
+	printf("\t-v :\t\tDisplays the entire line and where the mistake\n");
+	printf("\t\t\tis in it\n\n");
+	printf("\t-I<path> : \tUsing the I flag enables the forbidden functions\n");
+	printf("\t\t\tchecking in .c files. Using this flag transform the remaining\n");
+	printf("\t\t\tstring into the path of the folder or file which contains\n");
+	printf("\t\t\tallowed functions. The program will save every function\n");
+	printf("\t\t\tdeclared in those files/folders (only .c and .h files)\n");
+	printf("\t\t\tand use them as only allowed functions. That means that all\n");
+	printf("\t\t\tfunctions which are not declared in these files will be\n");
+	printf("\t\t\tthe forbidden functions. All the allowed system calls have\n");
+	printf("\t\t\thave to be declared in a .h or .c file. No need to declare\n");
+	printf("\t\t\tthe functions properly. You juste have to follow this exemple\n");
+	printf("\t\t\t\t\tvoid function();\n");
+	printf("\t\t\tNote : severals -I can be used at the same if you have many include\n");
+	printf("\t\t\tand source folders with, for exemple, the CSFML\n");
+	printf("\t\t\tCSMFL's includes are in the folder /usr/local/include/SFML.\n");
+	printf("\t\t\tFor graphical projects use -I/usr/local/include/SFML .\n\n");
+	printf("EXEMPLES :\n");
+	printf("\t%s :\n\t\tLaunch a basic test on the current folder\n\n", prog_name);
+	printf("\t%s src test.c :\n\t\tLaunch a basic test in the folder 'src' and on the file 'test.c'\n\n", prog_name);
+	printf("\t%s -vfIinclude -I/usr -I../sys.h\n\t\tLaunch the program in verbose mode, in french\n", prog_name);
+	printf("\t\twith forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'\n\n");
+	printf("RETURN VALUES :\n");
+	printf("\tIf no mistakes are found, the program exit with code 0.\n");
+	printf("\tIf one or many mistakes are found, the program eit with code 1.\n\n");
+	printf("REPORT A BUG :\n");
+	printf("\tIf you find a bug, first, update  the program  (Use the\n");
+	printf("\t'update.sh'  in  the  repository or, if  you  used  the\n");
+	printf("\tinstallation script, <your alias>-update). If it is not\n");
+	printf("\tyet patched, run the 'debug.sh' (or <your alias>-debug)\n");
+	printf("\twith,  as argument, the  file  which caused  the bug to\n");
+	printf("\thappen. Send me, then, the  scan.log file (you can join\n");
+	printf("\tthe source  file too) at  \"andgel.halley@epitech.eu\".\n");
+	printf("\tExplain briefly in the mail what happened and  I'll fix\n");
+	printf("\tas fast as I can !\n\n");
+	printf("\tNote : No need to launch  in debug mode if  it's just a\n");
+	printf("\tdisplay problem (spelling mistake, ...).\n");
+	printf("\tThe given scripts (update.sh, debug.sh) will only work\n");
+	printf("\tif the program is stored in ~/norminette. You can also\n");
+	printf("\tmodify  the scripts  to make them  work with your  own\n");
+	printf("\tpath\n");
+	printf("\tYou can also send me ideas by mail !\n");
+}
+
+void	disp_fr_help(char *prog_name)
+{
+	printf("USAGE :\n");
+	printf("\t%s [-vfunahd] [-I<chemin>] [dossiers/fichiers]\n\n", prog_name);
+	printf("DESCRIPTION :\n");
+	printf("\t-a :\t\tActive les options v, u et n (equivaut à -vun)\n\n");
+	printf("\t-d :\t\tFlag de debug à éviter\n\n");
+	printf("\t-f :\t\tChange la langue en français\n\n");
+	printf("\t-h :\t\tAffiche cette page d'aide\n\n");
+	printf("\t-n :\t\tAffiche le nom des fichiers scannés\n\n");
+	printf("\t-u :\t\tCherche les fichiers inutiles dans le repo et\n");
+	printf("\t\t\tles noms invalides\n\n");
+	printf("\t-v :\t\tAffiche la ligne contenant l'erreur et met en\n");
+	printf("\t\t\tvaleur l'erreur\n\n");
+	printf("\t-I<chemin> : \tUtiliser le flag I permet d'activer la détection des\n");
+	printf("\t\t\tfonctions dans les dossiers et fichiers .c. Utiliser\n");
+	printf("\t\t\tce flag transforme tous les charactères suivants en\n");
+	printf("\t\t\ten un chemin d'accès vers un dossier ou fichier. La\n");
+	printf("\t\t\tnorminette va sauvegarder toutes les fonctions déclarées\n");
+	printf("\t\t\tdans les fichier .c et .h et les interprèter comme fonctions\n");
+	printf("\t\t\tautorisées. Toute fonction n'étant pas déclaré ici seront\n");
+	printf("\t\t\tdonc considéré comme des fonction interdites. Les fonctions\n");
+	printf("\t\t\tsystèmes autorisées doivent avoir une définition dans un\n");
+	printf("\t\t\tfichier .h ou .c. La définition des fonctions n'as pas a être\n");
+	printf("\t\t\tcomplète ! Vous pouvez toutes les déclarer comme ceci\n");
+	printf("\t\t\t\t\tvoid fonction();\n");
+	printf("\t\t\tÀ noter aussi que plusieurs -I peuvent être utiliser en même\n");
+	printf("\t\t\ttemps si vous avez plusieurs dossiers d'include comme avec\n");
+	printf("\t\t\tla CSMFL par exemple. Les includes de la CSML sont stocké dans le\n");
+	printf("\t\t\tdossier /usr/local/include/SFML.\n");
+	printf("\t\t\tUtiliser donc -I/usr/local/include/SFML pour vos projets graphiques.\n\n");
+	printf("EXEMPLES :\n");
+	printf("\t%s :\n\t\tLance un scan basique dans le dossier courant\n\n", prog_name);
+	printf("\t%s src test.c :\n\t\tLance un scan basique dans le dossier 'src' et sur le fichier 'test.c'\n\n", prog_name);
+	printf("\t%s -vfIinclude -I/usr -I../sys.h\n\t\tLance un scan en mode verbeux en français avec la détections des fonctions interdites\n", prog_name);
+	printf("\t\tavec les fonctions autorisées dans les dossiers 'include' et '/usr' et dans le fichier '../sys.h'\n\n");
+	printf("VALEURS DE RETOUR :\n");
+	printf("\tSi aucune erreur n'est trouvée, le programme sort avec le code 0.\n");
+	printf("\tSi une ou plusieurs erreurs ont été détectées, le programme sort avec le code 1.\n\n");
+	printf("RAPPORTER UN BUG :\n");
+	printf("\tSi vous  trouvez un bug, mettez  à jour  le  programme\n");
+	printf("\t(Utilisez le script 'update.sh' dans le repo ou encore\n");
+	printf("\t<votre alias>-update  si vous  avez utilisé  le script\n");
+	printf("\td'installation). Si le bug persiste, lancez 'debug.sh'\n");
+	printf("\t(<votre alias>-debug) avec, comme argument, le fichier\n");
+	printf("\tayant causé  le bug. Envoyez moi  ensuite  le  fichier\n");
+	printf("\tscan.log (vous pouvez aussi  joindre le fichier posant\n");
+	printf("\tproblème)   à   l'addresse  \"andgel.halley@epitech.eu\"\n");
+	printf("\ten expliquant  le bug rencontrez  et je le  corrigerai\n");
+	printf("\tle plus vite possible !\n\n");
+	printf("\tNote : Inutile de le lancer en mode debug si  ce n'est\n");
+	printf("\tqu'un problème d'affichage (faute de frappe, ...)\n");
+	printf("\tLes   scripts   fournis   (update.sh,   debug.sh)   ne\n");
+	printf("\tfonctionneront que  si la  norminette se  trouve de le\n");
+	printf("\tdossier ~/norminette.  Vous pouvez sinon  les modifier\n");
+	printf("\tpour les faire  fonctionner avec votre chemain d'accès\n");
+	printf("\tN'hésitez pas à m'envoyer des suggestions par mail !\n");
+}
+
 void	display_help(char *prog_name, int fr)
 {
-	if (fr) {
-		printf("USAGE :\n");
-		printf("\t%s [-vfunahd] [dossiers/fichiers]\n\n", prog_name);
-		printf("DESCRIPTION :\n");
-		printf("\t-a :\tActive les options v, u et n (equivaut à -vun)\n\n");
-		printf("\t-d :\tFlag de debug à éviter\n\n");
-		printf("\t-f :\tChange la langue en français\n\n");
-		printf("\t-h :\tAffiche cette page d'aide\n\n");
-		printf("\t-n :\tAffiche le nom des fichiers scannés\n\n");
-		printf("\t-u :\tCherche les fichiers inutiles dans le repo et\n");
-		printf("\t\tles noms invalides\n\n");
-		printf("\t-v :\tAffiche la ligne contenant l'erreur et met en\n");
-		printf("\t\tvaleur l'erreur\n\n");
-		printf("RAPPORTER UN BUG :\n");
-		printf("\tSi vous  trouvez un bug, mettez  à jour  le  programme\n");
-		printf("\t(Utilisez le script 'update.sh' dans le repo ou encore\n");
-		printf("\t<votre alias>-update  si vous  avez utilisé  le script\n");
-		printf("\td'installation). Si le bug persiste, lancez 'debug.sh'\n");
-		printf("\t(<votre alias>-debug) avec, comme argument, le fichier\n");
-		printf("\tayant causé  le bug. Envoyez moi  ensuite  le  fichier\n");
-		printf("\tscan.log (vous pouvez aussi  joindre le fichier posant\n");
-		printf("\tproblème)   à   l'addresse  \"andgel.halley@epitech.eu\"\n");
-		printf("\ten expliquant  le bug rencontrez  et je le  corrigerai\n");
-		printf("\tle plus vite possible !\n\n");
-		printf("\tNote : Inutile de le lancer en mode debug si  ce n'est\n");
-		printf("\tqu'un problème d'affichage (faute de frappe, ...)\n");
-		printf("\tLes   scripts   fournis   (update.sh,   debug.sh)   ne\n");
-		printf("\tfonctionneront que  si la  norminette se  trouve de le\n");
-		printf("\tdossier ~/norminette.  Vous pouvez sinon  les modifier\n");
-		printf("\tpour les faire  fonctionner avec votre chemain d'accès\n");
-		printf("\tN'hésitez pas à m'envoyer des suggestions par mail !\n");
-	} else {
-		printf("USAGE :\n");
-		printf("\t%s [-vfunahd] [folders/files]\n\n", prog_name);
-		printf("DESCRIPTION :\n");
-		printf("\t-a :\tEnables v, u and n options (like -vun)\n\n");
-		printf("\t-d :\tDebug option (don't use it)\n\n");
-		printf("\t-f :\tChange the main language to french\n\n");
-		printf("\t-h :\tDisplay this help page\n\n");
-		printf("\t-n :\tDisplays the scanned files' names\n\n");
-		printf("\t-u :\tFinds unseless files and invalid file names\n\n");
-		printf("\t-v :\tDisplays the entire line and where the mistake\n");
-		printf("\t\tis in it\n");
-		printf("REPORT A BUG :\n");
-		printf("\tIf you find a bug, first, update  the program  (Use the\n");
-		printf("\t'update.sh'  in  the  repository or, if  you  used  the\n");
-		printf("\tinstallation script, <your alias>-update). If it is not\n");
-		printf("\tyet patched, run the 'debug.sh' (or <your alias>-debug)\n");
-		printf("\twith,  as argument, the  file  which caused  the bug to\n");
-		printf("\thappen. Send me, then, the  scan.log file (you can join\n");
-		printf("\tthe source  file too) at  \"andgel.halley@epitech.eu\".\n");
-		printf("\tExplain briefly in the mail what happened and  I'll fix\n");
-		printf("\tas fast as I can !\n\n");
-		printf("\tNote : No need to launch  in debug mode if  it's just a\n");
-		printf("\tdisplay problem (spelling mistake, ...).\n");
-		printf("\tThe given scripts (update.sh, debug.sh) will only work\n");
-		printf("\tif the program is stored in ~/norminette. You can also\n");
-		printf("\tmodify  the scripts  to make them  work with your  own\n");
-		printf("\tpath\n");
-		printf("\tYou can also send me ideas by mail !\n");
-	}
+	if (fr)
+		disp_fr_help(prog_name);
+	else
+		disp_en_help(prog_name);
 	exit(0);
 }
 
