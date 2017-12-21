@@ -5,7 +5,7 @@
 ## Makefile of the project
 ##
 
-NAME =	norminette
+NAME =	norm
 
 SRC =	src/main.c \
 	src/scan.c \
