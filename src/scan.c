@@ -80,7 +80,10 @@ void	verify_name(char *file, char *name, int *mistakes, flag *flags)
 		cond = cond || compare_strings(name, "Makefile");
 		if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
 			mistakes[2]++;
-			display_path(file);
+			if (flags->c)
+				printf("%s", file);
+			else
+				display_path(file);
 			if (flags->f)
 				printf(": Nom invalide%s", flags->v ? "\n\n\n" : "\n");
 		        else
@@ -107,15 +110,19 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 			verify_name(file_path, file->d_name, mistakes, flags);
 		if (flags->u && is_file_useless(file_path, file->d_name, flags)) {
 			mistakes[0]++;
+			if (!flags->c)
+				printf("\033[31m\033[1m");
 			if (flags->f) {
-				printf("\033[31m\033[1mFichier inutile '");
+				printf("Fichier inutile '");
 				display_path(file_path);
-				printf("' trouvé\033[0m%s", flags->v ? "\n\n\n" : "\n");
+				printf("' trouvé%s", flags->v ? "\n\n\n" : "\n");
 			} else {
-				printf("\033[31m\033[1mUseless file '");
+				printf("Useless file '");
 				display_path(file_path);
-				printf("' found\033[0m%s", flags->v ? "\n\n\n" : "\n");
+				printf("' found%s", flags->v ? "\n\n\n" : "\n");
 			}
+			if (!flags->c)
+				printf("\033[0m");
 		}
 	        if (file->d_name[0] != '.' && is_dir(file_path))
 			scan_folder(file_path, flags, mistakes);
@@ -141,6 +148,8 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	struct stat	info;
 	char		answer[3] = "Y\n";
 
+	if (flags->no_big_files)
+		answer[0] = 'n';
 	if (!is_file_c(path)) {
 	        return;
 	} else if (stat(path, &info) < 0) {
@@ -149,24 +158,44 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 		return;
 	}
 	if (flags->n) {
-		printf("\033[33;1mReading file \033[0m");
-		display_path(path);
+		if (flags->c) {
+			if (flags->f)
+				printf("Lecture du fichier %s", path);
+			else
+				printf("Reading file %s", path);
+		} else {
+			if (flags->f)
+				printf("\033[33;1mLecture du fichier \033[0m");
+			else
+				printf("\033[33;1mReading file \033[0m");
+			display_path(path);
+		}
 		printf("\n");
 	}
 	if (info.st_size >= 500000) {
-	        printf("\033[0mLarge file found (");
-		display_path(path);
-		printf(") : \033[31;1m%.4lf\033[0m MB\nDo you really want to load it ? [Y/n]\n", (double)info.st_size / 1000000);
-		answer[0] = 'a';
+		if (!flags->c)
+			printf("\033[0m");
+	        printf("Large file found (");
+		if (flags->c)
+			printf("%s", path);
+		else
+			display_path(path);
+		printf(") : %s%.4lf%s MB\n", flags->c ? "" : "\033[31;1m", (double)info.st_size / 1000000, flags->c ? "" : "\033[0m");
+		if (flags->no_big_files)
+			printf("Skipping\n");
+		else {
+			printf("Do you really want to load it ? [Y/n]\n");
+			answer[0] = 'a';
+		}
 	}
-	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n")) {
+	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n") && !compare_strings(answer, "y\n") && !compare_strings(answer, "N\n")) {
 		for (int i = 0; i < 3; i++)
 			answer[i] = 0;
 		read(0, answer, 2);
-		if (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n"))
+		if (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n") && !compare_strings(answer, "y\n") && !compare_strings(answer, "n\n"))
 			printf("Please answer 'Y' or 'n'\n");
 	}
-	if (compare_strings(answer, "Y\n")) {
+	if (compare_strings(answer, "Y\n") || compare_strings(answer, "y\n")) {
 		if (path[strlen(path) - 1] == 'c')
 			scan_c_file(path, mistakes, key_words, flags);
 		else
@@ -184,25 +213,44 @@ void	display_result(int *mistakes, flag *flags)
 			printf("%s : %i\n", style_names[i], mistakes[i]);
 	for (int i = 0; style_names[i]; i++)
 		if (mistakes[i]) {
-		        printf("\n\033[31;1m%s\033[0m", style_names[i]);
-			printf("\033[1m rule has been violated \033[0m");
-			printf("\033[31;1m%i\033[0m", mistakes[i]);
-			printf("\033[1m times \033[0m");
-			printf(": \033[91m%s\033[0m", style_description[i]);
+			if (flags->c) {
+				printf("\n%s", style_names[i]);
+				printf(" rule has been violated ");
+				printf("%i", mistakes[i]);
+				printf(" times ");
+				printf(": %s", style_description[i]);
+			} else {
+				printf("\n\033[31;1m%s\033[0m", style_names[i]);
+				printf("\033[1m rule has been violated \033[0m");
+				printf("\033[31;1m%i\033[0m", mistakes[i]);
+				printf("\033[1m times \033[0m");
+				printf(": \033[91m%s\033[0m", style_description[i]);
+			}
 			type[style_type[i]] += mistakes[i];
 		}
 	if (type[0] != 0 || type[1] != 0 || type[2] != 0)
 		printf("\n\n");
 	else if (flags->n)
 		printf("\n");
-	printf("\033[96minfo\033[0m : ");
-	printf("\033[%i;1m%i\033[0m  ", type[0]? 31 : 32, type[0]);
-	printf("\033[33mminor\033[0m : ");
-	printf("\033[%i;1m%i\033[0m  ", type[1] ? 31 : 32, type[1]);
-	printf("\033[31mmajor\033[0m : ");
-	printf("\033[%i;1m%i\033[0m\n", type[2] ? 31 : 32, type[2]);
-	printf("\033[1mStyle mark\033[0m : ");
 	style_mark = type[0] + type[1] + 5 * type[2];
-	printf("\033[%im%i\033[0m\n", style_mark == 0 ? 32 : 31, -style_mark);
+	if(flags->c) {
+		printf("info : ");
+		printf("%i  ", type[0]);
+		printf("minor : ");
+		printf("%i ", type[1]);
+		printf("major : ");
+		printf("%i\n", type[2]);
+		printf("Style mark : ");
+		printf("%i\n", -style_mark);
+	} else {
+		printf("\033[96minfo\033[0m : ");
+		printf("\033[%i;1m%i\033[0m  ", type[0]? 31 : 32, type[0]);
+		printf("\033[33mminor\033[0m : ");
+		printf("\033[%i;1m%i\033[0m  ", type[1] ? 31 : 32, type[1]);
+		printf("\033[31mmajor\033[0m : ");
+		printf("\033[%i;1m%i\033[0m\n", type[2] ? 31 : 32, type[2]);
+		printf("\033[1mStyle mark\033[0m : ");
+		printf("\033[%im%i\033[0m\n", style_mark == 0 ? 32 : 31, -style_mark);
+	}
 	exit(style_mark != 0);
 }

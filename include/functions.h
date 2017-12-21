@@ -28,5 +28,7 @@ char	*find_path(char *path, char *name);
 char	*get_name(char *file, flag *flags);
 int	is_file_c(char *path);
 int	list_len(list_t *list);
+int	*get_mistakes();
+flag	*get_flags_var();
 
 #endif
