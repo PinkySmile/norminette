@@ -15,13 +15,15 @@
 void	disp_en_help(char *prog_name)
 {
 	printf("USAGE :\n");
-	printf("\t%s [-vfunahd] [-I<path>] [folders/files]\n\n", prog_name);
+	printf("\t%s [-vcfunahd] [-I<path>] [folders/files]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
 	printf("\t-a :\t\tEnables v, u and n options (like -vun)\n\n");
+	printf("\t-c :\t\tDisables colors\n\n");
 	printf("\t-d :\t\tDebug option (don't use it)\n\n");
 	printf("\t-f :\t\tChange the main language to french\n\n");
 	printf("\t-h :\t\tDisplay this help page\n\n");
 	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
+	printf("\t-s :\t\tOnly scan small files (< 500 ko)\n\n");
 	printf("\t-u :\t\tFinds unseless files and invalid file names\n\n");
 	printf("\t-v :\t\tDisplays the entire line and where the mistake\n");
 	printf("\t\t\tis in it\n\n");
@@ -70,13 +72,15 @@ void	disp_en_help(char *prog_name)
 void	disp_fr_help(char *prog_name)
 {
 	printf("USAGE :\n");
-	printf("\t%s [-vfunahd] [-I<chemin>] [dossiers/fichiers]\n\n", prog_name);
+	printf("\t%s [-vcfunahd] [-I<chemin>] [dossiers/fichiers]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
 	printf("\t-a :\t\tActive les options v, u et n (equivaut à -vun)\n\n");
+	printf("\t-c :\t\tDésactive les couleurs\n\n");
 	printf("\t-d :\t\tFlag de debug à éviter\n\n");
 	printf("\t-f :\t\tChange la langue en français\n\n");
 	printf("\t-h :\t\tAffiche cette page d'aide\n\n");
 	printf("\t-n :\t\tAffiche le nom des fichiers scannés\n\n");
+	printf("\t-s :\t\tNe scan que les fichiers de petites tailles (< 500 ko)\n\n");
 	printf("\t-u :\t\tCherche les fichiers inutiles dans le repo et\n");
 	printf("\t\t\tles noms invalides\n\n");
 	printf("\t-v :\t\tAffiche la ligne contenant l'erreur et met en\n");
@@ -143,7 +147,7 @@ void	disp_list(list_t *list)
 
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0, 0, 0};
+	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int	disp = 0;
 	char	*dir = 0;
 
@@ -151,12 +155,16 @@ flag	get_flags(int argc, char **args)
 		for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
 			if (args[i][j] == 'v')
 				flags.v = 1;
+			else if (args[i][j] == 's')
+				flags.no_big_files = 1;
 			else if (args[i][j] == 'f')
 				flags.f = 1;
 			else if (args[i][j] == 'u')
 				flags.u = 1;
 			else if (args[i][j] == 'n')
 				flags.n = 1;
+			else if (args[i][j] == 'c')
+				flags.c = 1;
 			else if (args[i][j] == 'a') {
 				flags.u = 1;
 				flags.v = 1;
