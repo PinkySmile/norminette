@@ -31,7 +31,9 @@ void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 	if (sig_ID == 2) {
 		printf("\rInterrupted.\n");
 		display_result(get_mistakes(), get_flags_var());
-		exit(84);
+	} else if (sig_ID == 15) {
+		printf("\rTerminated.\n");
+		display_result(get_mistakes(), get_flags_var());
 	} else {
 		printf("\n\nOops !\nSomething went wrong...\n");
 		printf("Program killed by signal %i (%s)", sig_ID, getsig_name(sig_ID));

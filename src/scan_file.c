@@ -45,7 +45,6 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags)
 	int	chars = 0;
 	int	arrow_displayed = 0;
 
-	printf("Size : %i\n", size);
 	chars = printf("[%i:%i]-->", ln, col);
 	for (int i = 0; line[i]; i++) {
 		if (line[i] == '\t')
