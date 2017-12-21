@@ -80,10 +80,4 @@ int	my_puthexa(int *nbr);
 int	my_puthexa_cap(int *nbr);
 int	my_putpointer(void *ptr);
 
-typedef struct {
-	char	flag;
-	int	type;
-	int	(*fct)(void *);
-} flags;
-
 #endif

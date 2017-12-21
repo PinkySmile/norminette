@@ -7,6 +7,7 @@
 
 #include "functions.h"
 #include "my.h"
+#include "global2.h"
 #include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -90,9 +91,7 @@ void	set_sigaction(void)
 
 int	main(int argc, char **args)
 {
-	flag	flags;
 	char	**dirs = 0;
-	int	mistakes[40];
 
 	set_sigaction();
 	flags = get_flags(argc, args);
@@ -112,4 +111,14 @@ int	main(int argc, char **args)
 		printf("Displaying result\n");
 	display_result(mistakes, &flags);
 	return (0);
+}
+
+int	*get_mistakes()
+{
+	return (mistakes);
+}
+
+flag	*get_flags_var()
+{
+	return (&flags);
 }
