@@ -23,4 +23,5 @@ then make >> /dev/null
 	fi
 	make clean >> /dev/null
 fi
-./norm $line
+cd - >> /dev/null
+$HOME/norminette/norm $line
