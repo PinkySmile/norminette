@@ -463,6 +463,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	begin_of_line = 1;
 	int	declaring_var = 0;
 	char	*ptr = file;
+	int	l_o = 0;
 
 	if (flags->d)
 		printf("Beggining of buffer\n");
@@ -501,6 +502,46 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				}
 			}
 			col = 0;
+		}
+		if (cond3 && l_o != -1 && (file[i] == 'o' || file[i] == 'l'))
+			l_o++;
+		else if (char_valid(file[i]))
+			l_o = -1;
+		else {
+			if (cond3 && l_o != -1 && l_o != 0) {
+				if (flags->c) {
+					printf("%s [%i:%i]", path, ln, col - l_o);
+					printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+					if (flags->f) {
+						printf(": identifieur seulement ");
+						printf("composé de 'l' et de 'o'\n");
+					} else {
+						printf(": identifier only ");
+						printf("composed of 'l' and 'o'\n");
+					}
+				} else {
+					display_path(path);
+					printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - l_o);
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+					if (flags->f) {
+						printf(": identifieur seulement composé de ");
+						printf("'\033[31;1ml\033[0m' and '\033[31;1mo\033[0m'\n");
+					} else {
+						printf(": identifier only composed of ");
+						printf("'\033[31;1ml\033[0m' and '\033[31;1mo\033[0m'\n");
+					}
+				}
+				for (start = i; file[start] != '\n'; start--);
+				for (end = start + 1; file[end] != '\n' && file[end]; end++);
+				if (flags->v) {
+					bu = malloc(end - start + 10);
+					sub_strings(file, start + 1, end, bu);
+					mistake_line(l_o, bu, col - l_o, ln, flags);
+					free(bu);
+				}
+				mistakes[22]++;
+			}
+			l_o = 0;
 		}
 		if (cond3 && file[i] == '/' && file[i + 1] == '/') {
 			comment = 1;
