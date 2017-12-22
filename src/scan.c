@@ -135,11 +135,13 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 
 int	is_file_c(char *path)
 {
-	int	cond = 1;
+	int	cond = 0;
 
-	cond = path[strlen(path) - 1] == 'c';
-	cond = path[strlen(path) - 1] == 'h' || cond;
-	cond = path[strlen(path) - 2] == '.' && cond;
+	if (strlen(path) >= 3) {
+		cond = path[strlen(path) - 1] == 'c';
+		cond = path[strlen(path) - 1] == 'h' || cond;
+		cond = path[strlen(path) - 2] == '.' && cond;
+	}
 	return (cond);
 }
 
@@ -148,8 +150,6 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	struct stat	info;
 	char		answer[3] = "Y\n";
 
-	if (flags->no_big_files)
-		answer[0] = 'n';
 	if (!is_file_c(path)) {
 	        return;
 	} else if (stat(path, &info) < 0) {
@@ -172,20 +172,29 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 		}
 		printf("\n");
 	}
-	if (info.st_size >= 500000) {
+	if (info.st_size >= 1000000) {
 		if (!flags->c)
 			printf("\033[0m");
-	        printf("Large file found (");
+		if (flags->f)
+			printf("Fichier lourd trouvé (");
+		else
+			printf("Large file found (");
 		if (flags->c)
 			printf("%s", path);
 		else
 			display_path(path);
 		printf(") : %s%.4lf%s MB\n", flags->c ? "" : "\033[31;1m", (double)info.st_size / 1000000, flags->c ? "" : "\033[0m");
-		if (flags->no_big_files)
-			printf("Skipping\n");
-		else {
+		if (flags->f)
+			printf("Êtes vous sûr de vouloir l'ouvrir ? [Y/n]\n");
+		else
 			printf("Do you really want to load it ? [Y/n]\n");
-			answer[0] = 'a';
+		answer[0] = 'a';
+		if (flags->no_big_files) {
+			answer[0] = 'n';
+			printf("n\n");
+		} else if (flags->big_files) {
+			answer[0] = 'Y';
+			printf("Y\n");
 		}
 	}
 	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n") && !compare_strings(answer, "y\n") && !compare_strings(answer, "N\n")) {
@@ -200,7 +209,8 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 			scan_c_file(path, mistakes, key_words, flags);
 		else
 			scan_h_file(path, mistakes, flags);
-	}
+	} else
+		printf("Skipped\n");
 }
 
 void	display_result(int *mistakes, flag *flags)
@@ -237,7 +247,7 @@ void	display_result(int *mistakes, flag *flags)
 		printf("info : ");
 		printf("%i  ", type[0]);
 		printf("minor : ");
-		printf("%i ", type[1]);
+		printf("%i  ", type[1]);
 		printf("major : ");
 		printf("%i\n", type[2]);
 		printf("Style mark : ");

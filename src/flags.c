@@ -21,9 +21,11 @@ void	disp_en_help(char *prog_name)
 	printf("\t-c :\t\tDisables colors\n\n");
 	printf("\t-d :\t\tDebug option (don't use it)\n\n");
 	printf("\t-f :\t\tChange the main language to french\n\n");
+	printf("\t-l :\t\tAutomaticaly answer yes for large files (> 1 Mo)\n\n");
 	printf("\t-h :\t\tDisplay this help page\n\n");
 	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
-	printf("\t-s :\t\tOnly scan small files (< 500 ko)\n\n");
+	printf("\t-s :\t\tAutomaticaly answer no for large files (> 1 Mo)\n");
+	printf("\t\tOverrides -l\n\n");
 	printf("\t-u :\t\tFinds unseless files and invalid file names\n\n");
 	printf("\t-v :\t\tDisplays the entire line and where the mistake\n");
 	printf("\t\t\tis in it\n\n");
@@ -79,8 +81,10 @@ void	disp_fr_help(char *prog_name)
 	printf("\t-d :\t\tFlag de debug à éviter\n\n");
 	printf("\t-f :\t\tChange la langue en français\n\n");
 	printf("\t-h :\t\tAffiche cette page d'aide\n\n");
+	printf("\t-l :\t\tScan les fichiers de grande taille sans demander (> 1 Mo)\n\n");
 	printf("\t-n :\t\tAffiche le nom des fichiers scannés\n\n");
-	printf("\t-s :\t\tNe scan que les fichiers de petites tailles (< 500 ko)\n\n");
+	printf("\t-s :\t\tNe scan pas les fichiers de grande taille (> 1 Mo)\n");
+	printf("\t\tOutrepasse -l\n\n");
 	printf("\t-u :\t\tCherche les fichiers inutiles dans le repo et\n");
 	printf("\t\t\tles noms invalides\n\n");
 	printf("\t-v :\t\tAffiche la ligne contenant l'erreur et met en\n");
@@ -147,7 +151,7 @@ void	disp_list(list_t *list)
 
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int	disp = 0;
 	char	*dir = 0;
 
@@ -157,6 +161,8 @@ flag	get_flags(int argc, char **args)
 				flags.v = 1;
 			else if (args[i][j] == 's')
 				flags.no_big_files = 1;
+			else if (args[i][j] == 'l')
+				flags.big_files = 1;
 			else if (args[i][j] == 'f')
 				flags.f = 1;
 			else if (args[i][j] == 'u')

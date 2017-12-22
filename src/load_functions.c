@@ -27,7 +27,7 @@ int	char_valid(char c)
         return (0);
 }
 
-char	*get_name(char *file, flag *flags)
+char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 {
         int     i = 0;
         int     beg = 0;
@@ -37,6 +37,8 @@ char	*get_name(char *file, flag *flags)
         if (*file == '#') {
                 if (flags->d)
                         printf("Found #\n\n");
+		for (int i = 0; file[i] && file[i] != '\n'; i++)
+			*end_ptr = &file[i];
                 return (0);
         }
         if (flags->d) {
@@ -48,18 +50,36 @@ char	*get_name(char *file, flag *flags)
         for (; file[beg] && file[beg] != '(' && file[beg] != ';' && file[beg] != '\n'; beg++) {
                 if (flags->d)
                         printf("Skipping %c\n", file[beg]);
+		if (file[beg] == '\t')
+			*col += 8 - (*col % 8);
+		else
+			(*col)++;
         }
-	if (file[beg] == 0 || file[beg] == ';' || file[beg] == '\n')
+	if (file[beg] == 0 || file[beg] == ';' || file[beg] == '\n') {
+		*end_ptr = &file[beg];
                 return (0);
-	for (; file[beg + i] && space(file[beg + i]); i--);
+	}
+	for (; file[beg + i] && space(file[beg + i]); i--)
+		if (file[beg] == '\t')
+			*col -= 8 + (*col % 8);
+		else
+			(*col)--;
 	i--;
-        for (; file[beg + i] && char_valid(file[beg + i]); i--);
+	if (file[beg] == '\t')
+		*col -= 8 + (*col % 8);
+	else
+		(*col)--;
+        for (; file[beg + i] && char_valid(file[beg + i]); i--)
+	        (*col)--;
 	name = malloc(1 - i);
         sub_strings(file, beg + i + 1, beg, name);
         for (int j = 0; name[j]; j++)
                 if (name[j] <= 32)
                         for (int k = j; name[k]; k++)
 				name[k] = name[k + 1];
+	*end_ptr = &file[beg];
+	if (compare_strings(name, ""))
+		return (0);
         return (name);
 }
 
@@ -86,7 +106,7 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 		if (cond3 && bracket == 0 && file[i] == '\n') {
                         if (flags->d)
                                 printf("[line %i]:Trying to find function's name\n", ln);
-                        bu = get_name(file + i, flags);
+                        bu = get_name(file + i, flags, (int *)&bu, &bu);
                         if (flags->d)
                                 printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
                         if (bu != 0) {

@@ -61,7 +61,7 @@ const char	*style_description[] = {
 	"identifier should not be composed of only 'l' and 'o'",
 	"",
 	"function should be in english, according to the snake_case convention",
-	"forbiden functions used",
+	"banned functions used",
 	0
 };
 

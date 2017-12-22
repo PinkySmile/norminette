@@ -22,6 +22,7 @@ typedef struct {
 	int	d;
 	int	c;
 	int	i_caps;
+	int	big_files;
 	int	no_big_files;
 	list_t	*fcts;
 } flag;

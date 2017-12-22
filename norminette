@@ -9,12 +9,6 @@ while [ $nb_of_args != 0 ]; do
 done
 cd $HOME/norminette
 ./update.sh &
-#diff=$(git diff | wc -l)      this doesn't work
-#if [ $diff != 0 ]
-#then
-#	make fclean >> /dev/null
-#	git pull >> /dev/null
-#fi
 ls norm >> /dev/null 2>/dev/null
 if [ $? == 2 ]
 then make >> /dev/null
