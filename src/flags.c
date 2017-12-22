@@ -17,7 +17,7 @@ void	disp_en_help(char *prog_name)
 	printf("USAGE :\n");
 	printf("\t%s [-vcfunahd] [-I<path>] [folders/files]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
-	printf("\t-a :\t\tEnables v, u and n options (like -vun)\n\n");
+	printf("\t-a :\t\tEnables v, u, I. and l options (like -vunlI.\n\n");
 	printf("\t-c :\t\tDisables colors\n\n");
 	printf("\t-d :\t\tDebug option (don't use it)\n\n");
 	printf("\t-f :\t\tChange the main language to french\n\n");
@@ -76,7 +76,7 @@ void	disp_fr_help(char *prog_name)
 	printf("USAGE :\n");
 	printf("\t%s [-vcfunahd] [-I<chemin>] [dossiers/fichiers]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
-	printf("\t-a :\t\tActive les options v, u et n (equivaut à -vun)\n\n");
+	printf("\t-a :\t\tActive les options v, u, I. et l (equivaut à -vulI.)\n\n");
 	printf("\t-c :\t\tDésactive les couleurs\n\n");
 	printf("\t-d :\t\tFlag de debug à éviter\n\n");
 	printf("\t-f :\t\tChange la langue en français\n\n");
@@ -174,7 +174,9 @@ flag	get_flags(int argc, char **args)
 			else if (args[i][j] == 'a') {
 				flags.u = 1;
 				flags.v = 1;
-				flags.n = 1;
+				flags.i_caps = 1;
+				flags.big_files = 1;
+				load_functions(".", &flags);
 			} else if (args[i][j] == 'I') {
 				dir = sub_strings(&args[i][j], 1, strlen(&args[i][j]) + 1, malloc(strlen(&args[i][j]) + 1));
 				flags.i_caps = 1;

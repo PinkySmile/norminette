@@ -15,21 +15,21 @@ const char	*style_names[] = {
 	"F4",			/*6  : too long function			*/
 	"F5",			//7  : fct > 4 args
 	"F6",			/*8  : comment in fct				*/
-	"L1",			//9  : +1 action per line
+	"L1",		//	//9  : +1 action per line
 	"L2",			//10 : indentation
 	"L3",			/*11 : space after key words and operators	*/
 	"L4",			//12 : brackets
-	"L5",			//13 : x vars declared on 1 line or in prog
-	"L6",			//14 : line break after var s declarations
-	"V3",			//15 : pointers declaration
+	"L5",		//	//13 : x vars declared on 1 line or in prog
+	"L6",		//	//14 : line break after vars declarations
+	"V3",		//	//15 : pointers declaration
 	"C1",			//16 : if depth > 3 or if forest
-	"C3",			//17 : goto
+	"C3",		//	/*17 : goto					*/
 	"H1",			//18 : bad seperation between header and source
 	"implicit_L001",	/*19 : trailing space				*/
 	"implicit_L003",	//20 : trailing empty line
 	"implicit_T007",	/*21 : semicolon isolated			*/
 	"implicit_T010",	/*22 : l and o					*/
-	"V1",			//23 : nom de types
+	"V1",		//	//23 : nom de types
 	"F2",			/*24 : function's name invalid			*/
 	"implicit_F001",	/*25 : forbidden fcts				*/
 	0
