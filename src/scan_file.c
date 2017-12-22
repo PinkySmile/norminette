@@ -344,7 +344,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 	if (args_nbr == 0) {
 	        if (flags->c) {
 			printf("%s [%i:%i]", path, ln, col);
-			printf(" %s%s'",  flags->f ? " dans la fonction '" : " in function '", name);
+			printf("%s%s'",  flags->f ? " dans la fonction '" : " in function '", name);
 			if (flags->f) {
 				printf(" : 'void' attendu pour une fonction");
 				printf(" ne prenant aucun argument\n");
@@ -355,7 +355,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		} else {
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
-			printf(" \033[0m%s\033[31;1m%s\033[0m'",  flags->f ? " dans la fonction '" : " in function '", name);
+			printf("\033[1m%s\033[31;1m%s\033[0m'",  flags->f ? " dans la fonction '" : " in function '", name);
 			if (flags->f) {
 				printf("\033[0m : 'void' attendu pour une fonction");
 				printf(" ne prenant aucun argument\n");
@@ -453,7 +453,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	char	buffer[7] = {0, 0, 0, 0, 0, 0, 0};
 	char	*bu;
 	char	*fct_name = 0;
-	char	*fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1mdans la fonction '");
+	char	*fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1min fonction '");
         int	cond = 0;
 	int	cond2 = 0;
 	int	cond3 = 0;
@@ -556,6 +556,35 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			comment -= 2;
 			if (flags->d)
 				printf("[%i, %i]:End of multilines comments\n", ln, col);
+		}
+		sub_strings(file, i, i + 4, buffer);
+		if (cond3 && compare_strings(buffer, "goto")) {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col + 1);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+				if (flags->f)
+					printf(": Utilisation de goto interdit\n");
+				else
+					printf(": The use of goto is forbidden\n");
+			} else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+				if (flags->f)
+					printf("\033[0m: Utilisation de goto interdit\n");
+				else
+					printf("\033[0m: The use of goto is forbidden\n");
+			}
+			for (start = i; file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(4, bu, col, ln, flags);
+				free(bu);
+			}
+			mistakes[17]++;
+		
 		}
 		for (int k = 0; words[k] && cond3; k++) {
 			sub_strings(file, i, i + strlen(words[k]), buffer);
