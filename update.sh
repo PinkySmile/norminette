@@ -1,4 +1,5 @@
 #!/bin/bash
 cd $HOME/norminette
-git pull
-make re
+if [ $(git pull | wc -l) != 1 ]
+then make re >> /dev/null
+fi
