@@ -29,7 +29,7 @@ const char	*style_names[] = {
 	"implicit_L003",	//20 : trailing empty line
 	"implicit_T007",	//21 : semicolon isolated
 	"implicit_T010",	//22 : l or o 
-	"V1",			//23 :
+	"V1",			//23 : nom de types
 	"F2",			//24 : function's name invalid
 	"implicit_F001",	//25 : forbidden fcts
 	0
