@@ -397,7 +397,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->v) {
 			void_ = malloc(end + 10);
 			sub_strings(file, 0, end, void_);
-			mistake_line(strlen(name), void_, col + 1, ln, flags);
+			mistake_line(strlen(name), void_, col, ln, flags);
 			free(void_);
 		}
 		mistakes[7]++;
@@ -857,6 +857,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		}
 		mistakes[1] += function - 5;
 	}
+	free(fct_name);
 	if (flags->d)
 		printf("End of buffer\n");
 }
