@@ -163,12 +163,21 @@ int	is_in_array(char const **array, char *str)
 	return (0);
 }
 
+int	whitelisted(char *fct)
+{
+	if (compare_strings(fct, "sizeof"))
+		return (1);
+	if (compare_strings(fct, ""))
+		return (1);
+	return (0);
+}
+
 void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, char const **words, char *fct, int ln, char *fct_name, int col, char *file)
 {
 	char	*buffer;
 	int	end = 0;
 
-	if (!compare_strings(name, "") && !is_in_list(flags->fcts, name) && !is_in_array(words, name)) {
+	if (!is_in_list(flags->fcts, name) && !is_in_array(words, name) && !whitelisted(name)) {
 		mistakes[25]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", file_name, ln, col);

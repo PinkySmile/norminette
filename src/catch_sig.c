@@ -40,7 +40,7 @@ void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 		printf(" dumping core\n");
 		if (infos->si_errno)
 			printf("\"%s\"\n", strerror(infos->si_errno));
-		printf("Pls report this error\n");
+		printf("Please report this error\n");
 		(void)ptr;
 		exit(128 + sig_ID);
 	}
