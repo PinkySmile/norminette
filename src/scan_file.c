@@ -39,14 +39,11 @@ char	*load_file(char *path)
 	return (buffer);
 }
 
-void	mistake_line(int size, char *line, int col, int ln, flag *flags)
+void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int s_q, int comment)
 {
 	int	col_c = 0;
 	int	chars = 0;
 	int	arrow_displayed = 0;
-	int	comment = 0;
-	int	q = 0;
-	int	s_q = 0;
 	int	buffer = 0;
 
 	if (!flags->c)
@@ -199,13 +196,13 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			for (; file[end] && file[end] != '\n'; end++);
 			buffer = malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
-			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags);
+			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0);
 			free(buffer);
 		}
 	}
 }
 
-void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags, char *fct_name, char *fct)
+void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags, char *fct_name, char *fct, int q, int s_q, int comment)
 {
 	int	col = 0;
 	int	c = 0;
@@ -243,7 +240,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				bu = malloc(c - i + 2);
 				sub_strings(file, i + 1, c, bu);
 				for (spaces = 0; file[jl + spaces] == ' '; spaces++);
-				mistake_line(spaces, bu, col, ln, flags);
+				mistake_line(spaces, bu, col, ln, flags, q, s_q, comment);
 				free(bu);
 			}
 			jl = -2;
@@ -274,7 +271,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			if (flags->v) {
 				bu = malloc(i + 1);
 				sub_strings(file, i + 1, i - jl, bu);
-			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags);
+			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags, 0, 0, 0);
 				free(bu);
 			}
 			jl = -2;
@@ -377,7 +374,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->v) {
 			void_ = malloc(end + 10);
 			sub_strings(file, 0, end, void_);
-			mistake_line(strlen(name), void_, col, ln, flags);
+			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
 			free(void_);
 		}
 		mistakes[7]++;
@@ -406,7 +403,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->v) {
 			void_ = malloc(end + 10);
 			sub_strings(file, 0, end, void_);
-			mistake_line(strlen(name), void_, col, ln, flags);
+			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
 			free(void_);
 		}
 		mistakes[7]++;
@@ -422,7 +419,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 				printf("%s [%i:%i] ", path, col, ln);
 			else {
 				display_path(path);
-				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m] ", col, ln);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", col, ln);
 			}
 			if (flags->c)
 				if (flags->f)
@@ -439,7 +436,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			if (flags->v) {
 				void_ = malloc(end + 10);
 				sub_strings(file, 0, end, void_);
-				mistake_line(strlen(name), void_, col, ln, flags);
+				mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
 				free(void_);
 			}
 			break;
@@ -447,7 +444,19 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
         }
 	if (flags->d)
 		printf("Found %i arguments for function %s\n\n", args_nbr, name);
+	if (compare_strings(name, "")) {
+		free(name);
+		return (0);
+	}
 	return (name);
+}
+
+int	nobackslash(char *file)
+{
+	int	i = 0;
+
+	for (; space(file[i]); i++);
+	return (file[i] != '\\');
 }
 
 void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
@@ -478,8 +487,13 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		printf("Beggining of buffer\n");
 	for (int i = 0 ; file[i] ; i++) {
 		cond3 = !q && !s_q && comment == 0;
-		if (flags->d)
+		if (flags->d) {
 			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
+			printf("Global conditions :\tcond3   : %s\n", cond3 ? "TRUE" : "FALSE");
+			printf("\t\t\ts_quote : %s\n", q ? "TRUE" : "FALSE");
+			printf("\t\t\td_quote : %s\n", s_q ? "TRUE" : "FALSE");
+			printf("\t\t\tcomment: %i\n", comment);
+		}
 		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
 				printf("[%i, %i]:Trying to find function's name\n", ln, col);
@@ -545,7 +559,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(l_o, bu, col - l_o, ln, flags);
+					mistake_line(l_o, bu, col - l_o, ln, flags, q, s_q, comment);
 					free(bu);
 				}
 				mistakes[22]++;
@@ -589,7 +603,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(4, bu, col, ln, flags);
+				mistake_line(4, bu, col, ln, flags, q, s_q, comment);
 				free(bu);
 			}
 			mistakes[17]++;
@@ -642,7 +656,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(strlen(words[k]), bu, col, ln, flags);
+					mistake_line(strlen(words[k]), bu, col, ln, flags, q, s_q, comment);
 					free(bu);
 				}
 				mistakes[11]++;
@@ -711,7 +725,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(cond, bu,  col, ln, flags);
+				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment);
 				free(bu);
 			}
 			mistakes[19]++;
@@ -744,7 +758,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(2, bu, col - 1, ln, flags);
+				mistake_line(2, bu, col - 1, ln, flags, q, s_q, comment);
 				free(bu);
 			}
 			mistakes[21]++;
@@ -776,23 +790,24 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					for (start = i - 1; file[start] && file[start] != '\n'; start--);
 					bu = malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
-                                        mistake_line(col - 80, bu, 80, ln, flags);
+                                        mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment);
 					free(bu);
 				}
                         }
 			if (bracket > 0)
 				line++;
 			ln++;
-			check_ind(file, mistakes, path, ln, i, flags, fct_name, fct);
 			col = 0;
 			begin_of_line = 1;
 			declaring_var = 1;
 			comment = comment == 1 ? 0 : comment;
+			if (cond3)
+				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
 		} else if(!space(file[i]))
 			begin_of_line =	0;
 		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
 			declaring_var = 0;
-		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1])) {
+		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1]) && nobackslash(&file[i])) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col - cond);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
@@ -828,7 +843,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(cond, bu,  col, ln, flags);
+				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment);
 				free(bu);
 			}
 			mistakes[19]++;
@@ -866,7 +881,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(2, bu, col, ln, flags);
+					mistake_line(2, bu, col, ln, flags, q, s_q, 0);
 					free(bu);
 				}
 			}

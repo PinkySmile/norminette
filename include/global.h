@@ -47,7 +47,7 @@ const char	*style_description[] = {
 	"comment inside a function.",
 	"a line correspond to more than one statement",
 	"bad indentation on start of a line",
-	"operators should be isolated by spaces and a space should follow 'if', 'for', 'return' and 'while'",
+	"operators should be isolated by spaces and a space should follow 'if', 'for', 'return', 'switch' and 'while'",
 	"curly brackets misplaced",
 	"",
 	"",
