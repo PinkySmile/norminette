@@ -540,7 +540,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 						printf("'\033[31;1ml\033[0m' and '\033[31;1mo\033[0m'\n");
 					}
 				}
-				for (start = i; file[start] != '\n'; start--);
+				for (start = i; start > 0 && file[start] != '\n'; start--);
 				for (end = start + 1; file[end] != '\n' && file[end]; end++);
 				if (flags->v) {
 					bu = malloc(end - start + 10);
@@ -823,7 +823,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					printf("\033[0m: Trailing %s\n", bu);
 				}
 			}
-			for (start = i; file[start] != '\n'; start--);
+			for (start = i; start > 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
 				bu = malloc(end - start + 10);
