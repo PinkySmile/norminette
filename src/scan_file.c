@@ -383,7 +383,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			printf("%s [%i:%i]", path, ln, col + 1);
 			if (flags->f) {
 				printf(" : trop d'arguments pour la fonction '%s'", name);
-				printf(" (4 maximum mais %i trouvées)\n", args_nbr);
+				printf(" (4 maximum mais %i trouvés)\n", args_nbr);
 			} else {
 				printf(" : too many arguments for function '%s'", name);
 				printf(" (4 max but %i found)\n", args_nbr);
@@ -393,7 +393,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
 			if (flags->f) {
 				printf(" : trop d'arguments pour la fonction '%s'", name);
-				printf(" (4 maximum mais \033[31;1m%i\033[0m trouvées)\n", args_nbr);
+				printf(" (4 maximum mais \033[31;1m%i\033[0m trouvés)\n", args_nbr);
 			} else {
 				printf(" : too many arguments for function '%s'", name);
 				printf(" (4 max but \033[31;1m%i\033[0m found)\n", args_nbr);
