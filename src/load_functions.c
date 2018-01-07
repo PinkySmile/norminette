@@ -13,6 +13,7 @@
 #include "my.h"
 #include "structs.h"
 #include "functions.h"
+#include "stacktrace.h"
 
 int	char_valid(char c)
 {
@@ -33,12 +34,14 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
         int     beg = 0;
         char    *name = 0;
 
-        file++;
+	addStackTraceEntry("get_name", "pppp", "file", file, "flags", flags, "col", col, "end_ptr", end_ptr);
+	file++;
         if (*file == '#') {
                 if (flags->d)
                         printf("Found #\n\n");
 		for (int i = 0; file[i] && file[i] != '\n'; i++)
 			*end_ptr = &file[i];
+		delStackTraceEntry();
                 return (0);
         }
         if (flags->d) {
@@ -57,6 +60,7 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
         }
 	if (file[beg] == 0 || file[beg] == ';' || file[beg] == '\n') {
 		*end_ptr = &file[beg];
+		delStackTraceEntry();
                 return (0);
 	}
 	for (; file[beg + i] && space(file[beg + i]); i--)
@@ -78,8 +82,11 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
                         for (int k = j; name[k]; k++)
 				name[k] = name[k + 1];
 	*end_ptr = &file[beg];
-	if (compare_strings(name, ""))
+	if (compare_strings(name, "")) {
+		delStackTraceEntry();
 		return (0);
+	}
+	delStackTraceEntry();
         return (name);
 }
 
@@ -95,6 +102,7 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 	list_t	*begin = list;
 	int	nbr = 0;
 
+	addStackTraceEntry("put_fonction_names_in_list", "ppp", "file", file, "list", list, "flags", flags);
 	for (int i = 0; file[i]; i++) {
                 if (flags->d)
                         printf("[line %i:char %i]:Loop start '%c' (%i)\n", ln, i, file[i] > 31 ? file[i] : 0, file[i]);
@@ -152,6 +160,7 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 			printf("   -   %s\n", (char *)list->data);
 		printf("   -   %s\n", (char *)list->data);
 	}
+	delStackTraceEntry();
 	return (nbr);
 }
 
@@ -160,8 +169,11 @@ int	load_function_file(char *path, list_t *list, flag *flags)
 	char	*file_content;
 	int	nbr = 0;
 
-	if (!is_file_c(path))
+	addStackTraceEntry("load_function_file", "ppp", "path", path, "list", list, "flags", flags);
+	if (!is_file_c(path)) {
+		delStackTraceEntry();
 		return (0);
+	}
 	file_content = load_file(path);
 	if (flags->d) {
 		printf("Loading functions in file ");
@@ -179,6 +191,7 @@ int	load_function_file(char *path, list_t *list, flag *flags)
 			printf("   -   %s\n", (char *)list->data);
 		printf("   -   %s\n", (char *)list->data);
 	}
+	delStackTraceEntry();
 	return (nbr);
 }
 
@@ -190,9 +203,9 @@ int	load_function_folder(char *path, list_t *list, flag *flags)
 	list_t		*begin = list;
 	int		nbr = 0;
 
+	addStackTraceEntry("load_function_folder", "ppp", "path", path, "list", list, "flags", flags);
 	if (!folder) {
-		write(2, path, strlen(path));
-		perror(" ");
+		perror(path);
 		return (0);
 	}
 	for (file = readdir(folder); file != 0; file = readdir(folder)) {
@@ -211,6 +224,7 @@ int	load_function_folder(char *path, list_t *list, flag *flags)
 		}
 	}
 	closedir(folder);
+	delStackTraceEntry();
 	return (nbr);
 }
 
@@ -218,8 +232,10 @@ int	list_len(list_t *list)
 {
 	int	size = 0;
 
+	addStackTraceEntry("list_len", "p", "list", list);
 	for (; list && list->data; list = list->next)
 		size++;
+	delStackTraceEntry();
 	return (size);
 }
 
@@ -227,6 +243,7 @@ void	load_functions(char *path, flag *flags)
 {
 	list_t	*list = 0;
 
+	addStackTraceEntry("load_functions", "pp", "path", path, "flags", flags);
 	if (!flags->fcts) {
 		flags->fcts = malloc(sizeof(*flags->fcts));
 		flags->fcts->next = 0;
@@ -248,4 +265,5 @@ void	load_functions(char *path, flag *flags)
 	}
 	if (flags->d)
 		printf("%i functions are present in the list\n", list_len(flags->fcts));
+	delStackTraceEntry();
 }

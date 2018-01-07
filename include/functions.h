@@ -29,7 +29,14 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr);
 int	is_file_c(char *path);
 int	list_len(list_t *list);
 int	char_valid(char c);
+char	*get_prog_name();
 int	*get_mistakes();
 flag	*get_flags_var();
+char	*int_to_str(int nbr);
+char	*long_to_str(long nbr);
+char	*double_to_str(double nbr);
+int	get_nbrlen(int nbr);
+char	*concat(char *str1, char *str2);
+char	*my_putnbrbase(unsigned int nbr, char const *base);
 
 #endif

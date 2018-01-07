@@ -8,6 +8,7 @@
 #include "functions.h"
 #include "my.h"
 #include "global2.h"
+#include "stacktrace.h"
 #include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -94,6 +95,9 @@ int	main(int argc, char **args)
 {
 	char	**dirs = 0;
 
+	name = args[0];
+	initStackTrace();
+	addStackTraceEntry("main", "ip", "argc", argc, "args", args);
 	set_sigaction();
 	flags = get_flags(argc, args);
 	dirs = parse_args(argc, args);
@@ -111,7 +115,13 @@ int	main(int argc, char **args)
 	if (flags.d)
 		printf("Displaying result\n");
 	display_result(mistakes, &flags);
+	freeStackTrace();
 	return (0);
+}
+
+char	*get_prog_name()
+{
+	return (name);
 }
 
 int	*get_mistakes()

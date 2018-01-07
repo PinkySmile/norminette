@@ -6,6 +6,7 @@
 */
 
 #include <stdlib.h>
+#include "stacktrace.h"
 #include "functions.h"
 #include "structs.h"
 #include "my.h"
@@ -136,17 +137,21 @@ void	disp_fr_help(char *prog_name)
 
 void	display_help(char *prog_name, int fr)
 {
+	addStackTraceEntry("display_help", "pb", "prog_name", prog_name, "fr", fr);
 	if (fr)
 		disp_fr_help(prog_name);
 	else
 		disp_en_help(prog_name);
+	freeStackTrace();
 	exit(0);
 }
 
 void	disp_list(list_t *list)
 {
+	addStackTraceEntry("disp_list", "p", "list", list);
 	for (; list->next; list = list->next)
 		printf("  -  '%s'\n", (char *)list->data);
+	delStackTraceEntry();
 }
 
 flag	get_flags(int argc, char **args)
@@ -155,6 +160,7 @@ flag	get_flags(int argc, char **args)
 	int	disp = 0;
 	char	*dir = 0;
 
+	addStackTraceEntry("get_flags", "ip", "argc", argc, "args", args);
 	for (int i = 1; i < argc; i++)
 		for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
 			if (args[i][j] == 'v')
@@ -198,9 +204,11 @@ flag	get_flags(int argc, char **args)
 				printf("%s: Invalid option '%c' (ASCII : %i)\n", args[0], args[i][j], (unsigned char)args[i][j]);
 				printf("Use « %s -h » for more informations\n", args[0]);
 				free_list(flags.fcts);
+				freeStackTrace();
 				exit(84);
 			}
 	if (disp)
 		display_help(args[0], flags.f);
+	delStackTraceEntry();
 	return (flags);
 }

@@ -18,12 +18,18 @@ SRC =	src/main.c \
 	src/catch_sig.c \
 	src/load_functions.c \
 	src/free_list.c \
+	src/int_to_str.c \
+	src/long_to_str.c \
+	src/double_to_str.c \
+	src/concat.c \
+	src/get_nbrlen.c \
+	src/stacktrace.c \
 
 OBJ =	$(SRC:.c=.o)
 
 INC =	-Iinclude \
 
-LDFLAGS = 
+LDFLAGS = -lm
 
 CFLAGS= $(INC) \
 	-W \

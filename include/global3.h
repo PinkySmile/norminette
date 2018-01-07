@@ -1,10 +1,9 @@
 /*
 ** EPITECH PROJECT, 2017
-** global2
+** global3
 ** File description:
 ** Global var
 */
 
-int	mistakes[40];
-flag	flags;
-char	*name;
+list_t	*stack_trace;
+list_t	*last;

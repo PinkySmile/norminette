@@ -32,6 +32,7 @@ const char	*style_names[] = {
 	"V1",		//	//23 : nom de types
 	"F2",			/*24 : function's name invalid			*/
 	"implicit_F001",	/*25 : forbidden fcts				*/
+	"implicit_F002",	//26 : too long file name
 	0
 };
 
@@ -62,6 +63,7 @@ const char	*style_description[] = {
 	"",
 	"function should be in english, according to the snake_case convention",
 	"banned functions used",
+	"bad file or directory name",
 	0
 };
 

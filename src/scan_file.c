@@ -16,6 +16,7 @@
 #include "my.h"
 #include "structs.h"
 #include "functions.h"
+#include "stacktrace.h"
 
 char	*load_file(char *path)
 {
@@ -23,19 +24,23 @@ char	*load_file(char *path)
 	char		*buffer;
 	struct stat	info;
 
+	addStackTraceEntry("load_file", "p", "path", path);
 	if (stat(path, &info) < 0) {
-		perror("");
+		perror(path);
+		delStackTraceEntry();
 		return (0);
 	}
 	fd = open(path, O_RDONLY);
 	if (fd <= 0) {
-		perror("");
+		perror(path);
+		delStackTraceEntry();
 		return (0);
 	}
 	buffer = malloc(info.st_size + 1);
 	read(fd, buffer, info.st_size);
 	buffer[info.st_size] = 0;
 	close(fd);
+	delStackTraceEntry();
 	return (buffer);
 }
 
@@ -46,6 +51,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 	int	arrow_displayed = 0;
 	int	buffer = 0;
 
+	addStackTraceEntry("mistake_line", "ipiipbbi", "size", size, "line", line, "col", col, "ln", ln, "flags", flags, "q", q, "s_q", s_q, "comment", comment);
 	if (!flags->c)
 		printf("\033[0m\033[32m");
 	chars = printf("[%i:%i]", ln, col);
@@ -123,6 +129,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 		}
 	}
 	printf("\n");
+	delStackTraceEntry();
 }
 
 void	display_path(char *path)
@@ -130,6 +137,7 @@ void	display_path(char *path)
 	int	slash = 0;
 	int	max_slash = 0;
 
+	addStackTraceEntry("display_path", "p", "path", path);
 	for (int i = 0; path[i]; i++)
 		if (path[i] == '/')
 			max_slash++;
@@ -142,30 +150,44 @@ void	display_path(char *path)
 		else
 			printf("\033[34;1m%c", path[i]);
 	printf("\033[0m");
+	delStackTraceEntry();
 }
 
 int	is_in_list(list_t *list, char *str)
 {
+	addStackTraceEntry("is_in_list", "pp", "list", list, "str", str);
 	for (; list->next; list = list->next)
-		if (compare_strings(str, (char *)list->data))
+		if (compare_strings(str, (char *)list->data)) {
+			delStackTraceEntry();
 			return (1);
+		}
+	delStackTraceEntry();
 	return (0);
 }
 
 int	is_in_array(char const **array, char *str)
 {
+	addStackTraceEntry("is_in_array", "pp", "array", array, "str", str);
 	for (int i = 0; array[i]; i++)
-		if (compare_strings(str, array[i]))
+		if (compare_strings(str, array[i])) {
+			delStackTraceEntry();
 			return (1);
+		}
+	delStackTraceEntry();
 	return (0);
 }
 
 int	whitelisted(char *fct)
 {
-	if (compare_strings(fct, "sizeof"))
+	addStackTraceEntry("whitelisted", "p", "fct", fct);
+	if (compare_strings(fct, "sizeof")) {
+		delStackTraceEntry();
 		return (1);
-	if (compare_strings(fct, ""))
+	} else if (compare_strings(fct, "")) {
+		delStackTraceEntry();
 		return (1);
+	}
+	delStackTraceEntry();
 	return (0);
 }
 
@@ -174,6 +196,8 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 	char	*buffer;
 	int	end = 0;
 
+	addStackTraceEntry("verif_fct_used", "ppppppipip", "name", name, "flags", flags, "file_name", file_name, "mistakes", mistakes, \
+			   "words", words, "fct", fct, "ln", ln, "fct_name", "col", col, "file", file);
 	if (!is_in_list(flags->fcts, name) && !is_in_array(words, name) && !whitelisted(name)) {
 		mistakes[25]++;
 		if (flags->c) {
@@ -200,6 +224,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			free(buffer);
 		}
 	}
+	delStackTraceEntry();
 }
 
 void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags, char *fct_name, char *fct, int q, int s_q, int comment)
@@ -210,6 +235,8 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 	int	spaces = 0;
 	int	backslash_t = 0;
 
+	addStackTraceEntry("check_ind", "pppiipppbbi", "file", file, "mistakes", mistakes, "path", path, "ln", ln, "i", i, \
+			   "flags", flags, "fct_name", fct_name, "fct", fct, "q", q, "s_q", s_q, "comment", comment);
 	if (flags->d)
 		printf("[%i]:Checking ind\n", col);
         for (int jl = i + 1; jl != -1 && file[jl]; jl++) {
@@ -282,19 +309,12 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 		}
 		col += 8;
 	}
+	delStackTraceEntry();
 }
 
 int	space(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-int	is_nbr(char *str)
-{
-	for (int i = 0; str[i]; i++)
-		if (str[i] > '9' || str[i] < '0')
-			return (0);
-	return (0);
 }
 
 char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *path)
@@ -308,10 +328,12 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 	int	col = 0;
 	int     cond = 0;
 
+	addStackTraceEntry("get_function_name", "pppip", "file", file, "flags", flags, "mistakes", mistakes, "ln", ln, "path", path);
 	file++;
 	if (*file == '#') {
 		if (flags->d)
 			printf("Found #\n\n");
+		delStackTraceEntry();
 		return (0);
 	}
 	if (flags->d) {
@@ -446,8 +468,10 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		printf("Found %i arguments for function %s\n\n", args_nbr, name);
 	if (compare_strings(name, "")) {
 		free(name);
+		delStackTraceEntry();
 		return (0);
 	}
+	delStackTraceEntry();
 	return (name);
 }
 
@@ -483,6 +507,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	char	*ptr = file;
 	int	l_o = 0;
 
+	addStackTraceEntry("find_long_fct", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
 	if (flags->d)
 		printf("Beggining of buffer\n");
 	for (int i = 0 ; file[i] ; i++) {
@@ -954,28 +979,37 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	free(fct_name);
 	if (flags->d)
 		printf("End of buffer\n");
+	delStackTraceEntry();
 }
 
 void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 {
 	char	*file_content;
 
+	addStackTraceEntry("scan_c_file", "pppp", "path", path, "mistakes", mistakes, "key_words", key_words, "flags", flags);
 	file_content = load_file(path);
-	if (!file_content)
+	if (!file_content) {
+		delStackTraceEntry();
 		return;
+	}
 	find_long_fct(file_content, mistakes, path, key_words, flags);
 	if (flags->d)
 		printf("File %s scanned !\n\n", path);
         free(file_content);
+	delStackTraceEntry();
 }
 
 void	scan_h_file(char *path, int *mistakes, flag *flags)
 {
 	char	*file_content;
 
+	addStackTraceEntry("scan_h_file", "ppp", "path", path, "mistakes", mistakes, "flags", flags);
 	file_content = load_file(path);
-	if (!file_content)
+	if (!file_content) {
+		delStackTraceEntry();
 		return;
+	}
 	find_long_fct(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
 	free(file_content);
+	delStackTraceEntry();
 }
