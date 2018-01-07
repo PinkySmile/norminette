@@ -56,7 +56,10 @@ void	addStackTraceEntry(char *fct_name, char *args, ...)
 			break;
 		case 'i':
 			buffer2 = trace;
-			buffer1 = concat(" = ", int_to_str(va_arg(arg_list, int)));
+			trace = concat(trace, " = ");
+			free(buffer2);
+			buffer2 = trace;
+			buffer1 = int_to_str(va_arg(arg_list, int));
 			trace = concat(buffer2, buffer1);
 			free(buffer2);
 			free(buffer1);
@@ -70,7 +73,10 @@ void	addStackTraceEntry(char *fct_name, char *args, ...)
 			break;
 		case 'p':
 			buffer2 = trace;
-			buffer1 = concat(" = 0x", my_putnbrbase((long)va_arg(arg_list, void *), "0123456789abcdef"));
+			trace = concat(buffer2, " = 0x");
+			free(buffer2);
+			buffer2 = trace;
+			buffer1 = my_putnbrbase((long)va_arg(arg_list, void *), "0123456789abcdef");
 			trace = concat(buffer2, buffer1);
 			free(buffer2);
 			free(buffer1);
@@ -85,20 +91,49 @@ void	addStackTraceEntry(char *fct_name, char *args, ...)
 	trace = concat(trace, ")");
 	free(buffer1);
 	va_end(arg_list);
-	free(trace);
+	last->next = malloc(sizeof(*last->next));
+	last->next->prev = last;
+	last = last->next;
+	last->data = trace;
+	last->next = 0;
 }
 
 int	delStackTraceEntry(void)
 {
+	free(last->data);
+	last->data = 0;
+	if (last->prev != 0) {
+		last = last->prev;
+		free(last->next);
+		last->next = 0;
+		return (1);
+	}
 	return (0);
 }
 
 void	printStackTrace(void)
 {
 	printf("Stacktrace : \n");
+	for (; last && last->prev; last = last->prev)
+		printf("\t%s\n", (char *)last->data);
 }
 
 void	freeStackTrace(void)
 {
-	free(stack_trace);
+	for (; last && last->prev; last = last->prev) {
+	        free(last->data);
+		last->data = 0;
+		if (last->next) {
+			free(last->next);
+			last->next = 0;
+		}
+	}
+	if (last) {
+		free(last->next);
+		last->next = 0;
+		free(last->data);
+		last->data = 0;
+		free(last);
+		last = 0;
+	}
 }

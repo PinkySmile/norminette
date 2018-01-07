@@ -180,7 +180,7 @@ int	is_in_array(char const **array, char *str)
 int	whitelisted(char *fct)
 {
 	addStackTraceEntry("whitelisted", "p", "fct", fct);
-	if (compare_strings(fct, "sizeof")) {
+        if (compare_strings(fct, "sizeof")) {
 		delStackTraceEntry();
 		return (1);
 	} else if (compare_strings(fct, "")) {
@@ -197,7 +197,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 	int	end = 0;
 
 	addStackTraceEntry("verif_fct_used", "ppppppipip", "name", name, "flags", flags, "file_name", file_name, "mistakes", mistakes, \
-			   "words", words, "fct", fct, "ln", ln, "fct_name", "col", col, "file", file);
+			   "words", words, "fct", fct, "ln", ln, "fct_name", fct_name, "col", col, "file", file);
 	if (!is_in_list(flags->fcts, name) && !is_in_array(words, name) && !whitelisted(name)) {
 		mistakes[25]++;
 		if (flags->c) {
@@ -350,8 +350,10 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->d)
 			printf("Skipping %c\n", file[beg]);
 	}
-	if (file[beg] == ';' || file[beg] == '\n')
+	if (file[beg] == ';' || file[beg] == '\n') {
+		delStackTraceEntry();
 		return (0);
+	}
 	for (; file[beg + i] && char_valid(file[beg + i]); i--) {
 		if (file[beg + i] == '\t')
 			col -= 8 + col % 8;

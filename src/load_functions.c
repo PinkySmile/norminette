@@ -84,6 +84,7 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 	*end_ptr = &file[beg];
 	if (compare_strings(name, "")) {
 		delStackTraceEntry();
+		free(name);
 		return (0);
 	}
 	delStackTraceEntry();
