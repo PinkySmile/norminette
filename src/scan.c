@@ -85,7 +85,7 @@ void	verify_name(char *file, char *name, int *mistakes, flag *flags)
 		cond = name[i] == '_' || name[i] == '.';
 		cond = cond || compare_strings(name, "Makefile");
 		if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
-			mistakes[2]++;
+			mistakes[INVALID_FILE_NAME]++;
 			if (flags->c)
 				printf("%s", file);
 			else
@@ -118,7 +118,7 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 		if (flags->u)
 			verify_name(file_path, file->d_name, mistakes, flags);
 		if (flags->u && is_file_useless(file_path, file->d_name, flags)) {
-			mistakes[0]++;
+			mistakes[GARBAGE]++;
 			if (!flags->c)
 				printf("\033[31m\033[1m");
 			if (flags->f) {

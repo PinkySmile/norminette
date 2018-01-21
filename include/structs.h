@@ -8,7 +8,7 @@
 #ifndef _STRUCTS_H_
 #define _STRUCTS_H_
 
-enum    mistake_name {                                                                                                                                                                        
+enum    mistake_name {
         GARBAGE,
         TOO_MNY_FCT,
         INVALID_FILE_NAME,
@@ -31,7 +31,7 @@ enum    mistake_name {
         TRAILING_SPACE,
         TRAILING_EMPTY_LINE,
         SEMICOLON_ISOLATED,
-        IDENTIFIED_L_O,
+        IDENTIFIER_L_O,
         TYPE_NAME,
         INVALID_FCT_NAME,
         FORBIDDEN_FCT_USED,
