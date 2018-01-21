@@ -165,6 +165,76 @@ int	is_in_list(list_t *list, char *str)
 	return (0);
 }
 
+int	match(char *str1, char *str2)
+{
+	for (int i = 0; str1[i] && str2[i]; i++)
+		if (str1[i] != str2[i])
+			return (0);
+	return (1);
+}
+
+void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
+{
+	int	end = 0;
+	int	line = 0;
+	int	first_line = 0;
+	int	epi_proj = 0;
+	int	desc = 0;
+	int	oui = 0;
+	int	is_valid = 1;
+	char	buffer[40];
+
+	addStackTraceEntry("check_header", "pp", "file", file, "flags", flags, "mistakes", mistakes, "file_name", file_name);
+	if (match(file, "/*"))
+		first_line = 1;
+	strncpy(buffer, file, 2);
+	buffer[2] = 0;
+	if (flags->d) {
+		if (first_line == 1) {
+			printf("First line OK\n");
+		} else
+			printf("Invalid first line : got '%s' expected '/*'\n", buffer);
+	}
+	for (int i = 0; !end && file[i]; i++) {
+		if (file[i] == '\n') {
+			line++;
+			if (oui == 0 && match("** EPITECH PROJECT,", &file[i + 1])) {
+				oui = 1;
+				if (flags->d)
+					printf("Found \"** EPITECH PROJECT,\"\n");
+			}
+			if (oui == 1 && match("** File description:", &file[1 + i])) {
+				oui = 2;
+				if (flags->d)
+					printf("Found \"** File description:\"\n");
+			}
+			if (oui == 0)
+				first_line++;
+			else if (oui == 1)
+				epi_proj++;
+			else
+				desc++;
+			if (line == 20 || match(&file[i + 1], "*/"))
+				end = 1;
+			if (end == 0 && !match("**", &file[i + 1]))
+				is_valid = 0;
+		}
+	}
+	if (!(is_valid && desc > 1 && epi_proj > 1 && first_line == 1)) {
+		if (flags->c) {
+			printf("%s", file_name);
+	        } else {
+			display_path(file_name);
+		}
+		if (flags->f)
+			printf(" : Header invalide\n");
+		else
+			printf(" : Invalid header\n");
+		mistakes[INVALID_HEADER]++;
+	}
+	delStackTraceEntry();
+}
+
 int	is_in_array(char const **array, char *str)
 {
 	addStackTraceEntry("is_in_array", "pp", "array", array, "str", str);
@@ -994,6 +1064,7 @@ void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 		delStackTraceEntry();
 		return;
 	}
+	check_header(file_content, flags, mistakes, path);
 	find_long_fct(file_content, mistakes, path, key_words, flags);
 	if (flags->d)
 		printf("File %s scanned !\n\n", path);
@@ -1011,6 +1082,7 @@ void	scan_h_file(char *path, int *mistakes, flag *flags)
 		delStackTraceEntry();
 		return;
 	}
+	check_header(file_content, flags, mistakes, path);
 	find_long_fct(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
 	free(file_content);
 	delStackTraceEntry();

@@ -89,6 +89,10 @@ void	set_sigaction(void)
 	sigaction(SIGABRT, &action, 0);
 	sigaction(SIGSEGV, &action, 0);
 	sigaction(SIGTERM, &action, 0);
+	sigaction(SIGFPE, &action, 0);
+	sigaction(SIGBUS, &action, 0);
+	sigaction(SIGSYS, &action, 0);
+	sigaction(SIGPIPE, &action, 0);
 }
 
 int	main(int argc, char **args)
