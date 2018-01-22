@@ -32,7 +32,7 @@ enum    mistake_name {
         TRAILING_EMPTY_LINE,
         SEMICOLON_ISOLATED,
         IDENTIFIER_L_O,
-        TYPE_NAME,
+        INVALID_TYPE_NAME,
         INVALID_FCT_NAME,
         FORBIDDEN_FCT_USED,
         TOO_LONG_FILE_NAME,

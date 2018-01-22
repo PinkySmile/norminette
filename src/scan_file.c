@@ -44,22 +44,24 @@ char	*load_file(char *path)
 	return (buffer);
 }
 
-void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int s_q, int comment)
+void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int s_q, int comment, int alt)
 {
 	int	col_c = 0;
 	int	chars = 0;
 	int	arrow_displayed = 0;
 	int	buffer = 0;
 
-	addStackTraceEntry("mistake_line", "ipiipbbi", "size", size, "line", line, "col", col, "ln", ln, "flags", flags, "q", q, "s_q", s_q, "comment", comment);
-	if (!flags->c)
-		printf("\033[0m\033[32m");
-	chars = printf("[%i:%i]", ln, col);
-	if (!flags->c)
-		printf("\033[93m");
-	for (int i = 0; i < 8 - chars % 8 + 7; i++)
-		printf("-");
-	printf(">");
+	addStackTraceEntry("mistake_line", "ipiipbbi", "size", size, "line", line, "col", col, "ln", ln, "flags", flags, "q", q, "s_q", s_q, "comment", comment, "alt", alt);
+	if (alt) {
+		if (!flags->c)
+			printf("\033[0m\033[32m");
+		chars = printf("[%i:%i]", ln, col);
+		if (!flags->c)
+			printf("\033[93m");
+		for (int i = 0; i < 8 - chars % 8 + 7; i++)
+			printf("-");
+		printf(">");
+	}
 	if (!flags->c)
 		printf("\033[0m");
 	for (int i = 0; line[i]; i++) {
@@ -81,7 +83,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 			comment = 0;
 			buffer = 2;
 		}
-		if (!flags->c && col_c > col && col_c <= col + size)
+		if ((!flags->c && col_c > col && col_c <= col + size) || !alt)
 			printf("\033[95;1m");	
 		else if (!flags->c && (buffer > 0 || comment != 0))
 			printf("\033[0m\033[31m");
@@ -91,42 +93,53 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 			printf("\033[0m");
 		printf("%c", line[i]);
 	}
-	col_c = 0;
-	printf("%s\n", !flags->c ? "\033[0m" : "");
-	for (int i = 0; i < chars; i++)
-		printf(" ");
-	printf("\t\t");
-	for (int i = 0; line[i]; i++) {
-		if (line[i] == '\t') {
-			if (col_c >= col && col_c < col + size && !arrow_displayed) {
-				arrow_displayed = 1;
-				printf("%s^", !flags->c ? "\033[95;1m" : "");
-				for (int i = 0; i < 7 - col_c % 8; i++)
+	if (alt) {
+		col_c = 0;
+		printf("%s\n", !flags->c ? "\033[0m" : "");
+		for (int i = 0; i < chars; i++)
+			printf(" ");
+		printf("\t\t");
+		for (int i = 0; line[i]; i++) {
+			if (line[i] == '\t') {
+				if (col_c >= col && col_c < col + size && !arrow_displayed) {
+					arrow_displayed = 1;
+					printf("%s^", !flags->c ? "\033[95;1m" : "");
+					for (int i = 0; i < 7 - col_c % 8; i++)
+						printf("%s~", !flags->c ? "\033[95;1m" : "");
+				} else if (col_c >= col && col_c < col + size)
+					for (int i = 0; i < 8 - col_c % 8; i++)
+						printf("%s~", !flags->c ? "\033[95;1m" : "");
+				else 
+					printf("%s\t", !flags->c ? "\033[0m" : "");
+				col_c = (col_c + 8) - (col_c % 8);
+			} else if (line[i] >= 32) {
+				if (col_c >= col && col_c < col + size && !arrow_displayed) {
+					arrow_displayed = 1;
+					printf("%s^", !flags->c ? "\033[95;1m" : "");
+				} else if (col_c >= col && col_c < col + size)
 					printf("%s~", !flags->c ? "\033[95;1m" : "");
-			} else if (col_c >= col && col_c < col + size)
-				for (int i = 0; i < 8 - col_c % 8; i++)
+				else
+					printf("%s ", !flags->c ? "\033[0m" : "");
+				col_c++;
+			} else {
+				if (col_c >= col && col_c < col + size && !arrow_displayed) {
+					arrow_displayed = 1;
+					printf("%s^", !flags->c ? "\033[95;1m" : "");
+				} else if (col_c >= col && col_c < col + size)
 					printf("%s~", !flags->c ? "\033[95;1m" : "");
-			else 
-				printf("%s\t", !flags->c ? "\033[0m" : "");
-			col_c = (col_c + 8) - (col_c % 8);
-		} else if (line[i] >= 32) {
-			if (col_c >= col && col_c < col + size && !arrow_displayed) {
-				arrow_displayed = 1;
-				printf("%s^", !flags->c ? "\033[95;1m" : "");
-			} else if (col_c >= col && col_c < col + size)
-				printf("%s~", !flags->c ? "\033[95;1m" : "");
-			else
-				printf("%s ", !flags->c ? "\033[0m" : "");
-			col_c++;
-		} else {
-			if (col_c >= col && col_c < col + size && !arrow_displayed) {
-				arrow_displayed = 1;
-				printf("%s^", !flags->c ? "\033[95;1m" : "");
-			} else if (col_c >= col && col_c < col + size)
-				printf("%s~", !flags->c ? "\033[95;1m" : "");
-			else
-				printf("%s ", !flags->c ? "\033[0m" : "");
+				else
+					printf("%s ", !flags->c ? "\033[0m" : "");
+			}
 		}
+	} else {
+		if (!flags->c)
+			printf("\033[95;1m");
+		printf("^");
+		for (int i = 0; i < col - 1; i++)
+			printf("~");
+		if (!flags->c)
+			printf("\033[0m");
+		printf("\n");
 	}
 	printf("\n");
 	delStackTraceEntry();
@@ -183,6 +196,10 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 	int	oui = 0;
 	int	is_valid = 1;
 	char	buffer[40];
+	char	*buff = 0;
+	int	cols = 0;
+	int	max_cols = 0;
+	int	i = 0;
 
 	addStackTraceEntry("check_header", "pp", "file", file, "flags", flags, "mistakes", mistakes, "file_name", file_name);
 	if (match(file, "/*"))
@@ -195,9 +212,11 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 		} else
 			printf("Invalid first line : got '%s' expected '/*'\n", buffer);
 	}
-	for (int i = 0; !end && file[i]; i++) {
+	for (i = 0; !end && file[i]; i++) {
 		if (file[i] == '\n') {
 			line++;
+			max_cols = cols > max_cols ? cols : max_cols;
+			cols = -1;
 			if (oui == 0 && match("** EPITECH PROJECT,", &file[i + 1])) {
 				oui = 1;
 				if (flags->d)
@@ -219,18 +238,23 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 			if (end == 0 && !match("**", &file[i + 1]))
 				is_valid = 0;
 		}
+		cols++;
 	}
 	if (!(is_valid && desc > 1 && epi_proj > 1 && first_line == 1)) {
-		if (flags->c) {
+		if (flags->c)
 			printf("%s", file_name);
-	        } else {
+	        else
 			display_path(file_name);
-		}
 		if (flags->f)
 			printf(" : Header invalide\n");
 		else
 			printf(" : Invalid header\n");
 		mistakes[INVALID_HEADER]++;
+		if (flags->v) {
+			buff = sub_strings(file, 0, i + 3, malloc(i + 2));
+			mistake_line(i, buff, max_cols, 0, flags, 0, 0, 0, 0);
+			free(buff);
+		}
 	}
 	delStackTraceEntry();
 }
@@ -290,7 +314,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			for (; file[end] && file[end] != '\n'; end++);
 			buffer = malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
-			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0);
+			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0, 1);
 			free(buffer);
 		}
 	}
@@ -337,7 +361,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				bu = malloc(c - i + 2);
 				sub_strings(file, i + 1, c, bu);
 				for (spaces = 0; file[jl + spaces] == ' '; spaces++);
-				mistake_line(spaces, bu, col, ln, flags, q, s_q, comment);
+				mistake_line(spaces, bu, col, ln, flags, q, s_q, comment, 1);
 				free(bu);
 			}
 			jl = -2;
@@ -368,7 +392,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			if (flags->v) {
 				bu = malloc(i + 1);
 				sub_strings(file, i + 1, i - jl, bu);
-			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags, 0, 0, 0);
+			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags, 0, 0, 0, 1);
 				free(bu);
 			}
 			jl = -2;
@@ -468,7 +492,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->v) {
 			void_ = malloc(end + 10);
 			sub_strings(file, 0, end, void_);
-			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
+			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 			free(void_);
 		}
 		mistakes[TOO_MANY_ARGS]++;
@@ -497,7 +521,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (flags->v) {
 			void_ = malloc(end + 10);
 			sub_strings(file, 0, end, void_);
-			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
+			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 			free(void_);
 		}
 		mistakes[TOO_MANY_ARGS]++;
@@ -530,7 +554,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			if (flags->v) {
 				void_ = malloc(end + 10);
 				sub_strings(file, 0, end, void_);
-				mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0);
+				mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 				free(void_);
 			}
 			break;
@@ -656,7 +680,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(l_o, bu, col - l_o, ln, flags, q, s_q, comment);
+					mistake_line(l_o, bu, col - l_o, ln, flags, q, s_q, comment, 1);
 					free(bu);
 				}
 				mistakes[IDENTIFIER_L_O]++;
@@ -700,7 +724,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(4, bu, col, ln, flags, q, s_q, comment);
+				mistake_line(4, bu, col, ln, flags, q, s_q, comment, 1);
 				free(bu);
 			}
 			mistakes[GOTO_USED]++;
@@ -753,7 +777,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(strlen(words[k]), bu, col, ln, flags, q, s_q, comment);
+					mistake_line(strlen(words[k]), bu, col, ln, flags, q, s_q, comment, 1);
 					free(bu);
 				}
 				mistakes[TRAILING_SPACE]++;
@@ -822,7 +846,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment);
+				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
 				free(bu);
 			}
 			mistakes[TRAILING_SPACE]++;
@@ -855,7 +879,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(2, bu, col - 1, ln, flags, q, s_q, comment);
+				mistake_line(2, bu, col - 1, ln, flags, q, s_q, comment, 1);
 				free(bu);
 			}
 			mistakes[SEMICOLON_ISOLATED]++;
@@ -887,7 +911,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					for (start = i - 1; file[start] && file[start] != '\n'; start--);
 					bu = malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
-                                        mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment);
+                                        mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);
 					free(bu);
 				}
                         }
@@ -940,7 +964,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->v) {
 				bu = malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
-				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment);
+				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
 				free(bu);
 			}
 			mistakes[TRAILING_SPACE]++;
@@ -978,7 +1002,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (flags->v) {
 					bu = malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
-					mistake_line(2, bu, col, ln, flags, q, s_q, 0);
+					mistake_line(2, bu, col, ln, flags, q, s_q, 0, 1);
 					free(bu);
 				}
 			}
