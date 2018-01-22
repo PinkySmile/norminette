@@ -38,5 +38,6 @@ char	*double_to_str(double nbr);
 int	get_nbrlen(int nbr);
 char	*concat(char *str1, char *str2);
 char	*my_putnbrbase(unsigned int nbr, char const *base);
+void	*my_malloc(int size);
 
 #endif

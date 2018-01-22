@@ -156,7 +156,7 @@ void	disp_list(list_t *list)
 
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int	disp = 0;
 	char	*dir = 0;
 
@@ -177,14 +177,22 @@ flag	get_flags(int argc, char **args)
 				flags.n = 1;
 			else if (args[i][j] == 'c')
 				flags.c = 1;
-			else if (args[i][j] == 'a') {
+			else if (args[i][j] == 'b') {
+				flags.b = 1;
+				if (!flags.b_fcts) {
+					flags.b_fcts = my_malloc(sizeof(*flags.b_fcts));
+					flags.b_fcts->next = 0;
+					flags.b_fcts->prev = 0;
+					flags.b_fcts->data = 0;
+				}
+			} else if (args[i][j] == 'a') {
 				flags.u = 1;
 				flags.v = 1;
 				flags.i_caps = 1;
 				flags.big_files = 1;
 				load_functions(".", &flags);
 			} else if (args[i][j] == 'I') {
-				dir = sub_strings(&args[i][j], 1, strlen(&args[i][j]) + 1, malloc(strlen(&args[i][j]) + 1));
+				dir = sub_strings(&args[i][j], 1, strlen(&args[i][j]) + 1, my_malloc(strlen(&args[i][j]) + 1));
 				flags.i_caps = 1;
 				load_functions(dir, &flags);
 				if (flags.d)

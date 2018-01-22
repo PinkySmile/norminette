@@ -36,7 +36,7 @@ char	*load_file(char *path)
 		delStackTraceEntry();
 		return (0);
 	}
-	buffer = malloc(info.st_size + 1);
+	buffer = my_malloc(info.st_size + 1);
 	read(fd, buffer, info.st_size);
 	buffer[info.st_size] = 0;
 	close(fd);
@@ -166,6 +166,18 @@ void	display_path(char *path)
 	delStackTraceEntry();
 }
 
+int	in_list(list_t *list, char *str)
+{
+	addStackTraceEntry("in_list", "pp", "list", list, "str", str);
+	for (; list->next; list = list->next)
+		if (compare_strings(str, ((b_fcts_t *)list->data)->name)) {
+			delStackTraceEntry();
+			return (1);
+		}
+	delStackTraceEntry();
+	return (0);
+}
+
 int	is_in_list(list_t *list, char *str)
 {
 	addStackTraceEntry("is_in_list", "pp", "list", list, "str", str);
@@ -251,7 +263,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 			printf(" : Invalid header\n");
 		mistakes[INVALID_HEADER]++;
 		if (flags->v) {
-			buff = sub_strings(file, 0, i + 3, malloc(i + 2));
+			buff = sub_strings(file, 0, i + 3, my_malloc(i + 2));
 			mistake_line(i, buff, max_cols, 0, flags, 0, 0, 0, 0);
 			free(buff);
 		}
@@ -289,6 +301,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 {
 	char	*buffer;
 	int	end = 0;
+	list_t	*list = flags->b_fcts;
 
 	addStackTraceEntry("verif_fct_used", "ppppppipip", "name", name, "flags", flags, "file_name", file_name, "mistakes", mistakes, \
 			   "words", words, "fct", fct, "ln", ln, "fct_name", fct_name, "col", col, "file", file);
@@ -310,9 +323,18 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			else
 				printf(": forbidden function used (\033[31;1m%s\033[0m)\n", name);
 		}
+		if (flags->b) {
+			for (; list->next; list = list->next);
+			if (!in_list(flags->b_fcts, name)) {
+				list->next = my_malloc(sizeof(*list->next));
+				list->next->next = 0;
+				list->next->data = 0;
+				list->next->prev = list;
+			}
+		}
 		if (flags->v) {
 			for (; file[end] && file[end] != '\n'; end++);
-			buffer = malloc(end + 2);
+			buffer = my_malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
 			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0, 1);
 			free(buffer);
@@ -358,7 +380,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			}
 			for (c = i + 1; file[c] != '\n' && file[c]; c++);
 			if (flags->v) {
-				bu = malloc(c - i + 2);
+				bu = my_malloc(c - i + 2);
 				sub_strings(file, i + 1, c, bu);
 				for (spaces = 0; file[jl + spaces] == ' '; spaces++);
 				mistake_line(spaces, bu, col, ln, flags, q, s_q, comment, 1);
@@ -390,7 +412,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 					printf("\033[0m : bad indentation (empty line)\n");
 			}
 			if (flags->v) {
-				bu = malloc(i + 1);
+				bu = my_malloc(i + 1);
 				sub_strings(file, i + 1, i - jl, bu);
 			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags, 0, 0, 0, 1);
 				free(bu);
@@ -459,7 +481,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			args_nbr++;
 	if (file[beg] && file[beg + 1] == ')')
 		args_nbr = 0;
-	name = malloc(1 - i);
+	name = my_malloc(1 - i);
 	sub_strings(file, beg + i + 1, beg, name);
 	for (int j = 0; name[j]; j++)
 		if (name[j] <= 32)
@@ -490,7 +512,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		}
 		for (end = 0; file[end] != '\n' && file[end]; end++);
 		if (flags->v) {
-			void_ = malloc(end + 10);
+			void_ = my_malloc(end + 10);
 			sub_strings(file, 0, end, void_);
 			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 			free(void_);
@@ -519,7 +541,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		}
 		for (end = 0; file[end] != '\n' && file[end]; end++);
 		if (flags->v) {
-			void_ = malloc(end + 10);
+			void_ = my_malloc(end + 10);
 			sub_strings(file, 0, end, void_);
 			mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 			free(void_);
@@ -552,7 +574,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 			}
 			for (end = 0; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
-				void_ = malloc(end + 10);
+				void_ = my_malloc(end + 10);
 				sub_strings(file, 0, end, void_);
 				mistake_line(strlen(name), void_, col, ln, flags, 0, 0, 0, 1);
 				free(void_);
@@ -678,7 +700,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				for (start = i; start > 0 && file[start] != '\n'; start--);
 				for (end = start + 1; file[end] != '\n' && file[end]; end++);
 				if (flags->v) {
-					bu = malloc(end - start + 10);
+					bu = my_malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
 					mistake_line(l_o, bu, col - l_o, ln, flags, q, s_q, comment, 1);
 					free(bu);
@@ -722,7 +744,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			for (start = i; file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
-				bu = malloc(end - start + 10);
+				bu = my_malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
 				mistake_line(4, bu, col, ln, flags, q, s_q, comment, 1);
 				free(bu);
@@ -775,7 +797,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				for (start = i; file[start] != '\n'; start--);
 				for (end = start + 1; file[end] != '\n' && file[end]; end++);
 				if (flags->v) {
-					bu = malloc(end - start + 10);
+					bu = my_malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
 					mistake_line(strlen(words[k]), bu, col, ln, flags, q, s_q, comment, 1);
 					free(bu);
@@ -844,7 +866,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			for (start = i; start >= 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
-				bu = malloc(end - start + 10);
+				bu = my_malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
 				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
 				free(bu);
@@ -877,7 +899,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			for (start = i; file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
-				bu = malloc(end - start + 10);
+				bu = my_malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
 				mistake_line(2, bu, col - 1, ln, flags, q, s_q, comment, 1);
 				free(bu);
@@ -909,7 +931,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				mistakes[TOO_LONG_LINE]++;
 				if (flags->v) {
 					for (start = i - 1; file[start] && file[start] != '\n'; start--);
-					bu = malloc(i - start + 1);
+					bu = my_malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
                                         mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);
 					free(bu);
@@ -962,7 +984,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			for (start = i; start > 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
-				bu = malloc(end - start + 10);
+				bu = my_malloc(end - start + 10);
 				sub_strings(file, start + 1, end, bu);
 				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
 				free(bu);
@@ -1000,7 +1022,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				for (start = i; file[start] != '\n'; start--);
 				for (end = start + 1; file[end] != '\n' && file[end]; end++);
 				if (flags->v) {
-					bu = malloc(end - start + 10);
+					bu = my_malloc(end - start + 10);
 					sub_strings(file, start + 1, end, bu);
 					mistake_line(2, bu, col, ln, flags, q, s_q, 0, 1);
 					free(bu);

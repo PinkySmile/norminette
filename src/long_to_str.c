@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 #include "my.h"
 #include "functions.h"
 
@@ -27,8 +28,12 @@ char    *long_to_str(long nb)
 	int	digit_pos;
 	int	number_left;
 	int	pos = 0;
-	char	*str = malloc(12);
+	char	*str = my_malloc(12);
 
+	if (str == 0) {
+		printf("Error while adding stack trace entry :\n\t\tCouldn't malloc 12B\n");
+		exit(84);
+	}
 	nb = del_neg_long(str, nb, &pos);
 	number_left = nb;
 	length_of_the_number = get_nbrlen(nb);

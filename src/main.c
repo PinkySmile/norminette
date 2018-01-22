@@ -55,11 +55,11 @@ char	**parse_args(int argc, char **args)
 	int	pos = 0;
 
 	if (argc != 1) {
-		dirs = malloc(sizeof(*dirs) * argc);
+		dirs = my_malloc(sizeof(*dirs) * argc);
 		for (int i = 0; i < argc; i++)
 			dirs[i] = 0;
 	} else {
-		dirs = malloc(sizeof(*dirs) * 2);
+		dirs = my_malloc(sizeof(*dirs) * 2);
 		for (int i = 0; i < 2; i++)
 			dirs[i] = 0;
 	}
@@ -103,7 +103,7 @@ int	main(int argc, char **args)
 	initStackTrace();
 	addStackTraceEntry("main", "ip", "argc", argc, "args", args);
 	set_sigaction();
-	flags = get_flags(argc, args);
+        flags = get_flags(argc, args);
 	dirs = parse_args(argc, args);
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;

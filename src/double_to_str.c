@@ -10,6 +10,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 int	concat_dec_part(int dec_part, int decimals, char *str)
 {
@@ -46,6 +47,10 @@ char	*double_to_str(double nbr)
 	exponant = (long)pow(10, decimals);
 	number = (long)(exponant * nbr + 0.5 * neg);
 	str = malloc(get_nbrlen(number) + decimals + 2);
+	if (str == 0) {
+		printf("Error while adding stack trace entry :\n\t\tCouldn't malloc %iB\n", get_nbrlen(number) + decimals + 2);
+		exit(84);
+	}
         nbrs = int_to_str((int)(number / exponant));
 	strcpy(str, nbrs);
 	free(nbrs);

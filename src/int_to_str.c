@@ -6,6 +6,7 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include "my.h"
 #include "functions.h"
@@ -29,6 +30,10 @@ char    *int_to_str(int nb)
 	int	pos = 0;
 	char	*str = malloc(12);
 
+	if (str == 0) {
+                printf("Error while adding stack trace entry :\n\t\tCouldn't malloc 12B\n");
+                exit(84);
+        }
 	nb = del_neg(str, nb, &pos);
 	number_left = nb;
 	length_of_the_number = get_nbrlen(nb);

@@ -45,16 +45,23 @@ typedef struct list_s {
 } list_t;
 
 typedef struct {
+	char	*name;
+	int	count;
+} b_fcts_t;
+
+typedef struct {
 	int	v;
 	int	f;
 	int	n;
 	int	u;
 	int	d;
 	int	c;
+	int	b;
 	int	i_caps;
 	int	big_files;
 	int	no_big_files;
 	list_t	*fcts;
+	list_t	*b_fcts;
 } flag;
 
 #endif

@@ -25,7 +25,7 @@ char    *find_path(char *path, char *file_name)
 	int     name_len = strlen(file_name);
 	int     extra_len = path[path_len - 1] == '/' ? 0 : 1;
 	int     total_length = path_len + name_len + extra_len;
-	char    *file_path = malloc(total_length + 1);
+	char    *file_path = my_malloc(total_length + 1);
 
 	addStackTraceEntry("find_path", "pp", "path", path, "file_name", file_name);
 	for (int i = 0; i < path_len; i++)
@@ -228,6 +228,14 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	delStackTraceEntry();
 }
 
+void	print_list(list_t *list)
+{
+        addStackTraceEntry("print_list", "p", "list", list);
+        for (; list->next; list = list->next)
+                printf("Found '%s' %i time%s\n", ((b_fcts_t *)list->data)->name, ((b_fcts_t *)list->data)->count, ((b_fcts_t *)list->data)->count > 1 ? "s" : "");
+        delStackTraceEntry();
+}
+
 void	display_result(int *mistakes, flag *flags)
 {
 	int	type[3] = {0, 0, 0};
@@ -243,13 +251,13 @@ void	display_result(int *mistakes, flag *flags)
 				printf("\n%s", style_names[i]);
 				printf(" rule has been violated ");
 				printf("%i", mistakes[i]);
-				printf(" times ");
+				printf(" time%s ", mistakes[i] > 1 ? "s" : "");
 				printf(": %s", style_description[i]);
 			} else {
 				printf("\n\033[31;1m%s\033[0m", style_names[i]);
 				printf("\033[1m rule has been violated \033[0m");
 				printf("\033[31;1m%i\033[0m", mistakes[i]);
-				printf("\033[1m times \033[0m");
+				printf("\033[1m time%s \033[0m", mistakes[i] > 1 ? "s" : "");
 				printf(": \033[91m%s\033[0m", style_description[i]);
 			}
 			type[style_type[i]] += mistakes[i];
@@ -258,6 +266,14 @@ void	display_result(int *mistakes, flag *flags)
 		printf("\n\n");
 	else if (flags->n)
 		printf("\n");
+	if (mistakes[FORBIDDEN_FCT_USED] != 0) {
+		if (flags->b) {
+			printf("\nBanned functions used :\n");
+			print_list(flags->b_fcts);
+			printf("\n\n");
+		} else
+			printf("Re-run with -b to see a detailed list of all forbidden functions found.\n\n");
+	}
 	style_mark = type[0] + type[1] + 5 * type[2];
 	if(flags->c) {
 		printf("info : ");

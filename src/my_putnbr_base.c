@@ -6,9 +6,11 @@
 */
 
 #include "my.h"
+#include "functions.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 char	*my_putnbrbase(unsigned int nbr, char const *base)
 {
@@ -24,6 +26,10 @@ char	*my_putnbrbase(unsigned int nbr, char const *base)
 		counter++;
 	} while (nbr > 0);
 	new_nbr = malloc(nb_of_chars + 1);
+	if (new_nbr == 0) {
+		printf("Error while adding stack trace entry :\n\t\tCouldn't malloc %iB\n", nb_of_chars + 1);
+		exit(84);
+	}
 	nbr = 0;
 	for (int i = nb_of_chars - 1 ; i >= 0 ; i--) {
 		new_nbr[nbr] = all_chars[i];

@@ -75,7 +75,7 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 		(*col)--;
         for (; file[beg + i] && char_valid(file[beg + i]); i--)
 	        (*col)--;
-	name = malloc(1 - i);
+	name = my_malloc(1 - i);
         sub_strings(file, beg + i + 1, beg, name);
         for (int j = 0; name[j]; j++)
                 if (name[j] <= 32)
@@ -122,7 +122,7 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 				if (flags->d)
 					printf("Found %s at line %i\n", bu, ln);
 				list->data = bu;
-				list->next = malloc(sizeof(*list->next));
+				list->next = my_malloc(sizeof(*list->next));
 				list->next->prev = list;
 				list = list->next;
 				list->data = 0;
@@ -246,7 +246,7 @@ void	load_functions(char *path, flag *flags)
 
 	addStackTraceEntry("load_functions", "pp", "path", path, "flags", flags);
 	if (!flags->fcts) {
-		flags->fcts = malloc(sizeof(*flags->fcts));
+		flags->fcts = my_malloc(sizeof(*flags->fcts));
 		flags->fcts->next = 0;
 		flags->fcts->prev = 0;
 		flags->fcts->data = 0;

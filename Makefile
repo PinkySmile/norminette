@@ -24,6 +24,7 @@ SRC =	src/main.c \
 	src/concat.c \
 	src/get_nbrlen.c \
 	src/stacktrace.c \
+	src/my_malloc.c \
 
 OBJ =	$(SRC:.c=.o)
 
