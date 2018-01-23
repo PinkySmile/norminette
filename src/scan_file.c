@@ -83,7 +83,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 			comment = 0;
 			buffer = 2;
 		}
-		if ((!flags->c && col_c > col && col_c <= col + size) || !alt)
+		if (!flags->c && ((col_c > col && col_c <= col + size) || !alt))
 			printf("\033[95;1m");	
 		else if (!flags->c && (buffer > 0 || comment != 0))
 			printf("\033[0m\033[31m");
@@ -263,7 +263,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 			printf(" : Invalid header\n");
 		mistakes[INVALID_HEADER]++;
 		if (flags->v) {
-			buff = sub_strings(file, 0, i + 3, my_malloc(i + 2));
+			buff = sub_strings(file, 0, i + 3, my_malloc(i + 4));
 			mistake_line(i, buff, max_cols, 0, flags, 0, 0, 0, 0);
 			free(buff);
 		}
@@ -935,7 +935,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				}
 				mistakes[TOO_LONG_LINE]++;
 				if (flags->v) {
-					for (start = i - 1; file[start] && file[start] != '\n'; start--);
+					for (start = i - 1; start > 0 && file[start] != '\n'; start--);
 					bu = my_malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
                                         mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);

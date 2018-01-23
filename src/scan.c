@@ -109,7 +109,13 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 	addStackTraceEntry("scan_folder", "ppp", "path", path, "flags", flags, "mistakes", mistakes);
 	folder = opendir(path);
 	if (!folder) {
+		if (!flags->c)
+		        write(2, "\033[31;1m", 7);
+		write(2, "Error : ", 8);
 		perror(path);
+		if (!flags->c)
+			write(2, "\033[0m", 4);
+		write(2, "\n", 1);
 		delStackTraceEntry();
 		return;
 	}
@@ -163,14 +169,20 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	char		answer[3] = "Y\n";
 
 	addStackTraceEntry("scan_file", "ppp", "path", path, "flags", flags, "mistakes", mistakes);
-	if (!is_file_c(path)) {
-		delStackTraceEntry();
-	        return;
-	} else if (stat(path, &info) < 0) {
+	if (stat(path, &info) < 0) {
+		if (!flags->c)
+		        write(2, "\033[31;1m", 7);
+		write(2, "Error : ", 8);
 		perror(path);
+		if (!flags->c)
+			write(2, "\033[0m", 4);
+		write(2, "\n", 1);
 		delStackTraceEntry();
 		return;
-	}
+	} else if (!is_file_c(path)) {
+		delStackTraceEntry();
+	        return;
+	} 
 	if (flags->n) {
 		if (flags->c) {
 			if (flags->f)
