@@ -228,11 +228,57 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 	delStackTraceEntry();
 }
 
-void	print_list(list_t *list)
+int	find_bigg(list_t *list)
 {
+	unsigned int	biggest = 0;
+
+	for (; list->next; list = list->next)
+		biggest = biggest < strlen(((b_fcts_t *)list->data)->name) ? strlen(((b_fcts_t *)list->data)->name) : biggest;
+	return ((int)biggest);
+}
+
+int	find_big(list_t *list)
+{
+	int	biggest = 0;
+
+	for (; list->next; list = list->next)
+		biggest = biggest < get_nbrlen(((b_fcts_t *)list->data)->count) ? get_nbrlen(((b_fcts_t *)list->data)->count) : biggest;
+	return ((int)biggest);
+}
+
+void	print_list(list_t *list, flag* flags)
+{
+	int	temp = 0;
+	int	tmp = 0;
+
         addStackTraceEntry("print_list", "p", "list", list);
-        for (; list->next; list = list->next)
-                printf("Found '%s' %i time%s\n", ((b_fcts_t *)list->data)->name, ((b_fcts_t *)list->data)->count, ((b_fcts_t *)list->data)->count > 1 ? "s" : "");
+	temp = find_bigg(list);
+	tmp = find_big(list);
+        for (; list->next; list = list->next) {
+		if (!flags->c) {
+			printf("\033[1mUsed ");
+			for (int i = (strlen(((b_fcts_t *)list->data)->name) + 1) / 2; i <= temp / 2; i++)
+				printf(" ");
+			printf("'\033[31m%s\033[0;1m'", ((b_fcts_t *)list->data)->name);
+			for (int i = strlen(((b_fcts_t *)list->data)->name) / 2; i <= temp / 2; i++)
+				printf(" ");
+			printf("\033[31;1m %i", ((b_fcts_t *)list->data)->count);
+			for (int i = get_nbrlen(((b_fcts_t *)list->data)->count); i <= tmp; i++)
+				printf(" ");
+			printf("\033[0;1mtime%s\033[0m\n", ((b_fcts_t *)list->data)->count > 1 ? "s" : "");
+		} else {
+			printf("Used ");
+			for (int i = (strlen(((b_fcts_t *)list->data)->name) + 1) / 2; i <= temp / 2; i++)
+				printf(" ");
+			printf("'%s'", ((b_fcts_t *)list->data)->name);
+			for (int i = strlen(((b_fcts_t *)list->data)->name) / 2; i <= temp / 2; i++)
+				printf(" ");
+			printf(" %i", ((b_fcts_t *)list->data)->count);
+			for (int i = get_nbrlen(((b_fcts_t *)list->data)->count); i <= tmp; i++)
+				printf(" ");
+			printf("time%s\n", ((b_fcts_t *)list->data)->count > 1 ? "s" : "");
+		}
+	}
         delStackTraceEntry();
 }
 
@@ -269,7 +315,7 @@ void	display_result(int *mistakes, flag *flags)
 	if (mistakes[FORBIDDEN_FCT_USED] != 0) {
 		if (flags->b) {
 			printf("\nBanned functions used :\n");
-			print_list(flags->b_fcts);
+			print_list(flags->b_fcts, flags);
 			printf("\n\n");
 		} else
 			printf("Re-run with -b to see a detailed list of all forbidden functions found.\n\n");

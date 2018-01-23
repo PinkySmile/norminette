@@ -166,13 +166,13 @@ void	display_path(char *path)
 	delStackTraceEntry();
 }
 
-int	in_list(list_t *list, char *str)
+list_t	*in_list(list_t *list, char *str)
 {
 	addStackTraceEntry("in_list", "pp", "list", list, "str", str);
 	for (; list->next; list = list->next)
 		if (compare_strings(str, ((b_fcts_t *)list->data)->name)) {
 			delStackTraceEntry();
-			return (1);
+			return (list);
 		}
 	delStackTraceEntry();
 	return (0);
@@ -325,12 +325,17 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		}
 		if (flags->b) {
 			for (; list->next; list = list->next);
-			if (!in_list(flags->b_fcts, name)) {
+			if (in_list(flags->b_fcts, name) == 0) {
 				list->next = my_malloc(sizeof(*list->next));
+				list->data = my_malloc(sizeof(b_fcts_t));
+				((b_fcts_t *)list->data)->name = strdup(name);
+				((b_fcts_t *)list->data)->count = 0;
 				list->next->next = 0;
 				list->next->data = 0;
 				list->next->prev = list;
 			}
+			list = in_list(flags->b_fcts, name);
+			((b_fcts_t *)list->data)->count++;
 		}
 		if (flags->v) {
 			for (; file[end] && file[end] != '\n'; end++);
