@@ -1,10 +1,10 @@
 # norminette
 Norminette en C à la norme de la promo 2022
 
-USAGE :
+## USAGE :
 	./norminette [-vfunahd] [-I<chemin>] [dossiers/fichiers]
 
-DESCRIPTION :
+## DESCRIPTION :
 	-a :		Active les options v, u et n (equivaut à -vun)
 
 	-d :		Flag de debug à éviter
@@ -39,7 +39,7 @@ DESCRIPTION :
 			dossier /usr/local/include/SFML.
 			Utiliser donc -I/usr/local/include/SFML pour vos projets graphiques.
 
-EXEMPLES :
+## EXEMPLES :
 	./norminette :
 		Lance un scan basique dans le dossier courant
 
@@ -50,11 +50,11 @@ EXEMPLES :
 		Lance un scan en mode verbeux en français avec la détections des fonctions interdites
 		avec les fonctions autorisées dans les dossiers 'include' et '/usr' et dans le fichier '../sys.h'
 
-VALEURS DE RETOUR :
+## VALEURS DE RETOUR :
 	Si aucune erreur n'est trouvée, le programme sort avec le code 0.
 	Si une ou plusieurs erreurs ont été détectées, le programme sort avec le code 1.
 
-RAPPORTER UN BUG :
+## RAPPORTER UN BUG :
 	Si vous  trouvez un bug, mettez  à jour  le  programme
 	(Utilisez le script 'update.sh' dans le repo ou encore
 	<votre alias>-update  si vous  avez utilisé  le script
