@@ -142,7 +142,7 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 	        if (file->d_name[0] != '.' && is_dir(file_path))
 			scan_folder(file_path, flags, mistakes);
 		else if(file->d_name[0] != '.')
-			scan_file(file_path, flags, mistakes);
+			scan_file(file_path, flags, mistakes, 0);
 		free(file_path);
 	}
 	closedir(folder);
@@ -163,12 +163,12 @@ int	is_file_c(char *path)
 	return (cond);
 }
 
-void	scan_file(char *path, flag *flags, int *mistakes)
+void	scan_file(char *path, flag *flags, int *mistakes, int force)
 {
 	struct stat	info;
 	char		answer[3] = "Y\n";
 
-	addStackTraceEntry("scan_file", "ppp", "path", path, "flags", flags, "mistakes", mistakes);
+	addStackTraceEntry("scan_file", "pppb", "path", path, "flags", flags, "mistakes", mistakes, "force", force);
 	if (stat(path, &info) < 0) {
 		if (!flags->c)
 		        write(2, "\033[31;1m", 7);
@@ -179,7 +179,7 @@ void	scan_file(char *path, flag *flags, int *mistakes)
 		write(2, "\n", 1);
 		delStackTraceEntry();
 		return;
-	} else if (!is_file_c(path)) {
+	} else if (!is_file_c(path) && !force) {
 		delStackTraceEntry();
 	        return;
 	} 

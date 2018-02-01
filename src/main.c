@@ -113,7 +113,7 @@ int	main(int argc, char **args)
 		if (is_dir(dirs[i]))
 			scan_folder(dirs[i], &flags, mistakes);
 		else
-			scan_file(dirs[i], &flags, mistakes);
+			scan_file(dirs[i], &flags, mistakes, 1);
 	}
         free(dirs);
 	if (flags.d)

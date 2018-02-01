@@ -13,7 +13,7 @@
 
 flag	get_flags(int argc, char **args);
 void	scan_folder(char *path, flag *flags, int *mistakes);
-void	scan_file(char *path, flag *flags, int *mistakes);
+void	scan_file(char *path, flag *flags, int *mistakes, int force);
 int	is_dir(char *path);
 void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags);
 void	scan_h_file(char *path, int *mistakes, flag *flags);
