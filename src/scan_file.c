@@ -156,7 +156,7 @@ void	display_path(char *path)
 			max_slash++;
 	for (int i = 0; path[i]; i++)
 		if (path[i] == '/') {
-			printf("\033[0m\033[1m%c", path[i]);
+			printf("\033[0m\033[37m%c", path[i]);
 			slash++;
 		} else if (slash == max_slash)
 			printf("\033[36;1m%c", path[i]);
@@ -192,6 +192,8 @@ int	is_in_list(list_t *list, char *str)
 
 int	match(char *str1, char *str2)
 {
+	if (strlen(str1) > strlen(str2))
+		return (0);
 	for (int i = 0; str1[i] && str2[i]; i++)
 		if (str1[i] != str2[i])
 			return (0);
@@ -214,7 +216,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 	int	i = 0;
 
 	addStackTraceEntry("check_header", "pp", "file", file, "flags", flags, "mistakes", mistakes, "file_name", file_name);
-	if (match(file, "/*"))
+	if (match("/*", file))
 		first_line = 1;
 	strncpy(buffer, file, 2);
 	buffer[2] = 0;
@@ -245,7 +247,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 				epi_proj++;
 			else
 				desc++;
-			if (line == 20 || match(&file[i + 1], "*/"))
+			if (line == 20 || match("*/", &file[i + 1]))
 				end = 1;
 			if (end == 0 && !match("**", &file[i + 1]))
 				is_valid = 0;
@@ -253,6 +255,12 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 		cols++;
 	}
 	if (!(is_valid && desc > 1 && epi_proj > 1 && first_line == 1)) {
+		if (flags->d) {
+			printf("Header info :\n\tis_valid : %i", is_valid);
+			printf("\n\tdesc : %i", desc);
+			printf("\n\tepi_proj : %i", epi_proj);
+			printf("\n\tfirst_line : %i\n", first_line);
+		}
 		if (flags->c)
 			printf("%s", file_name);
 	        else
@@ -263,7 +271,12 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 			printf(" : Invalid header\n");
 		mistakes[INVALID_HEADER]++;
 		if (flags->v) {
-			buff = sub_strings(file, 0, i + 3, my_malloc(i + 4));
+			if (first_line != 1) {
+				for (i = 0; file[i] != '\n' && file[i]; i++);
+				buff = sub_strings(file, 0, i + 1, my_malloc(i + 2));
+				max_cols = i;
+			} else
+				buff = sub_strings(file, 0, i + 3, my_malloc(i + 4));
 			mistake_line(i, buff, max_cols, 0, flags, 0, 0, 0, 0);
 			free(buff);
 		}
@@ -606,6 +619,70 @@ int	nobackslash(char *file)
 	return (file[i] != '\\');
 }
 
+void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, flag *flags, int ln, int col, char *fct_name, char *fct, char *path)
+{
+	int	i = pos;
+	int	j = pos;
+	char	*buffer = 0;
+	int	lines = 0;
+	int	start = 0;
+	int	end = 0;
+	char	*bu = 0;
+	int	par = 0;
+
+	addStackTraceEntry("find_long_fct", "pipppiipp", "file", file, "pos", pos, "mistakes", mistakes, "words", words,
+			   "flags", flags, "ln", ln, "col", col, "fct_name", fct_name, "fct", fct, "path", path);
+	for (i--; i > 0 && (space(file[i]) || file[i] == '\\'); i--)
+		lines += file[i] == '\n';
+	if (file[i] != ')') {
+		delStackTraceEntry();
+		return;
+	}
+	for (i--; i > 0 && (par > 0 || file[i] != '('); i--)
+		par += (file[i] == ')') - (file[i] == '(');
+	if (file[i] != '(') {
+		delStackTraceEntry();
+		return;
+	}
+	for (i--; i > 0 && space(file[i]); i--);
+	if (space(file[i])) {
+		delStackTraceEntry();
+		return;
+	}
+	j = i;
+	for (; i > 0 && char_valid(file[i]); i--);
+	buffer = sub_strings(file, i + (i > 0), j + 1, my_malloc(j - i + 2));
+	if ((is_in_array(words, buffer) && lines != 0) || (lines != 1 && !is_in_array(words, buffer))) {
+		mistakes[BRACKET_MISPLACED]++;
+		if (flags->c) {
+			printf("%s [%i:%i]", path, ln, col);
+			printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+			if (flags->f)
+				printf(" : Accolade mal placée après '%s'\n", buffer);
+			else
+				printf(" : Bracket misplaced after '%s'\n", buffer);
+		} else {
+			display_path(path);
+			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
+			if (flags->f)
+				printf(" : Accolade mal placée après '\033[31;1m%s\033[0m'\n", buffer);
+			else
+				printf(" : Bracket misplaced after '\033[31;1m%s\033[0m'\n", buffer);
+		}
+		for (start = pos; start > 0 && file[start] != '\n'; start--);
+		for (end = pos; file[end] != '\n' && file[end]; end++);
+		if (flags->v) {
+			bu = my_malloc(end - start + 10);
+			sub_strings(file, start + 1, end, bu);
+			mistake_line(1, bu, col, ln, flags, 0, 0, 0, 1);
+			free(bu);
+		}
+	}
+	free(buffer);
+	delStackTraceEntry();
+}
+
 void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -793,10 +870,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "' " : "");
 					if (flags->f) {
 						printf("\033[0m: espace manquant ");
-						printf("après le mot clé '%s'\n", words[k]);
+						printf("après le mot clé '\033[31;1m%s\033[0m'\n", words[k]);
 					} else {
 						printf("\033[0m: space missing after ");
-						printf("key word '%s'\n", words[k]);
+						printf("key word '\033[31;1m%s\033[0m'\n", words[k]);
 					}
 				}
 				for (start = i; file[start] != '\n'; start--);
@@ -1039,8 +1116,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			s_q = !s_q;
 		if (comment == 0 && !s_q && file[i] == '"' && cond)
 			q = !q;
-		if (!s_q && !q && file[i] == '{')
+		if (!s_q && !q && file[i] == '{') {
 			bracket++;
+			verif_bracket_pos(file, i, words, mistakes, flags, ln, col, fct_name, fct, path);
+		}
 		if (!s_q && !q && file[i] == '}') {
 			bracket--;
 			if (!bracket && fct_name) {
