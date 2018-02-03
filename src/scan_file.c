@@ -652,7 +652,7 @@ void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, f
 	j = i;
 	for (; i > 0 && char_valid(file[i]); i--);
 	buffer = sub_strings(file, i + (i > 0), j + 1, my_malloc(j - i + 2));
-	if ((is_in_array(words, buffer) && lines != 0) || (lines != 1 && !is_in_array(words, buffer))) {
+	if (((is_in_array(words, buffer) && lines != 0) || (lines != 1 && !is_in_array(words, buffer))) && !compare_strings("", buffer)) {
 		mistakes[BRACKET_MISPLACED]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", path, ln, col);
