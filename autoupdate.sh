@@ -18,4 +18,4 @@ then make >> /dev/null
 	make clean >> /dev/null
 fi
 cd - >> /dev/null
-$HOME/norminette/norm $line
+$HOME/norminette/norminette $line
