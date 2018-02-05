@@ -125,16 +125,24 @@ void	scan_folder(char *path, flag *flags, int *mistakes)
 			verify_name(file_path, file->d_name, mistakes, flags);
 		if (flags->u && is_file_useless(file_path, file->d_name, flags)) {
 			mistakes[GARBAGE]++;
-			if (!flags->c)
-				printf("\033[31m\033[1m");
-			if (flags->f) {
-				printf("Fichier inutile '");
-				display_path(file_path);
-				printf("' trouvé%s", flags->v ? "\n\n\n" : "\n");
+			if (flags->c) {
+				if (flags->f) {
+					printf("Fichier inutile '%s", file_path);
+					printf("' trouvé%s", flags->v ? "\n\n\n" : "\n");
+				} else {
+				        printf("Useless file '%s", file_path);
+					printf("' found%s", flags->v ? "\n\n\n" : "\n");
+				}
 			} else {
-				printf("Useless file '");
-				display_path(file_path);
-				printf("' found%s", flags->v ? "\n\n\n" : "\n");
+				if (flags->f) {
+					printf("\033[31m\033[1mFichier inutile '");
+					display_path(file_path);
+					printf("' trouvé%s", flags->v ? "\n\n\n" : "\n");
+				} else {
+					printf("\033[31m\033[1mUseless file '");
+					display_path(file_path);
+					printf("' found%s", flags->v ? "\n\n\n" : "\n");
+				}
 			}
 			if (!flags->c)
 				printf("\033[0m");
