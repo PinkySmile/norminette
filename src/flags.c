@@ -27,7 +27,7 @@ void	disp_en_help(char *prog_name)
 	printf("\t-h :\t\tDisplay this help page\n\n");
 	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
 	printf("\t-s :\t\tAutomaticaly answer no for large files (> 1 Mo)\n");
-	printf("\t\tOverrides -l\n\n");
+	printf("\t\t\tOverrides -l\n\n");
 	printf("\t-u :\t\tFinds unseless files and invalid file names\n\n");
 	printf("\t-v :\t\tDisplays the entire line and where the mistake\n");
 	printf("\t\t\tis in it\n\n");
@@ -63,7 +63,8 @@ void	disp_en_help(char *prog_name)
 	printf("\thappen. Send me, then, the  scan.log file (you can join\n");
 	printf("\tthe source  file too) at  \"andgel.halley@epitech.eu\".\n");
 	printf("\tExplain briefly in the mail what happened and  I'll fix\n");
-	printf("\tas fast as I can !\n\n");
+	printf("\tas fast as I can !\nYou  can also send it on discord or\n");
+	printf("\topen a new issue ticket on github.\n\n");
 	printf("\tNote : No need to launch  in debug mode if  it's just a\n");
 	printf("\tdisplay problem (spelling mistake, ...).\n");
 	printf("\tThe given scripts (update.sh, debug.sh) will only work\n");
@@ -71,6 +72,9 @@ void	disp_en_help(char *prog_name)
 	printf("\tmodify  the scripts  to make them  work with your  own\n");
 	printf("\tpath\n");
 	printf("\tYou can also send me ideas by mail !\n");
+	printf("UPDATES :\n");
+	printf("\tif you want to get notified on new updates, you can join\n");
+	printf("\tthis server https://discord.gg/RgDbJDW\n");
 }
 
 void	disp_fr_help(char *prog_name)
@@ -87,7 +91,7 @@ void	disp_fr_help(char *prog_name)
 	printf("\t-l :\t\tScan les fichiers de grande taille sans demander (> 1 Mo)\n\n");
 	printf("\t-n :\t\tAffiche le nom des fichiers scannés\n\n");
 	printf("\t-s :\t\tNe scan pas les fichiers de grande taille (> 1 Mo)\n");
-	printf("\t\tOutrepasse -l\n\n");
+	printf("\t\t\tOutrepasse -l\n\n");
 	printf("\t-u :\t\tCherche les fichiers inutiles dans le repo et\n");
 	printf("\t\t\tles noms invalides\n\n");
 	printf("\t-v :\t\tAffiche la ligne contenant l'erreur et met en\n");
@@ -127,7 +131,8 @@ void	disp_fr_help(char *prog_name)
 	printf("\tscan.log (vous pouvez aussi  joindre le fichier posant\n");
 	printf("\tproblème)   à   l'addresse  \"andgel.halley@epitech.eu\"\n");
 	printf("\ten expliquant  le bug rencontrez  et je le  corrigerai\n");
-	printf("\tle plus vite possible !\n\n");
+	printf("\tle plus vite possible !\nVous pouvez aussi m'envoyer un");
+	printf("message sur\n\tdiscord ou ouvrir un ticket github.\n\n");
 	printf("\tNote : Inutile de le lancer en mode debug si  ce n'est\n");
 	printf("\tqu'un problème d'affichage (faute de frappe, ...)\n");
 	printf("\tLes   scripts   fournis   (update.sh,   debug.sh)   ne\n");
@@ -135,6 +140,10 @@ void	disp_fr_help(char *prog_name)
 	printf("\tdossier ~/norminette.  Vous pouvez sinon  les modifier\n");
 	printf("\tpour les faire  fonctionner avec votre chemain d'accès\n");
 	printf("\tN'hésitez pas à m'envoyer des suggestions par mail !\n");
+	printf("MISES A JOUR :\n");
+	printf("\tSi vous voulez recevoir des notifications de mises à\n");
+	printf("\tjour, vous pouvez rejoindre de serveur : \n");
+	printf("\thttps://discord.gg/RgDbJDW\n");
 }
 
 void	display_help(char *prog_name, int fr)
