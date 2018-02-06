@@ -9,7 +9,7 @@ while [ $nb_of_args != 0 ]; do
 done
 cd $HOME/norminette
 ./update.sh >> $HOME/norminette/update.log 2>>$HOME/norminette/update.log &
-ls norm >> /dev/null 2>/dev/null
+ls norminette >> /dev/null 2>/dev/null
 if [ $? == 2 ]
 then make >> /dev/null
 	if [ $? == 2 ]
