@@ -619,7 +619,7 @@ int	nobackslash(char *file)
 	return (file[i] != '\\');
 }
 
-void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, flag *flags, int ln, int col, char *fct_name, char *fct, char *path)
+void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, flag *flags, int ln, int col, char **fct_name, char *fct, char *path)
 {
 	int	i = pos;
 	int	j = pos;
@@ -656,7 +656,7 @@ void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, f
 		mistakes[BRACKET_MISPLACED]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", path, ln, col);
-			printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			printf(" %s%s%s",  *fct_name ? fct : "", *fct_name ? *fct_name : "", *fct_name ? "'" : "");
 			if (flags->f)
 				printf(": Accolade mal placée après '%s'\n", buffer);
 			else
@@ -664,7 +664,7 @@ void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, f
 		} else {
 			display_path(path);
 			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
-			printf(" \033[0m%s\033[31;1m%s\033[0m%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s", *fct_name ? fct : "", *fct_name ? *fct_name : "", *fct_name ? "'" : "");
 			if (flags->f)
 				printf(": Accolade mal placée après '\033[31;1m%s\033[0m'\n", buffer);
 			else
@@ -679,7 +679,11 @@ void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, f
 			free(bu);
 		}
 	}
-	free(buffer);
+	if (!is_in_array(words, buffer) && !compare_strings("", buffer)) {
+		free(*fct_name);
+		*fct_name = buffer;
+	} else
+		free(buffer);
 	delStackTraceEntry();
 }
 
@@ -719,7 +723,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			printf("\t\t\td_quote : %s\n", s_q ? "TRUE" : "FALSE");
 			printf("\t\t\tcomment: %i\n", comment);
 		}
-		if (cond3 && bracket == 0 && file[i] == '\n') {
+/*		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
 				printf("[%i, %i]:Trying to find function's name\n", ln, col);
 			bu = get_function_name(file + i, flags, mistakes, ln + 1, path);
@@ -729,7 +733,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = bu;
 			}
-		} else if (cond3 && file[i] == '\n' && flags->i_caps) {
+			} else */
+		if (cond3 && file[i] == '\n' && flags->i_caps) {
 		        ptr = &file[i + 1];
 			while (*ptr && *ptr != '\n') {
 				if (flags->d)
@@ -1118,7 +1123,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			q = !q;
 		if (!s_q && !q && file[i] == '{') {
 			bracket++;
-			verif_bracket_pos(file, i, words, mistakes, flags, ln, col, fct_name, fct, path);
+			verif_bracket_pos(file, i, words, mistakes, flags, ln, col, &fct_name, fct, path);
 		}
 		if (!s_q && !q && file[i] == '}') {
 			bracket--;
