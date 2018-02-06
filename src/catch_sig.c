@@ -17,10 +17,10 @@ int	signal_caught = 0;
 void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 {
 	signal_caught++;
-	if (sig_ID == 2) {
+	if (sig_ID == SIGINT) {
 		printf("\rInterrupted.\n");
 		display_result(get_mistakes(), get_flags_var());
-	} else if (sig_ID == 15) {
+	} else if (sig_ID == SIGTERM) {
 		printf("\rTerminated.\n");
 		display_result(get_mistakes(), get_flags_var());
 	} else {
