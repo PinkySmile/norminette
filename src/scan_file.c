@@ -722,6 +722,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			printf("\t\t\ts_quote : %s\n", q ? "TRUE" : "FALSE");
 			printf("\t\t\td_quote : %s\n", s_q ? "TRUE" : "FALSE");
 			printf("\t\t\tcomment: %i\n", comment);
+			printf("\t\t\tbracket: %i\n", bracket);
 		}
 /*		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
@@ -889,7 +890,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					mistake_line(strlen(words[k]), bu, col, ln, flags, q, s_q, comment, 1);
 					free(bu);
 				}
-				mistakes[TRAILING_SPACE]++;
+				mistakes[SPACE_MISSING]++;
 			}
 		}
 		if ((cond3 && file[i] < 32 && !space(file[i])) || file[i] == 127) {
