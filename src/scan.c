@@ -239,10 +239,10 @@ void	scan_file(char *path, flag *flags, int *mistakes, int force)
 			printf("Please answer 'Y' or 'n'\n");
 	}
 	if (compare_strings(answer, "Y\n") || compare_strings(answer, "y\n")) {
-		if (path[strlen(path) - 1] == 'c')
-			scan_c_file(path, mistakes, key_words, flags);
-		else
+		if (path[strlen(path) - 1] == 'h')
 			scan_h_file(path, mistakes, flags);
+		else
+			scan_c_file(path, mistakes, key_words, flags);
 	} else
 		printf("Skipped\n");
 	delStackTraceEntry();
