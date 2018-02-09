@@ -13,7 +13,7 @@ enum    mistake_name {
         TOO_MNY_FCT,
         INVALID_FILE_NAME,
         INVALID_HEADER,
-        EMPTY_LINE,
+        EMPTY_LINE_BETWEEN_FCTS,
         INVALID_FCT_NAME,
         TOO_LONG_LINE,
         TOO_LONG_FCT,

@@ -1191,6 +1191,35 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				fct_name = 0;
 				line = 0;
         		}
+			if (!bracket) {
+				int	fine = file[i + 1] == '\n' || file[i + 1] == 0;
+
+				fine = fine && (!file[i + 1] || !file[i + 2] || file[i + 2] == '\n');
+				fine = fine && (!file[i + 1] || !file[i + 2] || !file[i + 3] || file[i + 3] != '\n');
+				if (!fine) {
+					if (flags->c) {
+						printf("%s [%i:%i]", path, ln, col);
+						printf(" %s%s%s",  fct_name ? "" : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					} else {
+						display_path(path);
+						printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
+						printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					}
+					if (flags->f) {
+						printf(": Séparation do fonction invalide\n");
+					} else
+						printf(": Invalid function separator\n");
+					mistakes[EMPTY_LINE_BETWEEN_FCTS]++;
+					for (start = i; file[start] != '\n'; start--);
+					for (end = start + 1; file[end] != '\n' && file[end]; end++);
+					if (flags->v) {
+						bu = my_malloc(end - start + 10);
+						sub_strings(file, start + 1, end, bu);
+						mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
+						free(bu);
+					}
+				}
+			}
 		}
 		if (file[i] >= 32 || (unsigned char)file[i] == 195)
 			col++;
