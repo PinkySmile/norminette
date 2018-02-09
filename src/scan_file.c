@@ -1059,7 +1059,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					free(bu);
 				}
                         }
-			if (bracket > 0)
+			for (fine = i + 1; file[fine] && space(file[fine]) && file[fine] != '\n'; fine++);
+			if (bracket > 0 && file[fine] != '\n')
 				line++;
 			ln++;
 			col = 0;

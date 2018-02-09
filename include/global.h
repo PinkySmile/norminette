@@ -9,17 +9,17 @@ const char	*style_names[] = {
 	"O1",			/*garbage files					*/
 	"O3",			/*5 fcts					*/
 	"O4",			/*files names					*/
-	"G1",			//epi header
-	"G2",			//empty lines between fcts
+	"G1",			/*epi header					*/
+	"G2",			/*empty lines between fcts			*/
 	"F2",			/*function's name invalid			*/
 	"F3",			/*too long line					*/
 	"F4",			/*too long function				*/
-	"F5",			//fct > 4 args
+	"F5",			/*fct > 4 args					*/
 	"F6",			/*comment in fct				*/
 	"L1",		//	//+1 action per line
 	"L2",			//indentation
-	"L3",			/* space after key words and operators		*/
-	"L4",			//brackets
+	"L3",			/*space after key words and operators		*/
+	"L4",			/*brackets					*/
 	"L5",		//	//x vars declared on 1 line or in prog
 	"L6",		//	//line break after vars declarations
 	"V1",		//	//nom de types
