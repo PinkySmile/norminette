@@ -840,6 +840,39 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			mistakes[GOTO_USED]++;
 		
 		}
+		if (cond3 && file[i] == ',' && file[i + 1] != ' ') {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col + 1);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf(": espace manquant ");
+					printf("après une virgule\n");
+				} else {
+					printf(": space missing after ");
+					printf("a comma\n");
+				}
+			} else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf("\033[0m: espace manquant ");
+					printf("après une virgule\n");
+				} else {
+					printf("\033[0m: space missing after ");
+					printf("a comma\n");
+				}
+			}
+			for (start = i; file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = my_malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
+				free(bu);
+			}
+			mistakes[SPACE_MISSING]++;
+		}
 		for (int k = 0; words[k] && cond3; k++) {
 			sub_strings(file, i, i + strlen(words[k]), buffer);
 			cond = (i + strlen(words[k])) < strlen(file);
