@@ -863,7 +863,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					printf("a comma\n");
 				}
 			}
-			for (start = i; file[start] != '\n'; start--);
+			for (start = i; start > 0 && file[start] != '\n'; start--);
 			for (end = start + 1; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
 				bu = my_malloc(end - start + 10);
@@ -1210,7 +1210,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					} else
 						printf(": Invalid function separator\n");
 					mistakes[EMPTY_LINE_BETWEEN_FCTS]++;
-					for (start = i; file[start] != '\n'; start--);
+					for (start = i; start > 0 && file[start] != '\n'; start--);
 					for (end = start + 1; file[end] != '\n' && file[end]; end++);
 					if (flags->v) {
 						bu = my_malloc(end - start + 10);
