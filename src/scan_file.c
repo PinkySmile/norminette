@@ -44,6 +44,7 @@ char	*load_file(char *path)
 	return (buffer);
 }
 
+
 void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int s_q, int comment, int alt)
 {
 	int	col_c = 0;
@@ -144,7 +145,6 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 	printf("\n");
 	delStackTraceEntry();
 }
-
 void	display_path(char *path)
 {
 	int	slash = 0;
@@ -710,6 +710,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	declaring_var = 0;
 	char	*ptr = file;
 	int	l_o = 0;
+	int	fine = 0;
 
 	addStackTraceEntry("find_long_fct", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
 	if (flags->d)
@@ -1187,13 +1188,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					}
 					mistakes[TOO_LONG_FCT]++;
 				}
-				free(fct_name);
-				fct_name = 0;
-				line = 0;
-        		}
-			if (!bracket) {
-				int	fine = file[i + 1] == '\n' || file[i + 1] == 0;
-
+				fine = file[i + 1] == '\n' || file[i + 1] == 0;
 				fine = fine && (!file[i + 1] || !file[i + 2] || file[i + 2] == '\n');
 				fine = fine && (!file[i + 1] || !file[i + 2] || !file[i + 3] || file[i + 3] != '\n');
 				if (!fine) {
@@ -1219,6 +1214,9 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 						free(bu);
 					}
 				}
+				free(fct_name);
+				fct_name = 0;
+				line = 0;
 			}
 		}
 		if (file[i] >= 32 || (unsigned char)file[i] == 195)
