@@ -724,7 +724,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			printf("\t\t\tcomment: %i\n", comment);
 			printf("\t\t\tbracket: %i\n", bracket);
 		}
-/*		if (cond3 && bracket == 0 && file[i] == '\n') {
+		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
 				printf("[%i, %i]:Trying to find function's name\n", ln, col);
 			bu = get_function_name(file + i, flags, mistakes, ln + 1, path);
@@ -734,7 +734,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = bu;
 			}
-			} else */
+		}
 		if (cond3 && file[i] == '\n' && flags->i_caps) {
 		        ptr = &file[i + 1];
 			while (*ptr && *ptr != '\n') {
