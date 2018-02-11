@@ -16,11 +16,11 @@ const char	*style_names[] = {
 	"F4",			/*too long function				*/
 	"F5",			/*fct > 4 args					*/
 	"F6",			/*comment in fct				*/
-	"L1",		//	//+1 action per line
+	"L1",			/*+1 action per line				*/
 	"L2",			//indentation
 	"L3",			/*space after key words and operators		*/
 	"L4",			/*brackets					*/
-	"L5",		//	//x vars declared on 1 line or in prog
+	"L5",			/*x vars declared on 1 line or in prog		*/
 	"L6",		//	//line break after vars declarations
 	"V1",		//	//nom de types
 	"V3",		//	//pointers declaration
@@ -51,7 +51,7 @@ const char	*style_description[] = {
 	"bad indentation on start of a line",
 	"misplaced space(s)",
 	"curly brackets misplaced",
-	"",
+	"severals variables declared on the same line",
 	"",
 	"",
 	"nested conditonal branchings with a depth of 3 or more should be avoided and an if block should not contain more than 3 branchings",

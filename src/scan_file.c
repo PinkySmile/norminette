@@ -1012,10 +1012,34 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			}
 			mistakes[MORE_THAN_ONE_ACT_BY_LINE]++;
 		}
-/*		if (bracket == 1 && parenthesis == 0 && file[i] == ',' && cond3) {
-			
+		if (fct_name && bracket == 1 && parenthesis == 0 && file[i] == ',' && cond3) {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col + 1);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf(": Plusieurs variables déclarées sur la même ligne\n");
+				} else
+					printf(": Severals variables declared on the same line\n");
+			} else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf("\033[0m: Plusieurs variables déclarées sur la même ligne\n");
+				} else
+					printf("\033[0m: Severals variables declared on the same line\n");
+			}
+			for (start = i; start > 0 && file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = my_malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
+				free(bu);
+			}
+			mistakes[MULTPLE_VARS_DECLARED]++;
 		}
-*/		if (cond3 && file[i] == ',' && !space(file[i + 1])) {
+		if (cond3 && file[i] == ',' && !space(file[i + 1])) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col + 1);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
