@@ -7,7 +7,7 @@
 
 void	test(void)
 {
-	if (!s_q && comment == 0 && file[i] == '"')
+	if (!s_q && comment == 0 && file[i] == '\"')
 		q = !q;
 	if (!q && comment == 0 && file[i] == '\'')
 		s_q = !s_q;

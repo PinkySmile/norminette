@@ -192,11 +192,17 @@ int	is_in_list(list_t *list, char *str)
 
 int	match(char *str1, char *str2)
 {
-	if (strlen(str1) > strlen(str2))
+	addStackTraceEntry("match", "pp", "str1", str1, "str2", str2);
+	if (strlen(str1) > strlen(str2)) {
+		delStackTraceEntry();
 		return (0);
+	}
 	for (int i = 0; str1[i] && str2[i]; i++)
-		if (str1[i] != str2[i])
+		if (str1[i] != str2[i]) {
+			delStackTraceEntry();
 			return (0);
+		}
+	delStackTraceEntry();
 	return (1);
 }
 
@@ -586,9 +592,9 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 					printf(" in function '%s': Invalid name\n", name);
 			} else {
 				if (flags->f)
-					printf(" dans la fonction '\033[31;1m%s\033[0m': Nom invalide\n", name);
+					printf(" \033[1mdans la fonction\033[0m '\033[31;1m%s\033[0m': Nom invalide\n", name);
 				else
-					printf(" in function '\033[31;1m%s\033[0m': Invalid name\n", name);
+					printf(" \033[1min function\033[0m '\033[31;1m%s\033[0m': Invalid name\n", name);
 			}
 			for (end = 0; file[end] != '\n' && file[end]; end++);
 			if (flags->v) {
@@ -776,6 +782,7 @@ float	get_indent_lvl(char *file)
 	float	level = 0;
 	int	i = 0;
 
+	addStackTraceEntry("get_indent_lvl", "p", "file", file);
 	for (; file[i] == ' ' || file[i] == '\t'; i++) {
 	        if (file[i] == '\t')
 			level = (int)(level + 1);
@@ -1327,6 +1334,51 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 						printf(": Bad indentation (\033[32;1m%i\033[0m expected but \033[31;1m%.2f\033[0m found)\n", fine, current_indent_lvl);
 				}
 				mistakes[BAD_INDENTATION]++;
+				if (flags->v) {
+					for (end = i + 1; file[end] && file[end] != '\n'; end++);
+					bu = my_malloc(end - i + 1);
+					sub_strings(file, i + 1, end, bu);
+                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
+					free(bu);
+				}
+			}
+			if (fine > 10) {
+				if (flags->c) {
+					printf("%s [line:%i]", path, ln + 1);
+					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				} else {
+					display_path(path);
+					printf(" [line:\033[32;1m%i\033[0m]", ln + 1);
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				}
+				printf(": il y a un jour où il faut s'arrêter...\n");
+				mistakes[IF_DEPTH]++;
+				mistakes[ETIENNE]++;
+				if (flags->v) {
+					for (end = i + 1; file[end] && file[end] != '\n'; end++);
+					bu = my_malloc(end - i + 1);
+					sub_strings(file, i + 1, end, bu);
+                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
+					free(bu);
+				}
+			} else if (fine > 3) {
+				if (flags->c) {
+					printf("%s [line:%i]", path, ln + 1);
+					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf(": profondeur d'indentation de 3 ou plus (%i)\n", fine - 1);
+					else
+						printf(": nested conditonal branchings with a depth of 3 or more (%i)\n", fine - 1);
+				} else {
+					display_path(path);
+					printf(" [line:\033[32;1m%i\033[0m]", ln + 1);
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf(": profondeur d'indentation de 3 ou plus (\033[32;1m%i\033[0m)\n", fine - 1);
+					else
+						printf(": nested conditonal branchings with a depth of 3 or more (\033[31;1m%i\033[0m)\n", fine - 1);
+				}
+				mistakes[IF_DEPTH]++;
 				if (flags->v) {
 					for (end = i + 1; file[end] && file[end] != '\n'; end++);
 					bu = my_malloc(end - i + 1);
