@@ -1,5 +1,5 @@
 # USAGE :
-	/home/andgel/norminette/norminette [-vcfunahd] [-I<path>] [folders/files]
+	norminette [-vcfunahd] [-I<path>] [folders/files]
 
 ## DESCRIPTION :
 	-a :		Enables v, u, b, I. and l options (like -vbunlI.
@@ -43,15 +43,16 @@
 			For graphical projects use -I/usr/local/include/SFML .
 
 ## EXEMPLES :
-	/home/andgel/norminette/norminette :
+	norminette :
 		Launch a basic test on the current folder
 
-	/home/andgel/norminette/norminette src test.c :
+	norminette src test.c :
 		Launch a basic test in the folder 'src' and on the file 'test.c'
 
-	/home/andgel/norminette/norminette -vfIinclude -I/usr -I../sys.h
+	norminette -vfIinclude -I/usr -I../sys.h
 		Launch the program in verbose mode, in french
-		with forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'
+		with forbidden function wich are not found neither
+		in the folders 'include' and '/usr' nor in the file '../sys.h'
 
 ## RETURN VALUES :
 	If no mistakes are found, the program exit with code 0.
