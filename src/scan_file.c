@@ -1310,7 +1310,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		}
 		if (file[i] == '\n') {
 		        current_indent_lvl = get_indent_lvl(&file[i + 1]);
-		        fine = get_indent_expected(&file[i], bracket, expected_indentlvl, comment);
+			if (i == 0 || file[i - 1] != '\\')
+				fine = get_indent_expected(&file[i], bracket, expected_indentlvl, comment);
+			else
+				fine = 0;
 			for (int j = i; file[j] && (space(file[j]) || file[j] == '}'); j++)
 				if (file[j] == '}') {
 					fine--;
