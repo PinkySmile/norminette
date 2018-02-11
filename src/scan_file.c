@@ -812,6 +812,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	char	*fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1min function '");
         int	cond = 0;
 	int	cond2 = 0;
+	int	act = 0;
 	int	cond3 = 0;
 	int	start = 0;
 	int	end = 0;
@@ -926,12 +927,12 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (flags->d)
 				printf("[%i, %i]:Start simple comments\n", ln, col);
 		} else if (cond3 && file[i] == '/' && file[i + 1] == '*') {
-			comment += 2;
+			comment = 2;
 			if (flags->d)
 				printf("[%i, %i]:Start of multilines comments\n", ln, col);
 		}
-		if (!q && !s_q && !(comment % 2) && file[i] == '*' && file[i + 1] == '/') {
-			comment -= 2;
+		if (!q && !s_q && comment == 2 && file[i] == '*' && file[i + 1] == '/') {
+			comment = 0;
 			if (flags->d)
 				printf("[%i, %i]:End of multilines comments\n", ln, col);
 		}
@@ -964,7 +965,57 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			mistakes[GOTO_USED]++;
 		
 		}
-		if (cond3 && file[i] == ',' && !space(file[i + 1])) {
+		if (file[i] == ';' && parenthesis == 0)
+			act++;
+		if (bracket == 1 && parenthesis == 0 && act >= 5 && file[i] == ';' && cond3) {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col + 1);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+		        } else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s\033[0m",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+			}
+			printf(": Alors, tu vas rire, mas ça c'est pas à la norme\n");
+			for (start = i; start > 0 && file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			bu = my_malloc(end - start + 10);
+			sub_strings(file, start + 1, end, bu);
+			mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
+			free(bu);
+			mistakes[ETIENNE]++;
+			mistakes[MORE_THAN_ONE_ACT_BY_LINE]++;
+		} else if (bracket == 1 && parenthesis == 0 && act > 1 && file[i] == ';' && cond3) {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col + 1);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf(": Plus d'une action par ligne\n");
+				} else
+					printf(": A line corresponds to more than one statement\n");
+			} else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				if (flags->f) {
+					printf("\033[0m: Plus d'une action par ligne\n");
+				} else
+					printf("\033[0m: A line corresponds to more than one statement\n");
+			}
+			for (start = i; start > 0 && file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = my_malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
+				free(bu);
+			}
+			mistakes[MORE_THAN_ONE_ACT_BY_LINE]++;
+		}
+/*		if (bracket == 1 && parenthesis == 0 && file[i] == ',' && cond3) {
+			
+		}
+*/		if (cond3 && file[i] == ',' && !space(file[i + 1])) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col + 1);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1309,6 +1360,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				printf("[%i:%i]:%i < %i\n", ln, col, *(int *)expected_indentlvl->data, bracket);
 		}
 		if (file[i] == '\n') {
+			act = 0;
 		        current_indent_lvl = get_indent_lvl(&file[i + 1]);
 			if (i == 0 || file[i - 1] != '\\')
 				fine = get_indent_expected(&file[i], bracket, expected_indentlvl, comment);

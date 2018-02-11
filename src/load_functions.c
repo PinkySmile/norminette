@@ -96,7 +96,7 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 	int	q = 0;
 	int	s_q = 0;
 	int	cond3 = 0;
-	char	*bu = 0;;
+	char	*bu = 0;
 	int	comment = 0;
 	int	bracket = 0;
 	int	ln = 1;

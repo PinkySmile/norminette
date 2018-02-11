@@ -10,7 +10,7 @@
 
 void	free_list(list_t *list)
 {
-	list_t	*prev = 0;;
+	list_t	*prev = 0;
 
 	if (list == 0)
 		return;
