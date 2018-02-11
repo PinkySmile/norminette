@@ -1,7 +1,7 @@
-#USAGE :
+# USAGE :
 	/home/andgel/norminette/norminette [-vcfunahd] [-I<path>] [folders/files]
 
-##DESCRIPTION :
+## DESCRIPTION :
 	-a :		Enables v, u, b, I. and l options (like -vbunlI.
 
 	-b :		Displays all banned functions found (useless without -I)
@@ -42,7 +42,7 @@
 			CSMFL's includes are in the folder /usr/local/include/SFML.
 			For graphical projects use -I/usr/local/include/SFML .
 
-##EXEMPLES :
+## EXEMPLES :
 	/home/andgel/norminette/norminette :
 		Launch a basic test on the current folder
 
@@ -53,11 +53,11 @@
 		Launch the program in verbose mode, in french
 		with forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'
 
-##RETURN VALUES :
+## RETURN VALUES :
 	If no mistakes are found, the program exit with code 0.
 	If one or many mistakes are found, the program eit with code 1.
 
-##REPORT A BUG :
+## REPORT A BUG :
 	If you find a bug, first, update  the program  (Use the
 	'update.sh'  in  the  repository or, if  you  used  the
 	installation script, <your alias>-update). If it is not
@@ -78,6 +78,6 @@
 	path
 	You can also send me ideas by mail !
 
-##UPDATES :
+## UPDATES :
 	if you want to get notified on new updates, you can join
 	this server https://discord.gg/RgDbJDW
