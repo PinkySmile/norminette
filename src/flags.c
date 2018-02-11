@@ -28,7 +28,7 @@ void	disp_en_help(char *prog_name)
 	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
 	printf("\t-s :\t\tAutomaticaly answer no for large files (> 1 Mo)\n");
 	printf("\t\t\tOverrides -l\n\n");
-	printf("\t-u :\t\tFinds unseless files and invalid file names\n\n");
+	printf("\t-u :\t\tFinds useless files and invalid file names\n\n");
 	printf("\t-v :\t\tDisplays the entire line and where the mistake\n");
 	printf("\t\t\tis in it\n\n");
 	printf("\t-I<path> : \tUsing the I flag enables the forbidden functions\n");
@@ -63,7 +63,7 @@ void	disp_en_help(char *prog_name)
 	printf("\thappen. Send me, then, the  scan.log file (you can join\n");
 	printf("\tthe source  file too) at  \"andgel.halley@epitech.eu\".\n");
 	printf("\tExplain briefly in the mail what happened and  I'll fix\n");
-	printf("\tas fast as I can !\nYou  can also send it on discord or\n");
+	printf("\tas fast as I can !\n\tYou  can also send it on discord or\n");
 	printf("\topen a new issue ticket on github.\n\n");
 	printf("\tNote : No need to launch  in debug mode if  it's just a\n");
 	printf("\tdisplay problem (spelling mistake, ...).\n");
@@ -131,7 +131,7 @@ void	disp_fr_help(char *prog_name)
 	printf("\tscan.log (vous pouvez aussi  joindre le fichier posant\n");
 	printf("\tproblème)   à   l'addresse  \"andgel.halley@epitech.eu\"\n");
 	printf("\ten expliquant  le bug rencontrez  et je le  corrigerai\n");
-	printf("\tle plus vite possible !\nVous pouvez aussi m'envoyer un");
+	printf("\tle plus vite possible !\n\tVous pouvez aussi m'envoyer un");
 	printf("message sur\n\tdiscord ou ouvrir un ticket github.\n\n");
 	printf("\tNote : Inutile de le lancer en mode debug si  ce n'est\n");
 	printf("\tqu'un problème d'affichage (faute de frappe, ...)\n");
