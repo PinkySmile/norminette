@@ -21,7 +21,7 @@
 	-s :		Automaticaly answer no for large files (> 1 Mo)
 			Overrides -l
 
-	-u :		Finds unseless files and invalid file names
+	-u :		Finds useless files and invalid file names
 
 	-v :		Displays the entire line and where the mistake
 			is in it
