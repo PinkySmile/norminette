@@ -36,7 +36,6 @@ CFLAGS= $(INC) \
 	-W \
 	-Wall \
 	-Wextra \
-	-Werror
 
 CC =	gcc
 
