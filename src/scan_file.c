@@ -579,12 +579,12 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 				display_path(path);
 				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", col, ln);
 			}
-			if (flags->c)
+			if (flags->c) {
 				if (flags->f)
 					printf(" dans la fonction '%s': Nom invalide\n", name);
 				else
 					printf(" in function '%s': Invalid name\n", name);
-			else {
+			} else {
 				if (flags->f)
 					printf(" dans la fonction '\033[31;1m%s\033[0m': Nom invalide\n", name);
 				else
@@ -687,6 +687,109 @@ void	verif_bracket_pos(char *file, int pos, char const **words, int *mistakes, f
 	delStackTraceEntry();
 }
 
+int	get_indent_expected(char *file, int bracket, list_t *expected_indentlvl, int comment)
+{
+	int	level = bracket;
+	int	s_q = 0;
+	int	q = 0;
+	int	i = 1;
+
+	addStackTraceEntry("get_indent_expected", "pipi", "file", file, "bracket", bracket, "expected_indentlvl", expected_indentlvl, "comment", comment);
+	if (get_flags_var()->d)
+		printf("Bracket level : %i\n", level);
+	for (; expected_indentlvl && expected_indentlvl->prev; expected_indentlvl = expected_indentlvl->prev);
+	for (; expected_indentlvl && expected_indentlvl->next; expected_indentlvl = expected_indentlvl->next)
+		level++;
+	if (get_flags_var()->d)
+		printf("List size : %i\n", -bracket + level);
+	for (; file[i] && file[i] != '\n'; i++) {
+		if (!s_q && comment == 0 && file[i] == '"')
+			q = !q;
+		if (!q && comment == 0 && file[i] == '\'')
+			s_q = !s_q;
+		if (!q && !s_q && file[i] == '/' && file[i + 1] == '/')
+			comment = 1;
+		if (!q && !s_q && file[i] == '/' && file[i + 1] == '*')
+			comment = 2;
+		if (!q && !s_q && file[i] == '*' && file[i + 1] == '/' && comment == 2)
+			comment = 0;
+	}
+	if (file[i - 1] == ':' && !q && !s_q && comment == 0) {
+		level--;
+		if (get_flags_var()->d)
+			printf("Found ':' : %i\n", level);
+	}
+	delStackTraceEntry();
+	return (level);
+}
+
+int	need_to_indent(char *file, int comment)
+{
+	int	parenthesis = 0;
+	int	found_it = 0;
+	int	s_q = 0;
+	int	q = 0;
+	int	i = 0;
+
+	addStackTraceEntry("need_to_indent", "pi", "file", file, "comment", comment);
+	for (; file[i] && !space(file[i]) && file[i] != ')' && file[i] != ';' && file[i] != '(' && file[i] != ']' && file[i] != '['; i++);
+	if (file[i] == ')' || file[i] == ';' || file[i] == ']' || file[i] == '[') {
+		
+		delStackTraceEntry();
+		return (0);
+	}
+	for (; file[i] && space(file[i]); i++);
+	for (; file[i] && (parenthesis || !found_it) && (parenthesis || file[i] != '{'); i++) {
+		found_it = 1;
+		parenthesis += ((file[i] == '(') - (file[i] == ')')) * (!s_q && !q && comment == 0);
+		if (!s_q && comment == 0 && file[i] == '"' && (i == 0 || (file[i - 1] != '\\' && (i <= 1 || file[i - 2] == '\\'))))
+			q = !q;
+		if (!q && comment == 0 && file[i] == '\'' && (i == 0 || (file[i - 1] != '\\' || (i <= 1 || file[i - 2] == '\\'))))
+			s_q = !s_q;
+		if (!q && !s_q && file[i] == '/' && file[i + 1] == '/')
+			comment = 1;
+		if (!q && !s_q && file[i] == '/' && file[i + 1] == '*')
+			comment = 2;
+		if (!q && !s_q && file[i] == '*' && file[i + 1] == '/' && comment == 2)
+			comment = 0;
+		if (file[i] == '\n' && comment == 1)
+			comment = 0;
+	}
+	for (; file[i] && space(file[i]); i++);
+	if (get_flags_var()->d) {
+		printf("Char : '%c'\n", file[i]);
+		printf("Stopped loop because ");
+		if (!file[i])
+			printf("reached end of buffer\n");
+		if (!(parenthesis || !found_it))
+			printf("went out of parenthesis\n");
+		if (file[i] == '{')
+			printf("found a openned bracket\n");
+		printf("Need to indent : %s\n", file[i] && file[i] != ';' && file[i] != '{' ? "TRUE" : "FALSE");
+	}
+	delStackTraceEntry();
+	return (file[i] && file[i] != ';' && file[i] != '{');
+}
+
+float	get_indent_lvl(char *file)
+{
+	float	level = 0;
+	int	i = 0;
+
+	for (; file[i] == ' ' || file[i] == '\t'; i++) {
+	        if (file[i] == '\t')
+			level = (int)(level + 1);
+		if (file[i] == ' ')
+			level += 1.0 / 8.0;
+	}
+	if (file[i] == '\n') {
+		delStackTraceEntry();
+		return (-1);
+	}
+	delStackTraceEntry();
+	return (level);
+}
+
 void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -711,20 +814,33 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	char	*ptr = file;
 	int	l_o = 0;
 	int	fine = 0;
+	int	parenthesis = 0;
+	int	indentBuffer = 0;
+	list_t	*expected_indentlvl = my_malloc(sizeof(*expected_indentlvl));
+	float	current_indent_lvl = 0;
 
+	memset(expected_indentlvl, 0, sizeof(*expected_indentlvl));
 	addStackTraceEntry("find_long_fct", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
 	if (flags->d)
 		printf("Beggining of buffer\n");
 	for (int i = 0 ; file[i] ; i++) {
 		cond3 = !q && !s_q && comment == 0;
+		indentBuffer = 0;
 		if (flags->d) {
 			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
-			printf("Global conditions :\tcond3   : %s\n", cond3 ? "TRUE" : "FALSE");
-			printf("\t\t\ts_quote : %s\n", q ? "TRUE" : "FALSE");
-			printf("\t\t\td_quote : %s\n", s_q ? "TRUE" : "FALSE");
-			printf("\t\t\tcomment: %i\n", comment);
-			printf("\t\t\tbracket: %i\n", bracket);
+			printf("Global conditions :\tcond3        : %s\n", cond3 ? "TRUE" : "FALSE");
+			printf("\t\t\ts_quote      : %s\n", q ? "TRUE" : "FALSE");
+			printf("\t\t\td_quote      : %s\n", s_q ? "TRUE" : "FALSE");
+			printf("\t\t\tcomment      : %i\n", comment);
+			printf("\t\t\tbracket      : %i\n", bracket);
+			printf("\t\t\tparenthesis  : %i\n", parenthesis);
+			printf("\t\t\tindent lvl   : %f\n", current_indent_lvl);
+			printf("\t\t\texpected ind : %i\n", get_indent_expected(&file[i], bracket, expected_indentlvl, comment));
 		}
+		if (cond3 && file[i] == '(')
+			parenthesis++;
+		if (cond3 && file[i] == ')')
+			parenthesis--;
 		if (cond3 && bracket == 0 && file[i] == '\n') {
 			if (flags->d)
 				printf("[%i, %i]:Trying to find function's name\n", ln, col);
@@ -841,7 +957,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			mistakes[GOTO_USED]++;
 		
 		}
-		if (cond3 && file[i] == ',' && file[i + 1] != ' ') {
+		if (cond3 && file[i] == ',' && !space(file[i + 1])) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col + 1);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -879,7 +995,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			cond = (i + strlen(words[k])) < strlen(file);
 		        cond = cond && file[i + strlen(words[k])] == '(';
 			if (flags->d) {
-				printf("[%i, %i]:Searching for '%s'", ln, col, words[k]);
+				printf("[%i, %i]:Searching for '%s' ", ln, col, words[k]);
 				printf("and got '");
 				my_showstr(buffer);
 				printf("' with");
@@ -892,7 +1008,24 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				printf(" and with");
 				printf("%s before\n", cond ? "out any spaces" : " a space");
 			}
-		        cond = cond && cond2;
+		        if (compare_strings(buffer, "else")) {
+				for (fine = i + 4; file[fine] && space(file[fine]); fine++);
+				if (flags->d)
+					printf("After else : %c\n", file[fine]);
+				if (match("if", &file[fine]))
+					break;
+			}
+			if (compare_strings(buffer, words[k]) && need_to_indent(&file[i], comment)) {
+				expected_indentlvl->next = my_malloc(sizeof(*expected_indentlvl->next));
+				expected_indentlvl->next->prev = expected_indentlvl;
+				expected_indentlvl->next->next = 0;
+				expected_indentlvl = expected_indentlvl->next;
+				expected_indentlvl->data = my_malloc(sizeof(int));
+				*(int *)expected_indentlvl->data = bracket;
+			        if (flags->d)
+					printf("[%i:%i]:Added list entry ! (%i)\n", ln, col, *(int *)expected_indentlvl->data);
+			}
+			cond = cond && cond2;
 			if(compare_strings(buffer, words[k]) && cond) {
 				if (flags->c) {
 					printf("%s [%i:%i]", path, ln, col + 1);
@@ -926,6 +1059,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				}
 				mistakes[SPACE_MISSING]++;
 			}
+			if (compare_strings(words[k], buffer))
+				break;
 		}
 		if ((cond3 && file[i] < 32 && !space(file[i])) || file[i] == 127) {
 		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
@@ -1028,93 +1163,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			}
 			mistakes[SEMICOLON_ISOLATED]++;
 		}
-		if (file[i] == '\n') {
-			if (col > 80) {
-                                if (flags->d)
-                                        printf("Too long line %i\n", col);
-				if (flags->c) {
-					printf("%s [line:%i]", path, ln);
-					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-					if (flags->f)
-						printf(": ligne trop longue ");
-					else
-						printf(": too long line ");
-					printf("(%i)\n", col);
-				} else {
-					display_path(path);
-					printf(" [line:\033[32;1m%i\033[0m]", ln);
-					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-					if (flags->f)
-						printf("\033[0m: ligne trop longue ");
-					else
-						printf("\033[0m: too long line ");
-					printf("(\033[31;1m%i\033[0m)\n", col);
-				}
-				mistakes[TOO_LONG_LINE]++;
-				if (flags->v) {
-					for (start = i - 1; start > 0 && file[start] != '\n'; start--);
-					bu = my_malloc(i - start + 1);
-					sub_strings(file, start + 1, i, bu);
-                                        mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);
-					free(bu);
-				}
-                        }
-			for (fine = i + 1; file[fine] && space(file[fine]) && file[fine] != '\n'; fine++);
-			if (bracket > 0 && file[fine] != '\n')
-				line++;
-			ln++;
-			col = 0;
-			begin_of_line = 1;
-			declaring_var = 1;
-			comment = comment == 1 ? 0 : comment;
-			if (cond3)
-				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
-		} else if(!space(file[i]))
-			begin_of_line =	0;
-		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
-			declaring_var = 0;
-		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1]) && nobackslash(&file[i])) {
-			if (flags->c) {
-				printf("%s [%i:%i]", path, ln, col - cond);
-				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				cond = file[i] == '\t' ? 8 - col % 8 : 1;
-				if (flags->f) {
-					bu = file[i] == ' ' ? "Espace" : bu;
-					bu = file[i] == '\t' ? "Tabulation" : bu;
-					printf(": %s égaré", bu);
-					printf(" dans le programme \n");
-				} else {
-					bu = file[i] == ' ' ? "space" : bu;
-					bu = file[i] == '\t' ? "tab" : bu;
-					printf(": Trailing %s\n", bu);
-				}
-			} else {
-				display_path(path);
-				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
-				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				cond = file[i] == '\t' ? 8 - col % 8 : 1;
-				if (flags->f) {
-					bu = file[i] == ' ' ? "Espace" : bu;
-					bu = file[i] == '\t' ? "Tabulation" : bu;
-					printf("\033[0m: %s égaré", bu);
-					printf(" dans le programme \n");
-				} else {
-					bu = file[i] == ' ' ? "space" : bu;
-					bu = file[i] == '\t' ? "tab" : bu;
-					printf("\033[0m: Trailing %s\n", bu);
-				}
-			}
-			for (start = i; start > 0 && file[start] != '\n'; start--);
-			for (end = start + 1; file[end] != '\n' && file[end]; end++);
-			if (flags->v) {
-				bu = my_malloc(end - start + 10);
-				sub_strings(file, start + 1, end, bu);
-				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
-				free(bu);
-			}
-			mistakes[TRAILING_SPACE]++;
-		}
-	        if (bracket > 0 && fct_name && cond3) {
+		if (bracket > 0 && fct_name && cond3) {
 			if (flags->d) {
 				printf("[%i, %i]:Searching for comments.", ln, col);
 				printf(" Found '");
@@ -1220,7 +1269,167 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				line = 0;
 			}
 		}
-		if (file[i] >= 32 || (unsigned char)file[i] == 195)
+		if (parenthesis == 0 && (file[i] == ';' || file[i] == '}')) {
+			if (expected_indentlvl->data && flags->d)
+				printf("[%i:%i]:Comparing %i with %i\n", ln, col, *(int *)expected_indentlvl->data, bracket);
+			else if (flags->d)
+				printf("[%i:%i]:No data\n", ln, col);
+			for (start = i + 1; file[start] && space(file[start]); start++);
+			if (match("else", &file[start])) {
+				if (flags->d)
+					printf("[%i:%i]:Found 'else'\n", ln, col);
+				if (file[i] == ';')
+					indentBuffer = -1;
+				else
+					indentBuffer = 1;
+			}	
+			while (indentBuffer <= 0 && expected_indentlvl->data && *(int *)expected_indentlvl->data >= bracket) {
+				free(expected_indentlvl->data);
+			        expected_indentlvl = expected_indentlvl->prev;
+				free(expected_indentlvl->next);
+				expected_indentlvl->next = 0;
+				if (flags->d) {
+					printf("[%i:%i]:Deleted list entry !\n", ln, col);
+					if (expected_indentlvl->data)
+						printf("[%i:%i]:Comparing %i with %i\n", ln, col, *(int *)expected_indentlvl->data, bracket);
+					else
+						printf("[%i:%i]:No data\n", ln, col);
+				}
+				if (indentBuffer == -1)
+					break;
+			}
+			if (expected_indentlvl->data && flags->d)
+				printf("[%i:%i]:%i < %i\n", ln, col, *(int *)expected_indentlvl->data, bracket);
+		}
+		if (file[i] == '\n') {
+		        current_indent_lvl = get_indent_lvl(&file[i + 1]);
+		        fine = get_indent_expected(&file[i], bracket, expected_indentlvl, comment);
+			for (int j = i; file[j] && (space(file[j]) || file[j] == '}'); j++)
+				if (file[j] == '}') {
+					fine--;
+					break;
+				}
+			if (current_indent_lvl != -1 && current_indent_lvl != fine) {
+				if (flags->c) {
+					printf("%s [line:%i]", path, ln + 1);
+					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf(": Mauvaise indentation (%i attendu mais %.2f trouvé)\n", fine, current_indent_lvl);
+					else
+						printf(": Bad indentation (%i expected %.2f found)\n", fine, current_indent_lvl);
+				} else {
+					display_path(path);
+					printf(" [line:\033[32;1m%i\033[0m]", ln + 1);
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf(": Mauvaise indentation (\033[32;1m%i\033[0m attendu mais \033[31;1m%.2f\033[0m trouvé)\n", fine, current_indent_lvl);
+					else
+						printf(": Bad indentation (\033[32;1m%i\033[0m expected but \033[31;1m%.2f\033[0m found)\n", fine, current_indent_lvl);
+				}
+				mistakes[BAD_INDENTATION]++;
+				if (flags->v) {
+					for (end = i + 1; file[end] && file[end] != '\n'; end++);
+					bu = my_malloc(end - i + 1);
+					sub_strings(file, i + 1, end, bu);
+                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
+					free(bu);
+				}
+			}
+			if (col > 1000) {
+				printf("%s [line:%i]: ??????? Is this a joke ?\n", path, ln);
+				for (start = i - 1; start > 0 && file[start] != '\n'; start--);
+				bu = my_malloc(i - start + 1);
+				sub_strings(file, start + 1, i, bu);
+				mistake_line(col, bu, -1, ln, flags, q, s_q, comment, 1);
+				free(bu);
+				mistakes[TOO_LONG_LINE]++;
+			        mistakes[ETIENNE]++;
+			} else if (col > 80) {
+                                if (flags->d)
+                                        printf("Too long line %i\n", col);
+				if (flags->c) {
+					printf("%s [line:%i]", path, ln);
+					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf(": ligne trop longue ");
+					else
+						printf(": too long line ");
+					printf("(%i)\n", col);
+				} else {
+					display_path(path);
+					printf(" [line:\033[32;1m%i\033[0m]", ln);
+					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+					if (flags->f)
+						printf("\033[0m: ligne trop longue ");
+					else
+						printf("\033[0m: too long line ");
+					printf("(\033[31;1m%i\033[0m)\n", col);
+				}
+				mistakes[TOO_LONG_LINE]++;
+				if (flags->v) {
+					for (start = i - 1; start > 0 && file[start] != '\n'; start--);
+					bu = my_malloc(i - start + 1);
+					sub_strings(file, start + 1, i, bu);
+                                        mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);
+					free(bu);
+				}
+                        }
+			for (fine = i + 1; file[fine] && space(file[fine]) && file[fine] != '\n'; fine++);
+			if (bracket > 0 && file[fine] != '\n')
+				line++;
+			ln++;
+			col = 0;
+			begin_of_line = 1;
+			declaring_var = 1;
+			comment = comment == 1 ? 0 : comment;
+			if (cond3)
+				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
+		} else if(!space(file[i]))
+			begin_of_line =	0;
+		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
+			declaring_var = 0;
+		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1]) && nobackslash(&file[i])) {
+			if (flags->c) {
+				printf("%s [%i:%i]", path, ln, col - cond);
+				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				cond = file[i] == '\t' ? 8 - col % 8 : 1;
+				if (flags->f) {
+					bu = file[i] == ' ' ? "Espace" : bu;
+					bu = file[i] == '\t' ? "Tabulation" : bu;
+					printf(": %s égaré", bu);
+					printf(" dans le programme \n");
+				} else {
+					bu = file[i] == ' ' ? "space" : bu;
+					bu = file[i] == '\t' ? "tab" : bu;
+					printf(": Trailing %s\n", bu);
+				}
+			} else {
+				display_path(path);
+				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
+				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+				cond = file[i] == '\t' ? 8 - col % 8 : 1;
+				if (flags->f) {
+					bu = file[i] == ' ' ? "Espace" : bu;
+					bu = file[i] == '\t' ? "Tabulation" : bu;
+					printf("\033[0m: %s égaré", bu);
+					printf(" dans le programme \n");
+				} else {
+					bu = file[i] == ' ' ? "space" : bu;
+					bu = file[i] == '\t' ? "tab" : bu;
+					printf("\033[0m: Trailing %s\n", bu);
+				}
+			}
+			for (start = i; start > 0 && file[start] != '\n'; start--);
+			for (end = start + 1; file[end] != '\n' && file[end]; end++);
+			if (flags->v) {
+				bu = my_malloc(end - start + 10);
+				sub_strings(file, start + 1, end, bu);
+				mistake_line(cond, bu,  col, ln, flags, q, s_q, comment, 1);
+				free(bu);
+			}
+			mistakes[TRAILING_SPACE]++;
+		}
+	        if (file[i] >= 32 || (unsigned char)file[i] == 195)
 			col++;
 		else if (file[i] == '\t')
 			col = (col + 8) - (col % 8);
@@ -1248,7 +1457,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	free(fct_name);
 	if (flags->d)
 		printf("End of buffer\n");
-	delStackTraceEntry();
+        delStackTraceEntry();
 }
 
 void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)

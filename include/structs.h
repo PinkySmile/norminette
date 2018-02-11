@@ -36,6 +36,7 @@ enum    mistake_name {
         IDENTIFIER_L_O,
         FORBIDDEN_FCT_USED,
         TOO_LONG_FILE_NAME,
+	ETIENNE = 29,
 };
 
 typedef struct list_s {

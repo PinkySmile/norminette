@@ -9,7 +9,7 @@ void	test(void)
 {
 	for () {}
 	while() {}
-	return()
+	return();
 	if() {}
 	else if() {}
 	switch() {}
