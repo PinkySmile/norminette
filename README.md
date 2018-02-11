@@ -1,75 +1,83 @@
-# norminette
-Norminette en C à la norme de la promo 2022
+#USAGE :
+	/home/andgel/norminette/norminette [-vcfunahd] [-I<path>] [folders/files]
 
-## USAGE :
-	./norminette [-vfunahd] [-I<chemin>] [dossiers/fichiers]
+##DESCRIPTION :
+	-a :		Enables v, u, b, I. and l options (like -vbunlI.
 
-## DESCRIPTION :
-	-a :		Active les options v, u et n (equivaut à -vun)
+	-b :		Displays all banned functions found (useless without -I)
 
-	-d :		Flag de debug à éviter
+	-c :		Disables colors
 
-	-f :		Change la langue en français
+	-d :		Debug option (don't use it)
 
-	-h :		Affiche cette page d'aide
+	-f :		Change the main language to french
 
-	-n :		Affiche le nom des fichiers scannés
+	-l :		Automaticaly answer yes for large files (> 1 Mo)
 
-	-u :		Cherche les fichiers inutiles dans le repo et
-			les noms invalides
+	-h :		Display this help page
 
-	-v :		Affiche la ligne contenant l'erreur et met en
-			valeur l'erreur
+	-n :		Displays the scanned files' names
 
-	-I<chemin> : 	Utiliser le flag I permet d'activer la détection des
-			fonctions dans les dossiers et fichiers .c. Utiliser
-			ce flag transforme tous les charactères suivants en
-			en un chemin d'accès vers un dossier ou fichier. La
-			norminette va sauvegarder toutes les fonctions déclarées
-			dans les fichier .c et .h et les interprèter comme fonctions
-			autorisées. Toute fonction n'étant pas déclaré ici seront
-			donc considéré comme des fonction interdites. Les fonctions
-			systèmes autorisées doivent avoir une définition dans un
-			fichier .h ou .c. La définition des fonctions n'as pas a être
-			complète ! Vous pouvez toutes les déclarer comme ceci
-					void fonction();
-			À noter aussi que plusieurs -I peuvent être utiliser en même
-			temps si vous avez plusieurs dossiers d'include comme avec
-			la CSMFL par exemple. Les includes de la CSML sont stocké dans le
-			dossier /usr/local/include/SFML.
-			Utiliser donc -I/usr/local/include/SFML pour vos projets graphiques.
+	-s :		Automaticaly answer no for large files (> 1 Mo)
+			Overrides -l
 
-## EXEMPLES :
-	./norminette :
-		Lance un scan basique dans le dossier courant
+	-u :		Finds unseless files and invalid file names
 
-	./norminette src test.c :
-		Lance un scan basique dans le dossier 'src' et sur le fichier 'test.c'
+	-v :		Displays the entire line and where the mistake
+			is in it
 
-	./norminette -vfIinclude -I/usr -I../sys.h
-		Lance un scan en mode verbeux en français avec la détections des fonctions interdites
-		avec les fonctions autorisées dans les dossiers 'include' et '/usr' et dans le fichier '../sys.h'
+	-I<path> : 	Using the I flag enables the forbidden functions
+			checking in .c files. Using this flag transform the remaining
+			string into the path of the folder or file which contains
+			allowed functions. The program will save every function
+			declared in those files/folders (only .c and .h files)
+			and use them as only allowed functions. That means that all
+			functions which are not declared in these files will be
+			the forbidden functions. All the allowed system calls have
+			have to be declared in a .h or .c file. No need to declare
+			the functions properly. You juste have to follow this exemple
+					void function();
+			Note : severals -I can be used at the same if you have many include
+			and source folders with, for exemple, the CSFML
+			CSMFL's includes are in the folder /usr/local/include/SFML.
+			For graphical projects use -I/usr/local/include/SFML .
 
-## VALEURS DE RETOUR :
-	Si aucune erreur n'est trouvée, le programme sort avec le code 0.
-	Si une ou plusieurs erreurs ont été détectées, le programme sort avec le code 1.
+##EXEMPLES :
+	/home/andgel/norminette/norminette :
+		Launch a basic test on the current folder
 
-## RAPPORTER UN BUG :
-	Si vous  trouvez un bug, mettez  à jour  le  programme
-	(Utilisez le script 'update.sh' dans le repo ou encore
-	<votre alias>-update  si vous  avez utilisé  le script
-	d'installation). Si le bug persiste, lancez 'debug.sh'
-	(<votre alias>-debug) avec, comme argument, le fichier
-	ayant causé  le bug. Envoyez moi  ensuite  le  fichier
-	scan.log (vous pouvez aussi  joindre le fichier posant
-	problème)   à   l'addresse  "andgel.halley@epitech.eu"
-	en expliquant  le bug rencontrez  et je le  corrigerai
-	le plus vite possible !
+	/home/andgel/norminette/norminette src test.c :
+		Launch a basic test in the folder 'src' and on the file 'test.c'
 
-	Note : Inutile de le lancer en mode debug si  ce n'est
-	qu'un problème d'affichage (faute de frappe, ...)
-	Les   scripts   fournis   (update.sh,   debug.sh)   ne
-	fonctionneront que  si la  norminette se  trouve de le
-	dossier ~/norminette.  Vous pouvez sinon  les modifier
-	pour les faire  fonctionner avec votre chemain d'accès
-	N'hésitez pas à m'envoyer des suggestions par mail !
+	/home/andgel/norminette/norminette -vfIinclude -I/usr -I../sys.h
+		Launch the program in verbose mode, in french
+		with forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'
+
+##RETURN VALUES :
+	If no mistakes are found, the program exit with code 0.
+	If one or many mistakes are found, the program eit with code 1.
+
+##REPORT A BUG :
+	If you find a bug, first, update  the program  (Use the
+	'update.sh'  in  the  repository or, if  you  used  the
+	installation script, <your alias>-update). If it is not
+	yet patched, run the 'debug.sh' (or <your alias>-debug)
+	with,  as argument, the  file  which caused  the bug to
+	happen. Send me, then, the  scan.log file (you can join
+	the source  file too) at  "andgel.halley@epitech.eu".
+	Explain briefly in the mail what happened and  I'll fix
+	as fast as I can !
+	You  can also send it on discord or
+	open a new issue ticket on github.
+
+	Note : No need to launch  in debug mode if  it's just a
+	display problem (spelling mistake, ...).
+	The given scripts (update.sh, debug.sh) will only work
+	if the program is stored in ~/norminette. You can also
+	modify  the scripts  to make them  work with your  own
+	path
+	You can also send me ideas by mail !
+
+##UPDATES :
+	if you want to get notified on new updates, you can join
+	this server https://discord.gg/RgDbJDW
