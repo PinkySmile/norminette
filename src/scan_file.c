@@ -1097,7 +1097,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				if (match("if", &file[fine]))
 					break;
 			}
-			if (compare_strings(buffer, words[k]) && need_to_indent(&file[i], comment)) {
+			if (compare_strings(buffer, words[k]) && (i == 0 || !char_valid(file[i - 1])) &&
+			    (i + strlen(words[k]) > strlen(file) || !char_valid(file[i + strlen(words[k])])) && need_to_indent(&file[i], comment)) {
 				expected_indentlvl->next = my_malloc(sizeof(*expected_indentlvl->next));
 				expected_indentlvl->next->prev = expected_indentlvl;
 				expected_indentlvl->next->next = 0;
