@@ -861,8 +861,9 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			}
 		}
 		if (cond3 && file[i] == '\n' && flags->i_caps) {
-		        ptr = &file[i + 1];
-			while (*ptr && *ptr != '\n') {
+		        ptr = &file[i];
+			cond = 0;
+			while (*ptr && (*ptr != '\n' || 0 == cond++)) {
 				if (flags->d)
 					printf("[%i, %i]:Trying to find used function name\n", ln, col);
 				bu = get_name(ptr, flags, &col, &ptr);
