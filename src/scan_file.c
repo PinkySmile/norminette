@@ -1587,6 +1587,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		mistakes[TOO_MNY_FCT]++;
 	}
 	free(fct_name);
+	free_list(expected_indentlvl);
 	if (flags->d)
 		printf("End of buffer\n");
         delStackTraceEntry();
