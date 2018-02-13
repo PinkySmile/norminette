@@ -58,6 +58,7 @@ typedef struct {
 	int	d;
 	int	c;
 	int	b;
+	int	t;
 	int	i_caps;
 	int	big_files;
 	int	no_big_files;

@@ -26,6 +26,7 @@ void	disp_en_help(char *prog_name)
 	printf("\t-l :\t\tAutomaticaly answer yes for large files (> 1 Mo)\n\n");
 	printf("\t-h :\t\tDisplay this help page\n\n");
 	printf("\t-n :\t\tDisplays the scanned files' names\n\n");
+	printf("\t-t :\t\tEnables the stacktrace\n\n");
 	printf("\t-s :\t\tAutomaticaly answer no for large files (> 1 Mo)\n");
 	printf("\t\t\tOverrides -l\n\n");
 	printf("\t-u :\t\tFinds useless files and invalid file names\n\n");
@@ -90,6 +91,7 @@ void	disp_fr_help(char *prog_name)
 	printf("\t-h :\t\tAffiche cette page d'aide\n\n");
 	printf("\t-l :\t\tScan les fichiers de grande taille sans demander (> 1 Mo)\n\n");
 	printf("\t-n :\t\tAffiche le nom des fichiers scannés\n\n");
+	printf("\t-t :\t\tActive le stacktrace\n\n");
 	printf("\t-s :\t\tNe scan pas les fichiers de grande taille (> 1 Mo)\n");
 	printf("\t\t\tOutrepasse -l\n\n");
 	printf("\t-u :\t\tCherche les fichiers inutiles dans le repo et\n");
@@ -167,7 +169,7 @@ void	disp_list(list_t *list)
 
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	int	disp = 0;
 	char	*dir = 0;
 
@@ -186,6 +188,8 @@ flag	get_flags(int argc, char **args)
 				flags.u = 1;
 			else if (args[i][j] == 'n')
 				flags.n = 1;
+			else if (args[i][j] == 't')
+				flags.t = 1;
 			else if (args[i][j] == 'c')
 				flags.c = 1;
 			else if (args[i][j] == 'b') {
@@ -224,6 +228,7 @@ flag	get_flags(int argc, char **args)
 			} else if (args[i][j] == 'd') {
 				flags.n = 1;
 				flags.d = 1;
+				flags.t = 1;
 			} else if (args[i][j] == 'h')
 				disp = 1;
 			else {
