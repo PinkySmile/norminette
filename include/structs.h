@@ -25,10 +25,10 @@ enum    mistake_name {
         BRACKET_MISPLACED,
         MULTPLE_VARS_DECLARED,
         MISSING_LINE_BREAK_AFTER_VARS,
-        POINTER_DECLARATION,
-        IF_DEPTH,
-        GOTO_USED,
         INVALID_TYPE_NAME,
+        POINTER_DECLARATION,
+	IF_DEPTH,
+        GOTO_USED,
         SEPARATION_SOURCE_HEADER,
         TRAILING_SPACE,
         TRAILING_EMPTY_LINE,
@@ -44,6 +44,12 @@ typedef struct list_s {
 	struct list_s	*next;
 	struct list_s	*prev;
 } list_t;
+
+typedef struct {
+	char	*name;
+	char	*desc;
+	int	type;
+} style_error;
 
 typedef struct {
 	char	*name;

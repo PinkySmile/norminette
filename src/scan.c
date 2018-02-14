@@ -309,24 +309,24 @@ void	display_result(int *mistakes, flag *flags)
 
 	addStackTraceEntry("display_result", "pp", "mistakes", mistakes, "flags", flags);
 	if (flags->d)
-		for (int i = 0; style_names[i]; i++)
-			printf("%s : %i\n", style_names[i], mistakes[i]);
-	for (int i = 0; style_names[i]; i++)
+		for (int i = 0; coding_style[i].name; i++)
+			printf("%s : %i\n", coding_style[i].name, mistakes[i]);
+	for (int i = 0; coding_style[i].name; i++)
 		if (mistakes[i]) {
 			if (flags->c) {
-				printf("\n%s", style_names[i]);
+				printf("\n%s", coding_style[i].name);
 				printf(" rule has been violated ");
 				printf("%i", mistakes[i]);
 				printf(" time%s ", mistakes[i] > 1 ? "s" : "");
-				printf(": %s", style_description[i]);
+				printf(": %s", coding_style[i].desc);
 			} else {
-				printf("\n\033[31;1m%s\033[0m", style_names[i]);
+				printf("\n\033[31;1m%s\033[0m", coding_style[i].name);
 				printf("\033[1m rule has been violated \033[0m");
 				printf("\033[31;1m%i\033[0m", mistakes[i]);
 				printf("\033[1m time%s \033[0m", mistakes[i] > 1 ? "s" : "");
-				printf(": \033[91m%s\033[0m", style_description[i]);
+				printf(": \033[91m%s\033[0m", coding_style[i].desc);
 			}
-			type[style_type[i]] += mistakes[i];
+			type[coding_style[i].type] += mistakes[i];
 		}
 	if (type[0] != 0 || type[1] != 0 || type[2] != 0)
 		printf("\n\n");

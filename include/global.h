@@ -5,67 +5,7 @@
 ** My globals vars
 */
 
-const char	*style_names[] = {
-	"O1",			/*garbage files					*/
-	"O3",			/*5 fcts					*/
-	"O4",			/*files names					*/
-	"G1",			/*epi header					*/
-	"G2",			/*empty lines between fcts			*/
-	"F2",			/*function's name invalid			*/
-	"F3",			/*too long line					*/
-	"F4",			/*too long function				*/
-	"F5",			/*fct > 4 args					*/
-	"F6",			/*comment in fct				*/
-	"L1",			/*+1 action per line				*/
-	"L2",			//indentation
-	"L3",			/*space after key words and operators		*/
-	"L4",			/*brackets					*/
-	"L5",			/*x vars declared on 1 line or in prog		*/
-	"L6",		//	//line break after vars declarations
-	"V1",		//	//nom de types
-	"V3",		//	//pointers declaration
-	"C1",			//if depth > 3 or if forest
-	"C3",		//	/*goto						*/
-	"H1",			//bad seperation between header and source
-	"implicit_L001",	/*trailing space				*/
-	"implicit_L003",	//trailing empty line
-	"implicit_T007",	/*semicolon isolated				*/
-	"implicit_T010",	/*l and o					*/
-	"implicit_F001",	/*forbidden fcts				*/
-	"implicit_F002",	//too long file name
-	0
-};
-
-const char	*style_description[] = {
-	"content of the delivery folder should contain only files required for compilation",
-	"more than 5 function in a single file",
-	"your file name must follow the snake_case convention, be clear, precise, explicit, and unambiguous",
-	"you must start your source code with a correctly formatted Epitech standard header",
-	"one and only one empty line should separate the implementations of functions",
-	"function should be in english, according to the snake_case convention",
-	"too long line",
-	"too long function",
-	"a function should not need more than 4 arguments and taking no parameters should take void as argument in the function declaration.",
-	"comment inside a function.",
-	"a line correspond to more than one statement",
-	"bad indentation on start of a line",
-	"misplaced space(s)",
-	"curly brackets misplaced",
-	"severals variables declared on the same line",
-	"",
-	"",
-	"",
-	"nested conditonal branchings with a depth of 3 or more should be avoided and an if block should not contain more than 3 branchings",
-	"goto keyword is forbidden",
-	"bad separation between source file and header file",
-	"trailing space",
-	"leading or trailing empty line",
-	"semicolon is isolated from other tokens",
-	"identifier should not be composed of only 'l' and 'o'",
-	"banned functions used",
-	"bad file or directory name",
-	0
-};
+#include "structs.h"
 
 const char	*key_words[] = {
 	"while",
@@ -77,31 +17,172 @@ const char	*key_words[] = {
 	0
 };
 
-const int	style_type[] = {
-	2,
-	2,
-	2,
-	2,
-	1,
-	0,
-	2,
-	2,
-	2,
-	1,
-	2,
-	1,
-	1,
-	1,
-	1,
-	1,
-	1,
-	1,
-	2,
-	1,
-	2,
-	0,
-	0,
-	0,
-	2,
-	2
+const style_error	coding_style[] = {
+	/*garbage files*/
+	{
+		"O1",
+		"content of the delivery folder should contain only files required for compilation",
+		2
+	},
+	/*5 fcts*/
+	{
+		"O3",
+		"more than 5 function in a single file",
+		2
+	},
+	/*files names*/
+	{
+		"O4",
+		"your file name must follow the snake_case convention, be clear, precise, explicit, and unambiguous",
+		2
+	},
+	/*epi header*/
+	{
+		"G1",
+		"you must start your source code with a correctly formatted Epitech standard header",
+		2
+	},
+	/*empty lines between fcts*/
+	{
+		"G2",
+		"one and only one empty line should separate the implementations of functions",
+		1
+	},
+	/*function's name invalid*/
+	{
+		"F2",
+		"function should be in english, according to the snake_case convention",
+		2
+	},
+	/*too long line*/
+	{
+		"F3",
+		"too long line",
+		2
+	},
+	/*too long function*/
+	{
+		"F4",
+		"too long function",
+		2
+	},
+	/*fct > 4 args*/
+	{
+		"F5",
+		"a function should not need more than 4 arguments and taking no parameters should take void as argument in the function declaration.",
+		2
+	},
+	/*comment in fct*/
+	{
+		"F6",
+		"comment inside a function.",
+		1
+	},
+	/*+1 action per line*/
+	{
+		"L1",
+		"a line correspond to more than one statement",
+		2
+	},
+	/*indentation*/
+	{
+		"L2",
+		"bad indentation on start of a line",
+		1
+	},
+	/*space after key words and operators*/
+	{
+		"L3",
+		"misplaced space(s)",
+		1
+	},
+	/*brackets*/
+	{
+		"L4",
+		"curly brackets misplaced",
+		1
+	},
+	/*x vars declared on 1 line or in prog*/
+	{
+		"L5",
+		"severals variables declared on the same line",
+		1
+	},
+	//line break after vars declarations
+	{
+		"L6",
+		"",
+		1
+	},
+	//nom de types
+	{
+		"V1",
+		"",
+		2
+	},
+	//pointers declaration
+	{
+		"V3",
+		"",
+		1
+	},
+	//if depth > 3 or if forest
+	{
+		"C1",
+		"nested conditonal branchings with a depth of 3 or more should be avoided and an if block should not contain more than 3 branchings",
+		1
+	},
+	/*goto*/
+	{
+		"C3",
+		"goto keyword is forbidden",
+		1
+	},
+	//bad seperation between header and source
+	{
+		"H1",
+		"bad separation between source file and header file",
+		2
+	},
+	/*trailing space*/
+	{
+		"implicit_L001",
+		"trailing space",
+		0
+	},
+	//trailing empty line
+	{
+		"implicit_L003",
+		"leading or trailing empty line",
+		0
+	},
+	/*semicolon isolated*/
+	{
+		"implicit_T007",
+		"semicolon is isolated from other tokens",
+		0			
+	},
+	/*l and o*/
+	{
+		"implicit_T010",
+		"identifier should not be composed of only 'l' and 'o'",
+		0
+	},
+	/*banned fct*/
+	{
+		"explicit_F001",
+		"banned functions used",
+		2
+	},
+	//too long file name ?
+	{
+		"implicit_F002",
+		"bad file or directory name",
+		0
+	},
+	{
+		0,
+		0,
+		0
+	}
 };
