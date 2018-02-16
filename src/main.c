@@ -100,10 +100,10 @@ int	main(int argc, char **args)
 	char	**dirs = 0;
 
 	name = args[0];
-	initStackTrace();
-	addStackTraceEntry("main", "ip", "argc", argc, "args", args);
 	set_sigaction();
         flags = get_flags(argc, args);
+	initStackTrace();
+	addStackTraceEntry("main", "ip", "argc", argc, "args", args);
 	dirs = parse_args(argc, args);
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;
