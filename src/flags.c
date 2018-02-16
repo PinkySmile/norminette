@@ -18,7 +18,7 @@ void	disp_en_help(char *prog_name)
 	printf("USAGE :\n");
 	printf("\t%s [-vcfunahd] [-I<path>] [folders/files]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
-	printf("\t-a :\t\tEnables v, u, b, I. and l options (like -vbunlI.\n\n");
+	printf("\t-a :\t\tEnables v, u, b, I. and l options (like -vbunlI.)\n\n");
 	printf("\t-b :\t\tDisplays all banned functions found (useless without -I)\n\n");
 	printf("\t-c :\t\tDisables colors\n\n");
 	printf("\t-d :\t\tDebug option (don't use it)\n\n");
