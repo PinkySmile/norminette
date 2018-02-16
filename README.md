@@ -2,7 +2,7 @@
 	norminette [-vcfunahd] [-I<path>] [folders/files]
 
 ## DESCRIPTION :
-	-a :		Enables v, u, b, I. and l options (like -vbunlI.
+	-a :		Enables v, u, b, I. and l options (like -vbunlI.)
 
 	-b :		Displays all banned functions found (useless without -I)
 
