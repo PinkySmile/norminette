@@ -311,6 +311,15 @@ int	whitelisted(char *fct)
 	} else if (compare_strings(fct, "")) {
 		delStackTraceEntry();
 		return (1);
+	} else if (compare_strings(fct, "va_args")) {
+		delStackTraceEntry();
+		return (1);
+	} else if (compare_strings(fct, "va_end")) {
+		delStackTraceEntry();
+		return (1);
+	} else if (compare_strings(fct, "va_start")) {
+		delStackTraceEntry();
+		return (1);
 	}
 	delStackTraceEntry();
 	return (0);
@@ -320,11 +329,12 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 {
 	char	*buffer;
 	int	end = 0;
+	int	start = 0;
 	list_t	*list = flags->b_fcts;
 
 	addStackTraceEntry("verif_fct_used", "ppppppipip", "name", name, "flags", flags, "file_name", file_name, "mistakes", mistakes, \
 			   "words", words, "fct", fct, "ln", ln, "fct_name", fct_name, "col", col, "file", file);
-	if (!is_in_list(flags->fcts, name) && !is_in_array(words, name) && !whitelisted(name)) {
+	if (flags->i_caps && !is_in_list(flags->fcts, name) && !is_in_array(words, name) && !whitelisted(name)) {
 		mistakes[FORBIDDEN_FCT_USED]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", file_name, ln, col);
@@ -361,6 +371,44 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			buffer = my_malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
 			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0, 1);
+			free(buffer);
+		}
+	}
+	for (int i = 0; i < col && file[start]; start++) {
+		if (flags->d)
+			printf("Skipping 1 '%c' (%i : %i)\n", file[start], i, col);
+		if (file[start] == '\t')
+			i += 8 - i % 8;
+		else
+			i++;
+	}
+	for (; file[start] && file[start] != '('; start++) {
+		if (flags->d)
+			printf("Skipping 2 '%c'\n", file[start]);
+		if (file[start] == '\t')
+			col += 8 - col % 8;
+		else
+			col++;
+	}
+	if (!is_in_array(words, name) && start > 0 && space(file[start - 1])) {
+	        mistakes[TRAILING_SPACE]++;
+		if (flags->c) {
+			printf("%s [%i:%i]", file_name, ln, col);
+			printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+		} else {
+			display_path(file_name);
+			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
+			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
+		}
+		if (flags->f)
+			printf(": Espace égaré dans le programme\n");
+		else
+			printf(": Trailing space\n");
+		if (flags->v) {
+			for (; file[end] && file[end] != '\n'; end++);
+			buffer = my_malloc(end + 2);
+			sub_strings(file, 0, end, buffer);
+			mistake_line(1, buffer, col - 1, ln, flags, 0, 0, 0, 1);
 			free(buffer);
 		}
 	}
@@ -860,28 +908,28 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				fct_name = bu;
 			}
 		}
-		if (cond3 && file[i] == '\n' && flags->i_caps) {
+		if (cond3 && file[i] == '\n') {
 		        ptr = &file[i];
 			cond = 0;
+			cond2 = col;
 			while (*ptr && (*ptr != '\n' || 0 == cond++)) {
 				if (flags->d)
 					printf("[%i, %i]:Trying to find used function name\n", ln, col);
-				bu = get_name(ptr, flags, &col, &ptr);
+				bu = get_name(ptr, flags, &cond2, &ptr);
 				if (flags->d)
 					printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
 				if (bu != 0) {
-					col = 0;
+					cond2 = 0;
 					for (char *tmp = &file[i + 1]; tmp < ptr; tmp++) {
 						if (*tmp == '\t')
-							col += 8 - (col % 8);
+							cond2 += 8 - (cond2 % 8);
 						else if (*tmp >= 32 || (unsigned char)*tmp == 195)
-							col++;
+							cond2++;
 					}
-					verif_fct_used(bu, flags, path, mistakes, words, fct, ln, fct_name, col, &file[i + 1]);
+					verif_fct_used(bu, flags, path, mistakes, words, fct, ln, fct_name, cond2, &file[i + 1]);
 					free(bu);
 				}
 			}
-			col = 0;
 		}
 		if (cond3 && l_o != -1 && (file[i] == 'o' || file[i] == 'l'))
 			l_o++;

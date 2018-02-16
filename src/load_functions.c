@@ -37,7 +37,7 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 	addStackTraceEntry("get_name", "pppp", "file", file, "flags", flags, "col", col, "end_ptr", end_ptr);
 	file++;
         if (*file == '#') {
-                if (flags->d)
+		if (flags->d)
                         printf("Found #\n\n");
 		for (int i = 0; file[i] && file[i] != '\n'; i++)
 			*end_ptr = &file[i];
@@ -63,13 +63,13 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 		delStackTraceEntry();
                 return (0);
 	}
-	for (; file[beg + i] && space(file[beg + i]); i--)
-		if (file[beg] == '\t')
+	for (i = -1; beg + i > 0 && space(file[beg + i]); i--) {
+		if (file[beg + i] == '\t')
 			*col -= 8 + (*col % 8);
 		else
 			(*col)--;
-	i--;
-	if (file[beg] == '\t')
+	}
+        if (file[beg] == '\t')
 		*col -= 8 + (*col % 8);
 	else
 		(*col)--;
