@@ -84,7 +84,7 @@ void	verify_name(char *file, char *name, int *mistakes, flag *flags)
 	for (int i = 0; name[i]; i++) {
 		cond = name[i] == '_' || name[i] == '.';
 		cond = cond || compare_strings(name, "Makefile");
-		if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
+		if (!(((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= '0' && name[i] <= '9')) || cond)) {
 			mistakes[INVALID_FILE_NAME]++;
 			if (flags->c)
 				printf("%s", file);
