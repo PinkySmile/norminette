@@ -1471,7 +1471,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					free(bu);
 				}
 			}
-			if (fine > 10) {
+			if (fine > 7) {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
 					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1516,7 +1516,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					free(bu);
 				}
 			}
-			if (col > 1000) {
+			if (col > 300) {
 				printf("%s [line:%i]: ??????? Is this a joke ?\n", path, ln);
 				for (start = i - 1; start > 0 && file[start] != '\n'; start--);
 				bu = my_malloc(i - start + 1);
