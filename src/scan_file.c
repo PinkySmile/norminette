@@ -314,6 +314,9 @@ int	whitelisted(char *fct)
 	} else if (compare_strings(fct, "va_args")) {
 		delStackTraceEntry();
 		return (1);
+	} else if (compare_strings(fct, "case")) {
+		delStackTraceEntry();
+		return (1);
 	} else if (compare_strings(fct, "va_end")) {
 		delStackTraceEntry();
 		return (1);
@@ -393,11 +396,11 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 	if (!is_in_array(words, name) && start > 0 && space(file[start - 1])) {
 	        mistakes[TRAILING_SPACE]++;
 		if (flags->c) {
-			printf("%s [%i:%i]", file_name, ln, col);
+			printf("%s [%i:%i]", file_name, ln + 1, col - 1);
 			printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
 		} else {
 			display_path(file_name);
-			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col);
+			printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln + 1, col - 1);
 			printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
 		}
 		if (flags->f)
@@ -408,7 +411,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			for (; file[end] && file[end] != '\n'; end++);
 			buffer = my_malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
-			mistake_line(1, buffer, col - 1, ln, flags, 0, 0, 0, 1);
+			mistake_line(1, buffer, col - 1, ln + 1, flags, 0, 0, 0, 1);
 			free(buffer);
 		}
 	}
