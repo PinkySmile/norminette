@@ -1448,6 +1448,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					fine--;
 					break;
 				}
+			if (fine < 0)
+				fine = 0;
 			if (current_indent_lvl != -1 && current_indent_lvl != fine) {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
