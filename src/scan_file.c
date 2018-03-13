@@ -1402,7 +1402,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = 0;
 				line = 0;
-			}
+			} else if (!bracket)
+				function = 0;
 		}
 		if (parenthesis == 0 && (file[i] == ';' || file[i] == '}')) {
 			if (expected_indentlvl->data && flags->d)
