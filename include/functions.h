@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2017
+1;5003;0c** EPITECH PROJECT, 2017
 ** functions header
 ** File description:
 ** Contains all functions prototypes
@@ -25,7 +25,7 @@ char	*load_file(char *path);
 void	load_functions(char *path, flag *flags);
 int	space(char c);
 char	*find_path(char *path, char *name);
-char	*get_name(char *file, flag *flags, int *col, char **end_ptr, int comment, _Bool q, _Bool s_q);
+char	*get_name(char *file, flag *flags, int *col, char **end_ptr, int comment, _Bool q, _Bool s_q, _Bool declare);
 int	is_file_c(char *path);
 int	list_len(list_t *list);
 int	char_valid(char c);

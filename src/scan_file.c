@@ -918,7 +918,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			while (*ptr && (*ptr != '\n' || 0 == cond++)) {
 				if (flags->d)
 					printf("[%i, %i]:Trying to find used function name\n", ln, col);
-				bu = get_name(ptr, flags, &cond2, &ptr, comment, q, s_q);
+				bu = get_name(ptr, flags, &cond2, &ptr, comment, q, s_q, false);
 				if (flags->d)
 					printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
 				if (bu != 0) {
