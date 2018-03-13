@@ -373,7 +373,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 			for (; file[end] && file[end] != '\n'; end++);
 			buffer = my_malloc(end + 2);
 			sub_strings(file, 0, end, buffer);
-			mistake_line(strlen(name), buffer, col - strlen(name), ln, flags, 0, 0, 0, 1);
+			mistake_line(strlen(name), buffer, col - strlen(name) + 1, ln, flags, 0, 0, 0, 1);
 			free(buffer);
 		}
 	}
@@ -918,7 +918,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			while (*ptr && (*ptr != '\n' || 0 == cond++)) {
 				if (flags->d)
 					printf("[%i, %i]:Trying to find used function name\n", ln, col);
-				bu = get_name(ptr, flags, &cond2, &ptr);
+				bu = get_name(ptr, flags, &cond2, &ptr, comment, q, s_q);
 				if (flags->d)
 					printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
 				if (bu != 0) {

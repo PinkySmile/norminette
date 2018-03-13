@@ -8,6 +8,11 @@
 #ifndef _STRUCTS_H_
 #define _STRUCTS_H_
 
+enum	booleans {
+	false,
+	true,
+};
+
 enum    mistake_name {
         GARBAGE,
         TOO_MNY_FCT,

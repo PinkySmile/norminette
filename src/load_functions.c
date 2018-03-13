@@ -28,13 +28,14 @@ int	char_valid(char c)
         return (0);
 }
 
-char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
+char	*get_name(char *file, flag *flags, int *col, char **end_ptr, int comment, _Bool q, _Bool s_q)
 {
         int     i = 0;
         int     beg = 0;
+	int	temp = 0;
         char    *name = 0;
 
-	addStackTraceEntry("get_name", "pppp", "file", file, "flags", flags, "col", col, "end_ptr", end_ptr);
+	addStackTraceEntry("get_name", "ppppibb", "file", file, "flags", flags, "col", col, "end_ptr", end_ptr, "comment", comment, "q", q, "s_q", s_q);
 	file++;
         if (*file == '#') {
 		if (flags->d)
@@ -42,41 +43,58 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 		for (int i = 0; file[i] && file[i] != '\n'; i++)
 			*end_ptr = &file[i];
 		delStackTraceEntry();
-                return (0);
+                return (NULL);
         }
         if (flags->d) {
-                printf("Getting function name for line : ");
-                for (int j = 0; file[j] && file[j] != '\n'; j++)
-                        printf("%c", file[j]);
+		printf("Getting function name for line : ");
+		for (int j = 0; file[j] && file[j] != '\n'; j++)
+			printf("%c", file[j]);
 		printf("\n");
         }
-        for (; file[beg] && file[beg] != '(' && file[beg] != ';' && file[beg] != '\n'; beg++) {
+        for (; file[beg] && ((file[beg] != '(' && file[beg] != ';') || q || s_q || comment > 0) && file[beg] != '\n'; beg++) {
                 if (flags->d)
                         printf("Skipping %c\n", file[beg]);
 		if (file[beg] == '\t')
 			*col += 8 - (*col % 8);
 		else
 			(*col)++;
+		if (!s_q && file[beg] == '"')
+			q = !q;
+		if (!q && file[beg] == '\'')
+			s_q = !s_q;
+		if (!q && !s_q && comment == 2 && file[beg] && file[beg] == '*' && file[beg + 1] == '/')
+			comment = 0;
+		if (!q && !s_q && comment == 0 && file[beg] && file[beg] == '/' && file[beg + 1] == '*')
+			comment = 2;
+		if (!q && !s_q && file[beg] && file[beg] == '/' && file[beg + 1] == '/') {
+			delStackTraceEntry();
+			for (; file[beg] && file[beg] != '\n'; beg++);
+			*end_ptr = &file[beg];
+			return (NULL);
+		}
         }
 	if (file[beg] == 0 || file[beg] == ';' || file[beg] == '\n') {
 		*end_ptr = &file[beg];
 		delStackTraceEntry();
-                return (0);
+                return (NULL);
 	}
-	for (i = -1; beg + i > 0 && space(file[beg + i]); i--) {
+	for (beg -= (beg != 0 ? 1 : 0); beg > 0 && space(file[beg]); beg--) {
 		if (file[beg + i] == '\t')
 			*col -= 8 + (*col % 8);
 		else
 			(*col)--;
 	}
-        if (file[beg] == '\t')
-		*col -= 8 + (*col % 8);
-	else
-		(*col)--;
-        for (; file[beg + i] && char_valid(file[beg + i]); i--)
+        for (; beg + i >= 0 && file[beg + i] && char_valid(file[beg + i]); i--)
 	        (*col)--;
+	for (; beg + i - temp >= 0 && space(file[beg + i - temp]); temp++);
+	for (; beg + i - temp > 0 && char_valid(file[beg + i - temp]); temp++);
+        if (beg + i - temp < 0) {
+		*end_ptr = &file[beg];
+		delStackTraceEntry();
+		return (NULL);
+	}
 	name = my_malloc(1 - i);
-        sub_strings(file, beg + i + 1, beg, name);
+        sub_strings(file, beg + i + 1, beg + 1, name);
         for (int j = 0; name[j]; j++)
                 if (name[j] <= 32)
                         for (int k = j; name[k]; k++)
@@ -85,7 +103,7 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 	if (compare_strings(name, "")) {
 		delStackTraceEntry();
 		free(name);
-		return (0);
+		return (NULL);
 	}
 	delStackTraceEntry();
         return (name);
@@ -93,9 +111,9 @@ char	*get_name(char *file, flag *flags, int *col, char **end_ptr)
 
 int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 {
-	int	q = 0;
-	int	s_q = 0;
-	int	cond3 = 0;
+	_Bool	q = false;
+	_Bool	s_q = false;
+	_Bool	cond3 = false;
 	char	*bu = 0;
 	int	comment = 0;
 	int	bracket = 0;
@@ -106,16 +124,16 @@ int	put_function_names_in_list(char *file, list_t *list, flag *flags)
 	addStackTraceEntry("put_fonction_names_in_list", "ppp", "file", file, "list", list, "flags", flags);
 	for (int i = 0; file[i]; i++) {
                 if (flags->d)
-                        printf("[line %i:char %i]:Loop start '%c' (%i)\n", ln, i, file[i] > 31 ? file[i] : 0, file[i]);
+                        printf("[line %i:char %i]:Loop start '%c' (%i)\n", ln, i, file[i] >= ' ' ? file[i] : 0, file[i]);
 		if (file[i] == '\n') {
 			ln++;
 			comment = comment == 1 ? 0 : comment;
 		}
 		cond3 = !q && !s_q && comment == 0;
-		if (cond3 && bracket == 0 && file[i] == '\n') {
+		if (bracket == 0 && file[i] == '\n') {
                         if (flags->d)
                                 printf("[line %i]:Trying to find function's name\n", ln);
-                        bu = get_name(file + i, flags, (int *)&bu, &bu);
+                        bu = get_name(file + i, flags, (int *)&bu, &bu, comment, q, s_q);
                         if (flags->d)
                                 printf("Got %p (%s)\n", bu, bu == 0 ? "?" : bu);
                         if (bu != 0) {

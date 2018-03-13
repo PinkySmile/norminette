@@ -25,7 +25,7 @@ char	*load_file(char *path);
 void	load_functions(char *path, flag *flags);
 int	space(char c);
 char	*find_path(char *path, char *name);
-char	*get_name(char *file, flag *flags, int *col, char **end_ptr);
+char	*get_name(char *file, flag *flags, int *col, char **end_ptr, int comment, _Bool q, _Bool s_q);
 int	is_file_c(char *path);
 int	list_len(list_t *list);
 int	char_valid(char c);
