@@ -629,7 +629,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 		if (compare_strings("Test", name))
 			break;
                 if (!((name[i] >= 'a' && name[i] <= 'z') || cond)) {
-                        mistakes[24]++;
+                        mistakes[INVALID_FCT_NAME]++;
 			if (flags->c)
 				printf("%s [%i:%i] ", path, col, ln);
 			else {
