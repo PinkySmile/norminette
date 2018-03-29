@@ -393,7 +393,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		else
 			col++;
 	}
-	if (!is_in_array(words, name) && start > 0 && space(file[start - 1])) {
+	if (!is_in_array(words, name) && start > 0 && space(file[start - 1]) && !compare_strings(name, "case")) {
 	        mistakes[TRAILING_SPACE]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", file_name, ln + 1, col - 1);
