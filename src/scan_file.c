@@ -1536,11 +1536,13 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 						printf(": nested conditonal branchings with a depth of 3 or more (\033[31;1m%i\033[0m)\n", fine - 1);
 				}
 				mistakes[IF_DEPTH]++;
-				for (end = i + 1; file[end] && file[end] != '\n'; end++);
-				bu = my_malloc(end - i + 1);
-				sub_strings(file, i + 1, end, bu);
-				mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
-				free(bu);
+				if (flags->v) {
+					for (end = i + 1; file[end] && file[end] != '\n'; end++);
+					bu = my_malloc(end - i + 1);
+					sub_strings(file, i + 1, end, bu);
+					mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
+					free(bu);
+				}
 			}
 			if (col > 300) {
 				printf("%s [line:%i]: ??????? Is this a joke ?\n", path, ln);
