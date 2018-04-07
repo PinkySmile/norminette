@@ -8,10 +8,7 @@
 #ifndef _STRUCTS_H_
 #define _STRUCTS_H_
 
-enum	booleans {
-	false,
-	true,
-};
+#include <stdbool.h>
 
 enum    mistake_name {
         GARBAGE,
@@ -51,6 +48,12 @@ typedef struct list_s {
 } list_t;
 
 typedef struct {
+	int	line;
+	int	depth;
+	int	if_nbr;
+} if_branch;
+
+typedef struct {
 	char	*name;
 	char	*desc;
 	int	type;
@@ -62,17 +65,17 @@ typedef struct {
 } b_fcts_t;
 
 typedef struct {
-	int	v;
-	int	f;
-	int	n;
-	int	u;
-	int	d;
-	int	c;
-	int	b;
-	int	t;
-	int	i_caps;
-	int	big_files;
-	int	no_big_files;
+	bool	v;
+	bool	f;
+       	bool	n;
+	bool	u;
+	bool	d;
+	bool	c;
+	bool	b;
+	bool	t;
+	bool	i_caps;
+	bool	big_files;
+	bool	no_big_files;
 	list_t	*fcts;
 	list_t	*b_fcts;
 } flag;

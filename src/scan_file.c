@@ -145,6 +145,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 	printf("\n");
 	delStackTraceEntry();
 }
+
 void	display_path(char *path)
 {
 	int	slash = 0;
@@ -848,6 +849,18 @@ float	get_indent_lvl(char *file)
 	return (level);
 }
 
+void	display_if_branching(list_t *branchs)
+{
+	addStackTraceEntry("display_if_branching", "p", "branchs", branchs);
+	for (; branchs->prev; branchs = branchs->prev);
+	if (!branchs->next)
+		printf("\t\t\t\tNot in an if branch\n");
+	for (int i = 1; branchs->next; branchs = branchs->next)
+		printf("\t\t\t\tBranching %i starting on line %i and with indent depth %i (after %i if)\n",
+		       i, ((if_branch *)branchs->data)->line, ((if_branch *)branchs->data)->depth, ((if_branch *)branchs->data)->if_nbr);
+	delStackTraceEntry();
+}
+
 void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -860,7 +873,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	char	buffer[7] = {0, 0, 0, 0, 0, 0, 0};
 	char	*bu;
 	char	*fct_name = 0;
-	char	*fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1min function '");
+	char	*fct;
         int	cond = 0;
 	int	cond2 = 0;
 	int	act = 0;
@@ -872,14 +885,20 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	declaring_var = 0;
 	char	*ptr = file;
 	int	l_o = 0;
+	int	if_depth;
 	int	fine = 0;
 	int	parenthesis = 0;
 	int	indentBuffer = 0;
-	list_t	*expected_indentlvl = my_malloc(sizeof(*expected_indentlvl));
+	list_t	*expected_indentlvl;
 	float	current_indent_lvl = 0;
+	list_t	*if_branching;
 
-	memset(expected_indentlvl, 0, sizeof(*expected_indentlvl));
 	addStackTraceEntry("find_long_fct", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
+	fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1min function '");
+	if_branching = my_malloc(sizeof(*if_branching));
+	expected_indentlvl =  my_malloc(sizeof(*expected_indentlvl));
+	memset(if_branching, 0, sizeof(*if_branching));
+	memset(expected_indentlvl, 0, sizeof(*expected_indentlvl));
 	if (flags->d)
 		printf("Beggining of buffer\n");
 	for (int i = 0 ; file[i] ; i++) {
@@ -895,6 +914,8 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			printf("\t\t\tparenthesis  : %i\n", parenthesis);
 			printf("\t\t\tindent lvl   : %f\n", current_indent_lvl);
 			printf("\t\t\texpected ind : %i\n", get_indent_expected(&file[i], bracket, expected_indentlvl, comment));
+			printf("\t\t\tif branching :\n");
+			display_if_branching(if_branching);
 		}
 		if (cond3 && file[i] == '(')
 			parenthesis++;
@@ -910,6 +931,9 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = bu;
 			}
+		}
+		if (i > 0 && !char_valid(file[i - 1]) && match("if", &file[i]) && !char_valid(file[i + 2])) {
+			
 		}
 		if (cond3 && file[i] == '\n') {
 		        ptr = &file[i];
@@ -1489,13 +1513,11 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				printf(": il y a un jour où il faut s'arrêter...\n");
 				mistakes[IF_DEPTH]++;
 				mistakes[ETIENNE]++;
-				if (flags->v) {
-					for (end = i + 1; file[end] && file[end] != '\n'; end++);
-					bu = my_malloc(end - i + 1);
-					sub_strings(file, i + 1, end, bu);
-                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
-					free(bu);
-				}
+				for (end = i + 1; file[end] && file[end] != '\n'; end++);
+				bu = my_malloc(end - i + 1);
+				sub_strings(file, i + 1, end, bu);
+				mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
+				free(bu);
 			} else if (fine > 3) {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
@@ -1514,13 +1536,11 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 						printf(": nested conditonal branchings with a depth of 3 or more (\033[31;1m%i\033[0m)\n", fine - 1);
 				}
 				mistakes[IF_DEPTH]++;
-				if (flags->v) {
-					for (end = i + 1; file[end] && file[end] != '\n'; end++);
-					bu = my_malloc(end - i + 1);
-					sub_strings(file, i + 1, end, bu);
-                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
-					free(bu);
-				}
+				for (end = i + 1; file[end] && file[end] != '\n'; end++);
+				bu = my_malloc(end - i + 1);
+				sub_strings(file, i + 1, end, bu);
+				mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
+				free(bu);
 			}
 			if (col > 300) {
 				printf("%s [line:%i]: ??????? Is this a joke ?\n", path, ln);
@@ -1615,6 +1635,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(bu);
 			}
 			mistakes[TRAILING_SPACE]++;
+		}
+		if (file[i] == ';' && !bracket && fct_name) {
+			free(fct_name);
+			fct_name = NULL;
 		}
 	        if (file[i] >= 32 || (unsigned char)file[i] == 195)
 			col++;

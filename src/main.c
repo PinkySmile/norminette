@@ -102,10 +102,9 @@ int	main(int argc, char **args)
 	name = args[0];
 	set_sigaction();
 	initStackTrace();
-	addStackTraceEntry("main", "ip", "argc", argc, "args", args);
-	if (argc > 1 && compare_strings(args[1], "-t"))
-		flags.t = 1;
-        flags = get_flags(argc, args);
+	flags.t = 1;
+        addStackTraceEntry("main", "ip", "argc", argc, "args", args);
+	flags = get_flags(argc, args);
 	dirs = parse_args(argc, args);
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;

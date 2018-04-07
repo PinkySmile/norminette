@@ -169,11 +169,12 @@ void	disp_list(list_t *list)
 
 flag	get_flags(int argc, char **args)
 {
-	flag	flags = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	flag	flags;
 	int	disp = 0;
 	char	*dir = 0;
 
 	addStackTraceEntry("get_flags", "ip", "argc", argc, "args", args);
+	memset(&flags, false, sizeof(flags));
 	for (int i = 1; i < argc; i++)
 		for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
 			if (args[i][j] == 'v')
