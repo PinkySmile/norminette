@@ -32,6 +32,7 @@ int	char_valid(char c);
 char	*get_prog_name();
 int	*get_mistakes();
 flag	*get_flags_var();
+void	free_b_fct_list(list_t *list);
 char	*int_to_str(int nbr);
 char	*long_to_str(long nbr);
 char	*double_to_str(double nbr);

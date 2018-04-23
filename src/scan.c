@@ -46,6 +46,7 @@ int	is_file_useless(char *path, char *name, flag *flags)
 	int		cond2 = 1;
 
 	addStackTraceEntry("is_file_useless", "ppp", "path", path, "name", name, "flags", flags);
+	memset(&info, 0, sizeof(info));
 	stat(path, &info);
 	cond = name[strlen(name) - 1] == '~';
 	if (flags->d)
@@ -337,6 +338,7 @@ void	display_result(int *mistakes, flag *flags)
 			printf("\nBanned functions used :\n");
 			print_list(flags->b_fcts, flags);
 			printf("\n\n");
+			free_b_fct_list(flags->b_fcts);
 		} else
 			printf("Re-run with -b to see a detailed list of all forbidden functions found.\n\n");
 	}
@@ -369,5 +371,6 @@ void	display_result(int *mistakes, flag *flags)
 		printf("\033[%im%i\033[0m\n", style_mark == 0 ? 32 : 31, -style_mark);
 	}
 	freeStackTrace();
+	free_list(flags->fcts);
 	exit(style_mark != 0);
 }

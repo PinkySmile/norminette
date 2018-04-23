@@ -861,7 +861,25 @@ void	display_if_branching(list_t *branchs)
 	delStackTraceEntry();
 }
 
-void	find_long_fct(char *file, int *mistakes, char *path, char const **words, flag *flags)
+bool	checkTrailingSpace(char *file)
+{
+	if (file[0] && file[1] && file[2] && file[2] == '=')
+		if (space(file[1]) && (file[0] == '=' || file[0] == '<' || file[0] == '>' || file[0] == '*' || file[0] == '/' || file[0] == '+' || file[0] == '-'))
+			return (true);
+	if (file[0] && file[1] && space(file[1])) {
+		if (file[0] == '(')
+			return (true);
+		if (file[2] == ')')
+			return (true);
+		if (file[0] == '+' && file[1] == '+')
+			return (true);
+		if (file[0] == '-' && file[1] == '-')
+			return (true);
+	}
+	return (false);
+}
+
+void	scan_entire_file(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
 	int	s_q = 0;
@@ -871,7 +889,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	int	bracket = 0;
 	int	col = 1;
 	char	buffer[7] = {0, 0, 0, 0, 0, 0, 0};
-	char	*bu;
+	char	*bu = NULL;
 	char	*fct_name = 0;
 	char	*fct;
         int	cond = 0;
@@ -893,7 +911,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	float	current_indent_lvl = 0;
 	list_t	*if_branching;
 
-	addStackTraceEntry("find_long_fct", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
+	addStackTraceEntry("scan_entire_file", "ppppp", "file", file, "mistakes", mistakes, "path", path, "words", words, "flags", flags);
 	fct = flags->f ? (flags->c ? "dans la fonction '" : "\033[1mdans la fonction '") : (flags->c ? "in function '" : "\033[1min function '");
 	if_branching = my_malloc(sizeof(*if_branching));
 	expected_indentlvl =  my_malloc(sizeof(*expected_indentlvl));
@@ -931,9 +949,6 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 				free(fct_name);
 				fct_name = bu;
 			}
-		}
-		if (i > 0 && !char_valid(file[i - 1]) && match("if", &file[i]) && !char_valid(file[i + 2])) {
-			
 		}
 		if (cond3 && file[i] == '\n') {
 		        ptr = &file[i];
@@ -1225,40 +1240,37 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
 			for (int i = 0; i < 7; i++)
 				buffer[i] = 0;
-			if (file[i] == 5) {
-				buffer[0] = 'E';
-				buffer[1] = 'N';
-				buffer[2] = 'Q';
-			} else if (file[i] == 7) {
-				buffer[0] = '\\';
-				buffer[1] = 'a';
-			} else if (file[i] == 8) {
-				buffer[0] = '\\';
-				buffer[1] = 'b';
-			} else if (file[i] == 11) {
-				buffer[0] = '\\';
-				buffer[1] = 'v';
-			} else if (file[i] == 12) {
-				buffer[0] = '\\';
-				buffer[1] = 'f';
-			} else if (file[i] == 13) {
-				buffer[0] = '\\';
-				buffer[1] = 'r';
-			} else if (file[i] == 14) {
-				buffer[0] = 'S';
-				buffer[1] = 'O';
-			} else if (file[i] == 15) {
-				buffer[0] = 'S';
-				buffer[1] = 'I';
-			} else if (file[i] == 127) {
-				buffer[0] = 'D';
-				buffer[1] = 'E';
-				buffer[2] = 'L';
-			} else if (file[i] > 0) {
+			switch (file[i]) {
+			case 5:
+				strcpy(buffer, "ENQ");
+				break;
+			case 7:
+				strcpy(buffer, "\\a");
+				break;
+			case 8:
+				strcpy(buffer, "\\b");
+				break;
+			case 11:
+				strcpy(buffer, "\\a");
+				break;
+			case 12:
+				strcpy(buffer, "\\v");
+				break;
+			case 13:
+				strcpy(buffer, "\\r");
+				break;
+			case 14:
+				strcpy(buffer, "SO");
+				break;
+			case 15:
+				strcpy(buffer, "SI");
+				break;
+			case 127:
+				strcpy(buffer, "DEL");
+				break;
+			default:
 				buffer[0] = file[i];
-				buffer[1] = ' ';
-			} else
-				buffer[0] = file[i];
+			}
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col - cond);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1523,7 +1535,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					printf("%s [line:%i]", path, ln + 1);
 					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
 					if (flags->f)
-						printf(": profondeur d'indentation de 3 ou plus (%i)\n", fine - 1);
+						printf(": profondeur conditionnel de 3 ou plus (%i)\n", fine - 1);
 					else
 						printf(": nested conditonal branchings with a depth of 3 or more (%i)\n", fine - 1);
 				} else {
@@ -1531,7 +1543,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 					printf(" [line:\033[32;1m%i\033[0m]", ln + 1);
 					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
 					if (flags->f)
-						printf(": profondeur d'indentation de 3 ou plus (\033[32;1m%i\033[0m)\n", fine - 1);
+						printf(": profondeur conditionnel de 3 ou plus (\033[32;1m%i\033[0m)\n", fine - 1);
 					else
 						printf(": nested conditonal branchings with a depth of 3 or more (\033[31;1m%i\033[0m)\n", fine - 1);
 				}
@@ -1594,10 +1606,10 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 			if (cond3)
 				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
 		} else if(!space(file[i]))
-			begin_of_line =	0;
+			begin_of_line =	false;
 		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
 			declaring_var = 0;
-		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1]) && nobackslash(&file[i])) {
+		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && (space(file[i + 1]) || (i == 0 && checkTrailingSpace(&file[i - 1]))) && nobackslash(&file[i])) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col - cond);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1669,6 +1681,7 @@ void	find_long_fct(char *file, int *mistakes, char *path, char const **words, fl
 	}
 	free(fct_name);
 	free_list(expected_indentlvl);
+	free_list(if_branching);
 	if (flags->d)
 		printf("End of buffer\n");
         delStackTraceEntry();
@@ -1685,7 +1698,7 @@ void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 		return;
 	}
 	check_header(file_content, flags, mistakes, path);
-	find_long_fct(file_content, mistakes, path, key_words, flags);
+	scan_entire_file(file_content, mistakes, path, key_words, flags);
 	if (flags->d)
 		printf("File %s scanned !\n\n", path);
         free(file_content);
@@ -1703,7 +1716,7 @@ void	scan_h_file(char *path, int *mistakes, flag *flags)
 		return;
 	}
 	check_header(file_content, flags, mistakes, path);
-	find_long_fct(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
+	scan_entire_file(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
 	free(file_content);
 	delStackTraceEntry();
 }

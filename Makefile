@@ -32,10 +32,10 @@ INC =	-Iinclude \
 
 LDFLAGS = -lm
 
-CFLAGS= $(INC) \
-	-W \
-	-Wall \
-	-Wextra \
+CFLAGS= $(INC)	\
+	-W	\
+	-Wall	\
+	-Wextra	\
 
 CC =	gcc
 
@@ -54,6 +54,9 @@ fclean:	clean
 	$(RM) $(NAME)
 
 re:	fclean all
+
+fast:	CFLAGS += -Ofast
+fast:	re
 
 dbg:	CFLAGS += -O0 -g
 dbg:	RULE = dbg
