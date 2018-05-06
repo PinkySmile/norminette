@@ -54,7 +54,7 @@ void	disp_en_help(char *prog_name)
 	printf("\t\twith forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'\n\n");
 	printf("RETURN VALUES :\n");
 	printf("\tIf no mistakes are found, the program exit with code 0.\n");
-	printf("\tIf one or many mistakes are found, the program eit with code 1.\n\n");
+	printf("\tIf one or many mistakes are found, the program exit with code 1.\n\n");
 	printf("REPORT A BUG :\n");
 	printf("\tIf you find a bug, first, update  the program  (Use the\n");
 	printf("\t'update.sh'  in  the  repository or, if  you  used  the\n");
