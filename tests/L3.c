@@ -7,10 +7,16 @@
 
 void	test(void)
 {
-	for () {}
+	for() {}
 	while() {}
 	return();
 	if() {}
 	else if() {}
 	switch() {}
+	for () {}
+	while () {}
+	return ();
+	if () {}
+	else if () {}
+	switch () {}
 }
