@@ -10,7 +10,6 @@
 #include "structs.h"
 #include "functions.h"
 #include "stacktrace.h"
-#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>

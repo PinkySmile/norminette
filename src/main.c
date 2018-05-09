@@ -9,7 +9,6 @@
 #include "my.h"
 #include "global2.h"
 #include "stacktrace.h"
-#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>

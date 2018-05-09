@@ -7,7 +7,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/sysmacros.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -903,7 +902,6 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	int	declaring_var = 0;
 	char	*ptr = file;
 	int	l_o = 0;
-	int	if_depth;
 	int	fine = 0;
 	int	parenthesis = 0;
 	int	indentBuffer = 0;
