@@ -7,17 +7,16 @@
 
 typedef __attribute__ ((definetly_not_trailing)) NO;
 
-void	test( int yeah, __attribute__ ((not_trailing)) char space , NO no )
+void	test( int yeah, __attribute__((not_trailing)) char space , NO no )
 {
 	int	a    =     10;
 
 	switch (space) {
-	case (TRAILING):
-		throw_an_error ();
+	case (TRAILING): throw_an_error ();
+		break;
 	case (int) (STILL_TRAILING):
 		throw_an_error( );
-	case NOT_TRAILING:
-		dont();
+	case NOT_TRAILING: dont(); break;
 	case TRAILING_AGAIN :
 		throw_an_error() ;
 	default:
