@@ -5,17 +5,10 @@ if [ $? == 0 ]
 then make -C norminette
      make -C norminette clean
      chmod 755 $HOME/norminette/update.sh
-     echo "Donnez le nom de l'alias : "
-     read x
-     echo alias $x="$HOME/norminette/norminette" >> $HOME/.bashrc
-     echo alias $x="$HOME/norminette/norminette" >> $HOME/.zshrc
-     echo Alias $x créé
-     echo alias $x-update="$HOME/norminette/update.sh" >> $HOME/.bashrc
-     echo alias $x-update="$HOME/norminette/update.sh" >> $HOME/.zshrc
-     echo Alias $x-update créé
-     echo alias $x-debug="$HOME/norminette/debug.sh" >> $HOME/.bashrc
-     echo alias $x-debug="$HOME/norminette/debug.sh" >> $HOME/.zshrc
-     echo Alias $x-debug créé
+     echo "coping nominette to /bin/norminette"
+     sudo cp $HOME/norminette/norminette /bin/
+     echo "adding manpage"
+     sudo cp $HOME/norminette/manpage.1.gz /usr/local/share/man/man1/norminette.1.gz
 else
     echo "Error: could not clone repository"
     echo $result
