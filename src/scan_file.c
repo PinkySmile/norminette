@@ -84,7 +84,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 			buffer = 2;
 		}
 		if (!flags->c && ((col_c > col && col_c <= col + size) || !alt))
-			printf("\033[95;1m");	
+			printf("\033[95;1m");
 		else if (!flags->c && (buffer > 0 || comment != 0))
 			printf("\033[0m\033[31m");
 		else if (!flags->c && (q || s_q || line[i] == '"' || line[i] == '\''))
@@ -109,7 +109,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 				} else if (col_c >= col && col_c < col + size)
 					for (int i = 0; i < 8 - col_c % 8; i++)
 						printf("%s~", !flags->c ? "\033[95;1m" : "");
-				else 
+				else
 					printf("%s\t", !flags->c ? "\033[0m" : "");
 				col_c = (col_c + 8) - (col_c % 8);
 			} else if (line[i] >= 32) {
@@ -302,30 +302,33 @@ int	is_in_array(char const **array, char *str)
 	return (0);
 }
 
-int	whitelisted(char *fct)
+bool	whitelisted(char *fct)
 {
 	addStackTraceEntry("whitelisted", "p", "fct", fct);
         if (compare_strings(fct, "sizeof")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
 	} else if (compare_strings(fct, "")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
 	} else if (compare_strings(fct, "va_args")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
 	} else if (compare_strings(fct, "case")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
 	} else if (compare_strings(fct, "va_end")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
 	} else if (compare_strings(fct, "va_start")) {
 		delStackTraceEntry();
-		return (1);
+		return (true);
+	} else if (compare_strings(fct, "__attribute__")) {
+		delStackTraceEntry();
+		return (true);
 	}
 	delStackTraceEntry();
-	return (0);
+	return (false);
 }
 
 void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, char const **words, char *fct, int ln, char *fct_name, int col, char *file)
@@ -393,7 +396,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		else
 			col++;
 	}
-	if (!is_in_array(words, name) && start > 0 && space(file[start - 1]) && !compare_strings(name, "case")) {
+	if (!is_in_array(words, name) && start > 0 && space(file[start - 1]) && !compare_strings(name, "__attribute__") && !compare_strings(name, "case")) {
 	        mistakes[TRAILING_SPACE]++;
 		if (flags->c) {
 			printf("%s [%i:%i]", file_name, ln + 1, col - 1);
@@ -750,6 +753,7 @@ int	get_indent_expected(char *file, int bracket, list_t *expected_indentlvl, int
 	int	s_q = 0;
 	int	q = 0;
 	int	i = 1;
+	bool	has_2pt = false;
 
 	addStackTraceEntry("get_indent_expected", "pipi", "file", file, "bracket", bracket, "expected_indentlvl", expected_indentlvl, "comment", comment);
 	if (get_flags_var()->d)
@@ -770,8 +774,10 @@ int	get_indent_expected(char *file, int bracket, list_t *expected_indentlvl, int
 			comment = 2;
 		if (!q && !s_q && file[i] == '*' && file[i + 1] == '/' && comment == 2)
 			comment = 0;
+		if (!q && !s_q && comment == 0 && file[i] == ':')
+			has_2pt = true;
 	}
-	if (file[i - 1] == ':' && !q && !s_q && comment == 0) {
+	if (has_2pt) {
 		level--;
 		if (get_flags_var()->d)
 			printf("Found ':' : %i\n", level);
@@ -791,7 +797,7 @@ int	need_to_indent(char *file, int comment)
 	addStackTraceEntry("need_to_indent", "pi", "file", file, "comment", comment);
 	for (; file[i] && !space(file[i]) && file[i] != ')' && file[i] != ';' && file[i] != '(' && file[i] != ']' && file[i] != '['; i++);
 	if (file[i] == ')' || file[i] == ';' || file[i] == ']' || file[i] == '[') {
-		
+
 		delStackTraceEntry();
 		return (0);
 	}
@@ -1052,7 +1058,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				free(bu);
 			}
 			mistakes[GOTO_USED]++;
-		
+
 		}
 		if (file[i] == ';' && parenthesis == 0)
 			act++;
@@ -1452,7 +1458,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					indentBuffer = -1;
 				else
 					indentBuffer = 1;
-			}	
+			}
 			while (indentBuffer <= 0 && expected_indentlvl->data && *(int *)expected_indentlvl->data >= bracket) {
 				free(expected_indentlvl->data);
 			        expected_indentlvl = expected_indentlvl->prev;
