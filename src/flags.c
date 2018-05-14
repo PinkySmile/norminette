@@ -12,12 +12,15 @@
 #include "my.h"
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 void	disp_en_help(char *prog_name)
 {
 	printf("USAGE :\n");
 	printf("\t%s [-vcfunahd] [-I<path>] [folders/files]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
+	printf("\t--update :\tUpdates from the repository in ~/norminette (will ask sudo password)\n\n");
 	printf("\t-a :\t\tEnables v, u, b, I. and l options (like -vbunlI.)\n\n");
 	printf("\t-b :\t\tDisplays all banned functions found (useless without -I)\n\n");
 	printf("\t-c :\t\tDisables colors\n\n");
@@ -83,6 +86,7 @@ void	disp_fr_help(char *prog_name)
 	printf("USAGE :\n");
 	printf("\t%s [-vcfunahd] [-I<chemin>] [dossiers/fichiers]\n\n", prog_name);
 	printf("DESCRIPTION :\n");
+	printf("\t--update :\tMet à jour depuis le repository dans ~/norminette (demande le mot de passe sudo)\n\n");
 	printf("\t-a :\t\tActive les options v, u, b, I. et l (equivaut à -vbulI.)\n\n");
 	printf("\t-b :\t\tAffiche une liste des fonctions interdites trouvées (inutile sans -I)\n\n");
 	printf("\t-c :\t\tDésactive les couleurs\n\n");
@@ -167,17 +171,34 @@ void	disp_list(list_t *list)
 	delStackTraceEntry();
 }
 
-flag	get_flags(int argc, char **args)
+flag	get_flags(int argc, char **args, char **env)
 {
 	flag	flags;
 	int	disp = 0;
 	char	*dir = 0;
 
-	addStackTraceEntry("get_flags", "ip", "argc", argc, "args", args);
+	addStackTraceEntry("get_flags", "ipp", "argc", argc, "args", args, "env", env);
 	memset(&flags, false, sizeof(flags));
 	for (int i = 1; i < argc; i++)
-		for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
-			if (args[i][j] == 'v')
+		if (strcmp(args[i], "--update") == 0) {
+			char	*path = get_env_var(env, "HOME");
+			char	*arg[] = {
+				"bash",
+				NULL,
+				"--force",
+				NULL
+			};
+
+			arg[1] = concat(path, "/norminette");
+			printf("Updating from repository in %s\n", arg[1]);
+			chdir(arg[1]);
+			free(arg[1]);
+			arg[1] = "./update.sh";
+			if (execve("/bin/bash", arg, env))
+				 perror("/bin/bash");
+			exit(EXIT_FAILURE);
+		} else for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
+		        if (args[i][j] == 'v')
 				flags.v = 1;
 			else if (args[i][j] == 's')
 				flags.no_big_files = 1;

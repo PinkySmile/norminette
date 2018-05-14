@@ -7,24 +7,25 @@
 
 NAME =	norminette
 
-SRC =	src/main.c \
-	src/scan.c \
-	src/flags.c \
-	src/scan_file.c \
-	src/sub_strings.c \
-	src/compare_strings.c \
-	src/my_showstr.c \
-	src/my_putnbr_base.c \
-	src/catch_sig.c \
-	src/load_functions.c \
-	src/free_list.c \
-	src/int_to_str.c \
-	src/long_to_str.c \
-	src/double_to_str.c \
-	src/concat.c \
-	src/get_nbrlen.c \
-	src/stacktrace.c \
-	src/my_malloc.c \
+SRC =	src/main.c		\
+	src/scan.c		\
+	src/flags.c		\
+	src/scan_file.c		\
+	src/sub_strings.c	\
+	src/compare_strings.c	\
+	src/my_showstr.c	\
+	src/my_putnbr_base.c	\
+	src/catch_sig.c		\
+	src/load_functions.c	\
+	src/free_list.c		\
+	src/int_to_str.c	\
+	src/long_to_str.c	\
+	src/double_to_str.c	\
+	src/concat.c		\
+	src/get_nbrlen.c	\
+	src/stacktrace.c	\
+	src/my_malloc.c		\
+	src/get_env_vars.c	\
 
 OBJ =	$(SRC:.c=.o)
 

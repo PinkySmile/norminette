@@ -66,7 +66,7 @@ char	**parse_args(int argc, char **args)
 		if (args[i][0] != '-') {
 			dirs[pos++] = args[i];
 			got_an_arg = 1;
-		}		
+		}
 	if (!got_an_arg) {
 		dirs[0] = ".";
 		dirs[1] = 0;
@@ -94,7 +94,7 @@ void	set_sigaction(void)
 	sigaction(SIGPIPE, &action, 0);
 }
 
-int	main(int argc, char **args)
+int	main(int argc, char **args, char **env)
 {
 	char	**dirs = 0;
 
@@ -102,8 +102,8 @@ int	main(int argc, char **args)
 	set_sigaction();
 	initStackTrace();
 	flags.t = 1;
-        addStackTraceEntry("main", "ip", "argc", argc, "args", args);
-	flags = get_flags(argc, args);
+        addStackTraceEntry("main", "ipp", "argc", argc, "args", args, "env", env);
+	flags = get_flags(argc, args, env);
 	dirs = parse_args(argc, args);
 	for (int i = 0; i < 40; i++)
 		mistakes[i] = 0;

@@ -11,7 +11,7 @@
 #ifndef _FUNCTION_H_
 #define _FUNCTION_H_
 
-flag	get_flags(int argc, char **args);
+flag	get_flags(int argc, char **args, char **env);
 void	scan_folder(char *path, flag *flags, int *mistakes);
 void	scan_file(char *path, flag *flags, int *mistakes, int force);
 int	is_dir(char *path);
@@ -40,5 +40,7 @@ int	get_nbrlen(int nbr);
 char	*concat(char *str1, char *str2);
 char	*my_putnbrbase(unsigned int nbr, char const *base);
 void	*my_malloc(int size);
+char	*get_env_var(char **env, char *var_name);
+char	*sub_strings(char const *str, int start, int end, char *buffer);
 
 #endif

@@ -2,6 +2,8 @@
 	norminette [-vcfunahd] [-I<path>] [folders/files]
 
 ## DESCRIPTION :
+   	--update	Updates from the repository in ~/norminette (will ask for sudo passord)
+
 	-a :		Enables v, u, b, I. and l options (like -vbunlI.)
 
 	-b :		Displays all banned functions found (useless without -I)
