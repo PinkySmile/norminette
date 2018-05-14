@@ -1,7 +1,6 @@
 #!/bin/bash
 cd $HOME
-result=$(git clone https://github.com/Gegel85/norminette.git)
-if [ $? == 0 ]
+if git clone https://github.com/Gegel85/norminette.git
 then make -C norminette
      make -C norminette clean
      chmod 755 $HOME/norminette/update.sh
@@ -11,5 +10,4 @@ then make -C norminette
      sudo cp $HOME/norminette/manpage.1.gz /usr/local/share/man/man1/norminette.1.gz
 else
     echo "Error: could not clone repository"
-    echo $result
 fi
