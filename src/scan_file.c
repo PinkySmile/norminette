@@ -175,40 +175,40 @@ list_t	*in_list(list_t *list, char *str)
 			return (list);
 		}
 	delStackTraceEntry();
-	return (0);
+	return (NULL);
 }
 
-int	is_in_list(list_t *list, char *str)
+bool	is_in_list(list_t *list, char *str)
 {
 	addStackTraceEntry("is_in_list", "pp", "list", list, "str", str);
 	for (; list->next; list = list->next)
 		if (compare_strings(str, (char *)list->data)) {
 			delStackTraceEntry();
-			return (1);
+			return (true);
 		}
 	delStackTraceEntry();
-	return (0);
+	return (false);
 }
 
-int	match(char *str1, char *str2)
+bool	match(char *str1, char *str2)
 {
 	addStackTraceEntry("match", "pp", "str1", str1, "str2", str2);
 	if (strlen(str1) > strlen(str2)) {
 		delStackTraceEntry();
-		return (0);
+		return (false);
 	}
 	for (int i = 0; str1[i] && str2[i]; i++)
 		if (str1[i] != str2[i]) {
 			delStackTraceEntry();
-			return (0);
+			return (false);
 		}
 	delStackTraceEntry();
-	return (1);
+	return (true);
 }
 
 void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 {
-	int	end = 0;
+	bool	end = false;
 	int	line = 0;
 	int	first_line = 0;
 	int	epi_proj = 0;
@@ -222,7 +222,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 	int	i = 0;
 
 	addStackTraceEntry("check_header", "pp", "file", file, "flags", flags, "mistakes", mistakes, "file_name", file_name);
-	if (match("/*", file))
+	if (file[0] == '/' && file[1] == '*' && file[2] == '\n')
 		first_line = 1;
 	strncpy(buffer, file, 2);
 	buffer[2] = 0;
@@ -247,26 +247,26 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 				if (flags->d)
 					printf("Found \"** File description:\"\n");
 			}
-			if (oui == 0)
+			if (oui == 0 && first_line)
 				first_line++;
 			else if (oui == 1)
 				epi_proj++;
 			else
 				desc++;
 			if (line == 20 || match("*/", &file[i + 1]))
-				end = 1;
+				end = true;
 			if (end == 0 && !match("**", &file[i + 1]))
 				is_valid = 0;
 		}
 		cols++;
 	}
+	if (flags->d) {
+		printf("Header info :\n\tis_valid : %i", is_valid);
+		printf("\n\tdesc : %i", desc);
+		printf("\n\tepi_proj : %i", epi_proj);
+		printf("\n\tfirst_line : %i\n", first_line);
+	}
 	if (!(is_valid && desc > 1 && epi_proj > 1 && first_line == 1)) {
-		if (flags->d) {
-			printf("Header info :\n\tis_valid : %i", is_valid);
-			printf("\n\tdesc : %i", desc);
-			printf("\n\tepi_proj : %i", epi_proj);
-			printf("\n\tfirst_line : %i\n", first_line);
-		}
 		if (flags->c)
 			printf("%s", file_name);
 	        else
@@ -277,7 +277,7 @@ void	check_header(char *file, flag *flags, int *mistakes, char *file_name)
 			printf(": Invalid header\n");
 		mistakes[INVALID_HEADER]++;
 		if (flags->v) {
-			if (first_line != 1) {
+			if (first_line == 0){
 				for (i = 0; file[i] != '\n' && file[i]; i++);
 				buff = sub_strings(file, 0, i + 1, my_malloc(i + 2));
 				max_cols = i;
