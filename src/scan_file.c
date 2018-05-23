@@ -753,7 +753,7 @@ int	get_indent_expected(char *file, int bracket, list_t *expected_indentlvl, int
 	int	s_q = 0;
 	int	q = 0;
 	int	i = 1;
-	bool	has_2pt = false;
+	int	pt_nb = 0;
 
 	addStackTraceEntry("get_indent_expected", "pipi", "file", file, "bracket", bracket, "expected_indentlvl", expected_indentlvl, "comment", comment);
 	if (get_flags_var()->d)
@@ -775,9 +775,11 @@ int	get_indent_expected(char *file, int bracket, list_t *expected_indentlvl, int
 		if (!q && !s_q && file[i] == '*' && file[i + 1] == '/' && comment == 2)
 			comment = 0;
 		if (!q && !s_q && comment == 0 && file[i] == ':')
-			has_2pt = true;
+			pt_nb++;
+		if (!q && !s_q && comment == 0 && file[i] == '?')
+			pt_nb--;
 	}
-	if (has_2pt) {
+	if (pt_nb > 0) {
 		level--;
 		if (get_flags_var()->d)
 			printf("Found ':' : %i\n", level);
