@@ -20,9 +20,14 @@ void	test(void, void, void)
 		q = !q;
 	if (!q && comment == 0 && \
 file[i] == '\'')
+		//Nice comment, isn't it ?
 		s_q = !s_q;
+/*I don't know, I just wanted to comment my code
+		seems like I'm not good at this ;(
+*/
 	if (condition == true)
 		do_something_with(condition);
 if (indentation_is_bad)
 	throw_a_norm_error();
+//a comment here
 }

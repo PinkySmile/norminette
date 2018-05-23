@@ -1490,7 +1490,8 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				}
 			if (fine < 0)
 				fine = 0;
-			if ((current_indent_lvl != -1 && current_indent_lvl != fine) && !(i != 0 && file[i - 1] == '\\' && current_indent_lvl == 0)) {
+			if ((current_indent_lvl != -1 && current_indent_lvl != fine) && !(i != 0 && file[i - 1] == '\\' && current_indent_lvl == 0) &&
+			    comment == 0 && file[i + 1] != '/' && file[i + 1] && file[i + 2] != '/' && file[i + 2] != '*') {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
 					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
