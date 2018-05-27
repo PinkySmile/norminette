@@ -77,8 +77,11 @@ int	main(int argc, char **args, char **env)
         addStackTraceEntry("main", "ipp", "argc", argc, "args", args, "env", env);
 	flags = get_flags(argc, args, env, &dirs);
 	memset(mistakes, 0, 40 * sizeof(int));
-	if (!dirs)
-		dirs = (char *[]){".", NULL};
+	if (!dirs) {
+		dirs = my_malloc(2 * sizeof(*dirs));
+		dirs[0] = ".";
+		dirs[1] = NULL;
+	}
 	for (int i = 0; dirs[i] != 0; i++) {
 		if (flags.d)
 			printf("Entering %s\n", dirs[i]);
