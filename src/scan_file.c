@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2017
+1;5200;0c** EPITECH PROJECT, 2017
 ** scan_file
 ** File description:
 ** Scan a file to detect styles errors
@@ -878,9 +878,9 @@ bool	checkTrailingSpace(char *file)
 			return (true);
 		if (file[2] == ')')
 			return (true);
-		if (file[0] == '+' && file[1] == '+')
+		if (file[0] == '+' && file[2] == '+')
 			return (true);
-		if (file[0] == '-' && file[1] == '-')
+		if (file[0] == '-' && file[2] == '-')
 			return (true);
 	}
 	return (false);
@@ -906,8 +906,8 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	int	start = 0;
 	int	end = 0;
 	int	comment = 0;
-	int	begin_of_line = 1;
-	int	declaring_var = 0;
+	bool	begin_of_line = true;
+	bool	declaring_var = false;
 	char	*ptr = file;
 	int	l_o = 0;
 	int	fine = 0;
@@ -1242,7 +1242,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			if (compare_strings(words[k], buffer))
 				break;
 		}
-		if ((cond3 && file[i] < 32 && !space(file[i])) || file[i] == 127) {
+		if (cond3 && (file[i] < 32 || file[i] == 127) && !space(file[i])) {
 		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
 			for (int i = 0; i < 7; i++)
 				buffer[i] = 0;
@@ -1605,7 +1605,6 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			ln++;
 			col = 0;
 			begin_of_line = 1;
-			declaring_var = 1;
 			comment = comment == 1 ? 0 : comment;
 			if (cond3)
 				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
@@ -1613,7 +1612,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			begin_of_line =	false;
 		if (file[i] == '(' || file[i] == '{' || file[i] == '}')
 			declaring_var = 0;
-		if (cond3 && !declaring_var && !begin_of_line && space(file[i]) && (space(file[i + 1]) || (i == 0 && checkTrailingSpace(&file[i - 1]))) && nobackslash(&file[i])) {
+		if (cond3 && ((!declaring_var && !begin_of_line && space(file[i]) && space(file[i + 1]) && nobackslash(&file[i])) || (i != 0 && checkTrailingSpace(&file[i - 1])))) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col - cond);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");

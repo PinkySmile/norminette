@@ -27,4 +27,5 @@ void	test( int yeah, __attribute__((not_trailing)) char space , NO no )
 	a - = TRAILING_SPACE;
 	a * = TRAILING_SPACE;
 	a / = TRAILING_SPACE;
+	for (int i  = 0; i = = 0; i+ +);
 }

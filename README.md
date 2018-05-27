@@ -88,4 +88,5 @@
 	this server https://discord.gg/RgDbJDW
 
 ## CHANGELOG
+	1.1: Improved trailing spaces detection
 	1.0: Release
