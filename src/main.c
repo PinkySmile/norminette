@@ -38,41 +38,13 @@ int     find_type(mode_t mode)
 	return ('?');
 }
 
-int     is_dir(char *path)
+bool	is_dir(char *path)
 {
 	struct stat	info;
 
 	if (lstat(path, &info) >= 0 && find_type(info.st_mode) == 'd')
-		return (1);
-	return (0);
-}
-
-char	**parse_args(int argc, char **args)
-{
-	char	**dirs;
-	int	got_an_arg = 0;
-	int	pos = 0;
-
-	if (argc != 1) {
-		dirs = my_malloc(sizeof(*dirs) * argc);
-		for (int i = 0; i < argc; i++)
-			dirs[i] = 0;
-	} else {
-		dirs = my_malloc(sizeof(*dirs) * 2);
-		for (int i = 0; i < 2; i++)
-			dirs[i] = 0;
-	}
-	for (int i = 1; i < argc; i++)
-		if (args[i][0] != '-') {
-			dirs[pos++] = args[i];
-			got_an_arg = 1;
-		}
-	if (!got_an_arg) {
-		dirs[0] = ".";
-		dirs[1] = 0;
-	} else
-		dirs[argc - 1] = 0;
-	return (dirs);
+		return (true);
+	return (false);
 }
 
 void	set_sigaction(void)
@@ -96,17 +68,17 @@ void	set_sigaction(void)
 
 int	main(int argc, char **args, char **env)
 {
-	char	**dirs = 0;
+	char	**dirs = NULL;
 
 	name = args[0];
 	set_sigaction();
 	initStackTrace();
 	flags.t = 1;
         addStackTraceEntry("main", "ipp", "argc", argc, "args", args, "env", env);
-	flags = get_flags(argc, args, env);
-	dirs = parse_args(argc, args);
-	for (int i = 0; i < 40; i++)
-		mistakes[i] = 0;
+	flags = get_flags(argc, args, env, &dirs);
+	memset(mistakes, 0, 40 * sizeof(int));
+	if (!dirs)
+		dirs = (char *[]){".", NULL};
 	for (int i = 0; dirs[i] != 0; i++) {
 		if (flags.d)
 			printf("Entering %s\n", dirs[i]);
