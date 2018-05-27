@@ -193,23 +193,23 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 	memset(&flags, 0, sizeof(flag));
 	while (true) {
 		static struct option long_options[] = {
-			{"all",           no_argument,       0, 'a'},
-			{"banned",        no_argument,       0, 'b'},
-			{"colorless",     no_argument,       0, 'c'},
-			{"debug",         no_argument,       0, 'd'},
-			{"french",        no_argument,       0, 'f'},
-			{"large",         no_argument,       0, 'l'},
-			{"help",          no_argument,       0, 'h'},
-			{"name",          no_argument,       0, 'n'},
-			{"small",         no_argument,       0, 's'},
-			{"traceback",     no_argument,       0, 't'},
-			{"useless-file",  no_argument,       0, 'u'},
-			{"verbose",       no_argument,       0, 'v'},
-			{"include",       required_argument, 0, 'I'},
-			{"update",        no_argument,       0, 'U'},
-			{0,               0,                 0,  0 }
+			{"all",			no_argument,       0, 'a'},
+			{"banned-fct-list",	no_argument,       0, 'b'},
+			{"colorless",		no_argument,       0, 'c'},
+			{"debug",		no_argument,       0, 'd'},
+			{"french",		no_argument,       0, 'f'},
+			{"large",		no_argument,       0, 'l'},
+			{"help",		no_argument,       0, 'h'},
+			{"name",		no_argument,       0, 'n'},
+			{"small",		no_argument,       0, 's'},
+			{"traceback",		no_argument,       0, 't'},
+			{"useless-file",	no_argument,       0, 'u'},
+			{"verbose",		no_argument,       0, 'v'},
+			{"include",		required_argument, 0, 'I'},
+			{"update",		no_argument,       0, 'U'},
+			{0,			0,                 0,  0 }
 		};
-		
+
 		c = getopt_long(argc, args, "abcdflhnstuvIU",
 				long_options, &option_index);
 		if (c == -1)
@@ -238,7 +238,7 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 				flags.b_fcts->data = NULL;
 			}
 			break;
-			
+
 		case 'c':
 			flags.c = true;
 			break;
@@ -293,7 +293,6 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 				perror("/bin/bash");
 			exit(EXIT_FAILURE);
 		case '?':
-			printf("Invalid option\n");
 			printf("Use « %s -h » for more information\n", args[0]);
 			free_list(flags.fcts);
 			freeStackTrace();
