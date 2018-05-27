@@ -1169,7 +1169,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			}
 			mistakes[SPACE_MISSING]++;
 		}
-		for (int k = 0; words[k] && cond3; k++) {
+		for (int k = 0; words[k] && cond3; k++) { //à optimiser
 			sub_strings(file, i, i + strlen(words[k]), buffer);
 			cond = (i + strlen(words[k])) < strlen(file);
 		        cond = cond && file[i + strlen(words[k])] == '(';
@@ -1205,7 +1205,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			        if (flags->d)
 					printf("[%i:%i]:Added list entry ! (%i)\n", ln, col, *(int *)expected_indentlvl->data);
 			}
-			cond = cond && cond2;
+			cond = cond && (i == 0 || !char_valid(file[i - 1]));
 			if(compare_strings(buffer, words[k]) && cond) {
 				if (flags->c) {
 					printf("%s [%i:%i]", path, ln, col + 1);
