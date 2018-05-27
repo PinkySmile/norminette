@@ -5,6 +5,7 @@
 ** flags
 */
 
+#include <getopt.h>
 #include <stdlib.h>
 #include "stacktrace.h"
 #include "functions.h"
@@ -14,6 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+
 
 void	disp_en_help(char *prog_name)
 {
@@ -171,95 +173,138 @@ void	disp_list(list_t *list)
 	delStackTraceEntry();
 }
 
-flag	get_flags(int argc, char **args, char **env)
+flag get_flags(int argc, char **args, char **env, char ***dirs)
 {
-	flag	flags;
-	int	disp = 0;
-	char	*dir = 0;
+	int c;
+	flag flags;
+	bool disp = false;
+	char *dir = NULL;
+	int nb = 0;
+	int option_index = 0;
+	char *arg[] = {
+		"bash",
+		NULL,
+		"--force",
+		NULL
+	};
+	char *path;
 
 	addStackTraceEntry("get_flags", "ipp", "argc", argc, "args", args, "env", env);
-	memset(&flags, false, sizeof(flags));
-	for (int i = 1; i < argc; i++)
-		if (strcmp(args[i], "--update") == 0) {
-			char	*path = get_env_var(env, "HOME");
-			char	*arg[] = {
-				"bash",
-				NULL,
-				"--force",
-				NULL
-			};
-
+	memset(&flags, 0, sizeof(flag));
+	while (true) {
+		static struct option long_options[] = {
+			{"all",           no_argument,       0, 'a'},
+			{"banned",        no_argument,       0, 'b'},
+			{"colorless",     no_argument,       0, 'c'},
+			{"debug",         no_argument,       0, 'd'},
+			{"french",        no_argument,       0, 'f'},
+			{"large",         no_argument,       0, 'l'},
+			{"help",          no_argument,       0, 'h'},
+			{"name",          no_argument,       0, 'n'},
+			{"small",         no_argument,       0, 's'},
+			{"traceback",     no_argument,       0, 't'},
+			{"useless-file",  no_argument,       0, 'u'},
+			{"verbose",       no_argument,       0, 'v'},
+			{"include",       required_argument, 0, 'I'},
+			{"update",        no_argument,       0, 'U'},
+			{0,               0,                 0,  0 }
+		};
+		
+		c = getopt_long(argc, args, "abcdflhnstuvIU",
+				long_options, &option_index);
+		if (c == -1)
+			break;
+		switch (c) {
+		case 'a':
+			flags.u = true;
+			flags.v = true;
+			flags.i_caps = true;
+			flags.big_files = true;
+			load_functions(".", &flags);
+			flags.b = true;
+			if (!flags.b_fcts) {
+				flags.b_fcts = my_malloc(sizeof(*flags.b_fcts));
+				flags.b_fcts->next = NULL;
+				flags.b_fcts->prev = NULL;
+				flags.b_fcts->data = NULL;
+			}
+			break;
+		case 'b':
+			flags.b = true;
+			if (!flags.b_fcts) {
+				flags.b_fcts = my_malloc(sizeof(*flags.b_fcts));
+				flags.b_fcts->next = NULL;
+				flags.b_fcts->prev = NULL;
+				flags.b_fcts->data = NULL;
+			}
+			break;
+			
+		case 'c':
+			flags.c = true;
+			break;
+		case 'd':
+			flags.d = true;
+			flags.n = true;
+			flags.t = true;
+			break;
+		case 'f':
+			flags.f = true;
+			break;
+		case 'l':
+			flags.big_files = true;
+			break;
+		case 'h':
+			disp = true;
+			break;
+		case 'n':
+			flags.n = true;
+			break;
+		case 's':
+			flags.no_big_files = true;
+			break;
+		case 't':
+			flags.t = true;
+			break;
+		case 'u':
+			flags.u = true;
+			break;
+		case 'v':
+			flags.v = true;
+			break;
+		case 'I':
+			dir = optarg;
+			flags.i_caps = true;
+			load_functions(dir ? dir : "", &flags);
+			if (flags.d)
+				printf("%i functions are present in the list\n", list_len(flags.fcts));
+			if (flags.d) {
+				printf("All functions found in directory %s : \n", dir);
+				disp_list(flags.fcts);
+			}
+			break;
+		case 'U':
+			path = get_env_var(env, "HOME");
 			arg[1] = concat(path, "/norminette");
 			printf("Updating from repository in %s\n", arg[1]);
 			chdir(arg[1]);
 			free(arg[1]);
 			arg[1] = "./update.sh";
 			if (execve("/bin/bash", arg, env))
-				 perror("/bin/bash");
+				perror("/bin/bash");
 			exit(EXIT_FAILURE);
-		} else for (int j = 1; args[i][0] == '-' && args[i][j]; j++)
-		        if (args[i][j] == 'v')
-				flags.v = 1;
-			else if (args[i][j] == 's')
-				flags.no_big_files = 1;
-			else if (args[i][j] == 'l')
-				flags.big_files = 1;
-			else if (args[i][j] == 'f')
-				flags.f = 1;
-			else if (args[i][j] == 'u')
-				flags.u = 1;
-			else if (args[i][j] == 'n')
-				flags.n = 1;
-			else if (args[i][j] == 't')
-				flags.t = 1;
-			else if (args[i][j] == 'c')
-				flags.c = 1;
-			else if (args[i][j] == 'b') {
-				flags.b = 1;
-				if (!flags.b_fcts) {
-					flags.b_fcts = my_malloc(sizeof(*flags.b_fcts));
-					flags.b_fcts->next = 0;
-					flags.b_fcts->prev = 0;
-					flags.b_fcts->data = 0;
-				}
-			} else if (args[i][j] == 'a') {
-				flags.u = 1;
-				flags.v = 1;
-				flags.i_caps = 1;
-				flags.big_files = 1;
-				load_functions(".", &flags);
-				flags.b = 1;
-				if (!flags.b_fcts) {
-					flags.b_fcts = my_malloc(sizeof(*flags.b_fcts));
-					flags.b_fcts->next = 0;
-					flags.b_fcts->prev = 0;
-					flags.b_fcts->data = 0;
-				}
-			} else if (args[i][j] == 'I') {
-				dir = sub_strings(&args[i][j], 1, strlen(&args[i][j]) + 1, my_malloc(strlen(&args[i][j]) + 1));
-				flags.i_caps = 1;
-				load_functions(dir, &flags);
-				if (flags.d)
-					printf("%i functions are present in the list\n", list_len(flags.fcts));
-				if (flags.d) {
-					printf("All functions found in directory %s : \n", dir);
-					disp_list(flags.fcts);
-				}
-				free(dir);
-				break;
-			} else if (args[i][j] == 'd') {
-				flags.n = 1;
-				flags.d = 1;
-				flags.t = 1;
-			} else if (args[i][j] == 'h')
-				disp = 1;
-			else {
-				printf("%s: Invalid option '%c' (ASCII : %i)\n", args[0], args[i][j], (unsigned char)args[i][j]);
-				printf("Use « %s -h » for more information\n", args[0]);
-				free_list(flags.fcts);
-				freeStackTrace();
-				exit(84);
-			}
+		case '?':
+			printf("Invalid option\n");
+			printf("Use « %s -h » for more information\n", args[0]);
+			free_list(flags.fcts);
+			freeStackTrace();
+			exit(EXIT_FAILURE);
+		}
+	}
+	while (optind < argc) {
+		*dirs = realloc(*dirs, (++nb + 1) * sizeof(**dirs));
+		(*dirs)[nb - 1] = args[optind++];
+		(*dirs)[nb] = NULL;
+	}
 	if (disp)
 		display_help(args[0], flags.f);
 	delStackTraceEntry();
