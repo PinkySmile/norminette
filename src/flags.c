@@ -210,7 +210,7 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			{0,			0,                 0,  0 }
 		};
 
-		c = getopt_long(argc, args, "abcdflhnstuvIU",
+		c = getopt_long(argc, args, "abcdflhnstuvI:U",
 				long_options, &option_index);
 		if (c == -1)
 			break;
