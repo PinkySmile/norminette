@@ -76,6 +76,7 @@ typedef struct {
 	bool	i_caps;
 	bool	big_files;
 	bool	no_big_files;
+	bool	cappuccino;
 	list_t	*fcts;
 	list_t	*b_fcts;
 } flag;

@@ -26,6 +26,7 @@ SRC =	src/main.c		\
 	src/stacktrace.c	\
 	src/my_malloc.c		\
 	src/get_env_vars.c	\
+	src/display_cappuccino.c\
 
 OBJ =	$(SRC:.c=.o)
 

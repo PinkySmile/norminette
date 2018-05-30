@@ -94,6 +94,7 @@ int	main(int argc, char **args, char **env)
 	if (flags.d)
 		printf("Displaying result\n");
 	display_result(mistakes, &flags);
+	printf("%i\n", flags.cappuccino);
 	freeStackTrace();
 	return (0);
 }

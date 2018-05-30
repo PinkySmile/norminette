@@ -371,5 +371,7 @@ void	display_result(int *mistakes, flag *flags)
 	}
 	freeStackTrace();
 	free_list(flags->fcts);
+	if (flags->cappuccino)
+		print_cappuccino();
 	exit(style_mark != 0);
 }

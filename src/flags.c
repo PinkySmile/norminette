@@ -207,10 +207,11 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			{"verbose",		no_argument,       0, 'v'},
 			{"include",		required_argument, 0, 'I'},
 			{"update",		no_argument,       0, 'U'},
+			{"cappuccino",		no_argument,       0, 'C'},
 			{0,			0,                 0,  0 }
 		};
 
-		c = getopt_long(argc, args, "abcdflhnstuvI:U",
+		c = getopt_long(argc, args, "abcdflhnstuvI:UC",
 				long_options, &option_index);
 		if (c == -1)
 			break;
@@ -292,6 +293,9 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			if (execve("/bin/bash", arg, env))
 				perror("/bin/bash");
 			exit(EXIT_FAILURE);
+		case 'C':
+			flags.cappuccino = true;
+			break;
 		case '?':
 			printf("Use « %s -h » for more information\n", args[0]);
 			free_list(flags.fcts);

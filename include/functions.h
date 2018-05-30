@@ -42,5 +42,6 @@ char	*my_putnbrbase(unsigned int nbr, char const *base);
 void	*my_malloc(int size);
 char	*get_env_var(char **env, char *var_name);
 char	*sub_strings(char const *str, int start, int end, char *buffer);
+void	print_cappuccino(void);
 
 #endif
