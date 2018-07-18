@@ -190,7 +190,7 @@ void	scan_file(char *path, flag *flags, int *mistakes, int force)
 	} else if (!is_file_c(path) && !force) {
 		delStackTraceEntry();
 	        return;
-	} 
+	}
 	if (flags->n) {
 		if (flags->c) {
 			if (flags->f)
@@ -218,17 +218,21 @@ void	scan_file(char *path, flag *flags, int *mistakes, int force)
 		else
 			display_path(path);
 		printf(") : %s%.4lf%s MB\n", flags->c ? "" : "\033[31;1m", (double)info.st_size / 1000000, flags->c ? "" : "\033[0m");
-		if (flags->f)
-			printf("Êtes vous sûr de vouloir l'ouvrir ? [Y/n]\n");
-		else
-			printf("Do you really want to load it ? [Y/n]\n");
-		answer[0] = 'a';
-		if (flags->no_big_files) {
-			answer[0] = 'n';
-			printf("n\n");
-		} else if (flags->big_files) {
-			answer[0] = 'Y';
-			printf("Y\n");
+		if (info.st_size >= (unsigned int)-1 / 2) {
+			strcpy(answer, "n\n");
+		} else {
+			if (flags->f)
+				printf("Êtes vous sûr de vouloir l'ouvrir ? [Y/n]\n");
+			else
+				printf("Do you really want to load it ? [Y/n]\n");
+			answer[0] = 'a';
+			if (flags->no_big_files) {
+				answer[0] = 'n';
+				printf("n\n");
+			} else if (flags->big_files) {
+				answer[0] = 'Y';
+				printf("Y\n");
+			}
 		}
 	}
 	while (!compare_strings(answer, "Y\n") && !compare_strings(answer, "n\n") && !compare_strings(answer, "y\n") && !compare_strings(answer, "N\n")) {
