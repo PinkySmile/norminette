@@ -1,13 +1,33 @@
 #!/bin/bash
-cd $HOME
-if git clone https://github.com/Gegel85/norminette.git
-then make -C norminette
-     make -C norminette clean
-     chmod 755 $HOME/norminette/update.sh
-     echo "coping nominette to /bin/norminette"
-     sudo cp $HOME/norminette/norminette /bin/
-     echo "adding manpage"
-     sudo cp $HOME/norminette/manpage.1.gz /usr/local/share/man/man1/norminette.1.gz
+
+if [[ $1 == "-h" ]]; then
+	echo "Usage: $0 <installation path>"
+	exit 0
+fi
+
+if [[ -z "$1" ]]; then
+	path=$(realpath "./norminette")
 else
-    echo "Error: could not clone repository"
+	path=$(realpath $1)
+fi
+
+echo "Fetching norminette..."
+echo "======================"
+
+if git clone https://github.com/Gegel85/norminette.git $path; then
+	echo "Compiling..."
+	echo "======================"
+	make -C $path 1> /dev/null
+	make -C $path clean 1> /dev/null
+	chmod 755 $path/update.sh
+	echo "Compiled."
+
+	echo "Installing..."
+	echo "======================"
+	sudo ln -s $path/norminette /usr/local/bin/norminette
+	echo "Done."
+	exit 0;
+else
+	echo "Download failed."
+	exit 1
 fi
