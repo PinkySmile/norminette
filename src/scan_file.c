@@ -1177,20 +1177,9 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			sub_strings(file, i, i + strlen(words[k]), buffer);
 			cond = (i + strlen(words[k])) < strlen(file);
 		        cond = cond && file[i + strlen(words[k])] == '(';
-			if (flags->d) {
-				printf("[%i, %i]:Searching for '%s' ", ln, col, words[k]);
-				printf("and got '");
-				my_showstr(buffer);
-				printf("' with");
-				printf("%s after", !cond ? "out any '('" : " a '('");
-			}
 		        cond2 = i > 0 && file[i - 1] == '\n';
 			cond2 = i > 0 && (cond2 || file[i - 1] == '\t');
 			cond2 = i > 0 && (cond2 || file[i - 1] == ' ');
-			if (flags->d) {
-				printf(" and with");
-				printf("%s before\n", cond ? "out any spaces" : " a space");
-			}
 		        if (compare_strings(buffer, "else")) {
 				for (fine = i + 4; file[fine] && space(file[fine]); fine++);
 				if (flags->d)
@@ -1200,6 +1189,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			}
 			if (compare_strings(buffer, words[k]) && (i == 0 || !char_valid(file[i - 1])) &&
 			    (i + strlen(words[k]) > strlen(file) || !char_valid(file[i + strlen(words[k])])) && need_to_indent(&file[i], comment)) {
+				printf("[%i:%i]: Found %s\n", ln, col, buffer);
 				expected_indentlvl->next = my_malloc(sizeof(*expected_indentlvl->next));
 				expected_indentlvl->next->prev = expected_indentlvl;
 				expected_indentlvl->next->next = 0;
@@ -1495,7 +1485,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			if (fine < 0)
 				fine = 0;
 			if ((current_indent_lvl != -1 && current_indent_lvl != fine) && !(i != 0 && file[i - 1] == '\\' && current_indent_lvl == 0) &&
-			    comment == 0 && file[i + 1] != '/' && file[i + 1] && file[i + 2] != '/' && file[i + 2] != '*') {
+			    comment == 0 && !(file[i + 1] == '/' && (file[i + 2] == '/' || file[i + 2] == '*'))) {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
 					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
