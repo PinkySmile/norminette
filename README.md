@@ -1,96 +1,101 @@
-# USAGE :
-	norminette [-vcfunahd] [-I<path>] [folders/files]
+#USAGE
+       norminette [--update] [-vcfunahd] [-I <path>] [folders/files]
 
-## DESCRIPTION :
-   	--update	Updates from the repository in ~/norminette (will ask for sudo passord)
+#DESCRIPTION
+       -U --update
+              Updates from the repository stored in ~/norminette (will ask for sudo password)
 
-	-a :		Enables v, u, b, I. and l options (like -vbunlI.)
+       -a --all
+              Enables v, u, b, I . and l options (like -vbunlI.)
 
-	-b :		Displays all banned functions found (useless without -I)
+       -b --banned-fct-list
+              Displays all banned functions found (useless without -I)
 
-	-c :		Disables colors
+       -c --colorless
+              Disables colors
 
-	-d :		Debug option (don't use it)
+       -d --debug
+              Debug option (don't use it)
 
-	-f :		Change the main language to french
+       -f --french
+              Change the main language to french
 
-	-l :		Automaticaly answer yes for large files (> 1 Mo)
+       -i --indent=SIZE
+              Change  the  number of spaces required to achieve a level of indentation. (Default: 8). Note that if the -A is not specified, only tabulation characters will not trigger a
+	      bad indentation.
 
-	-h :		Display this help page
+       -l --large
+              Automaticaly answer yes for large files (> 1 Mo)
 
-	-n :		Displays the scanned files' names
+       -h --help
+              Display this help page
 
-	-s :		Automaticaly answer no for large files (> 1 Mo)
-			Overrides -l
+       -n --name
+              Displays the scanned files' names
 
-	-t :		Enables the stacktrace
+       -s --small
+              Automaticaly answer no for large files (> 1 Mo). Overrides -l
 
-	-u :		Finds useless files and invalid file names
+       -t --traceback
+              Enables the stacktrace
 
-	-v :		Displays the entire line and where the mistake
-			is in it
+       -u --useless-files
+              Finds useless files and invalid file names
 
-	-I<path> : 	Using the I flag enables the forbidden functions
-			checking in .c files. Using this flag transform the remaining
-			string into the path of the folder or file which contains
-			allowed functions. The program will save every function
-			declared in those files/folders (only .c and .h files)
-			and use them as only allowed functions. That means that all
-			functions which are not declared in these files will be
-			the forbidden functions. All the allowed system calls have
-			have to be declared in a .h or .c file. No need to declare
-			the functions properly. You juste have to follow this exemple
-					void function();
-			Note : severals -I can be used at the same if you have many include
-			and source folders with, for exemple, the CSFML
-			CSMFL's includes are in the folder /usr/local/include/SFML.
-			For graphical projects use -I/usr/local/include/SFML .
+       -v --verbose
+              Displays the entire line and where the mistake is in it
 
-## EXEMPLES :
-	norminette :
-		Launch a basic test on the current folder
+       -A --accept-space-indent
+              Accept space as indentation
 
-	norminette src test.c :
-		Launch a basic test in the folder 'src' and on the file 'test.c'
+       -T --tab-size=SIZE
+              Change the size of a tab character (default: 8)
 
-	norminette -vfIinclude -I/usr -I../sys.h
-		Launch the program in verbose mode, in french
-		with forbidden function wich are not found neither
-		in the folders 'include' and '/usr' nor in the file '../sys.h'
+       -I <path> --include=<path>
+              Using the I flag enables the forbidden functions checking in .c files. Using this flag transform the remaining string into the path of the folder or  file  which  contains
+	      allowed  functions. The program will save every function declared in those files/folders (only .c and .h files) and use them as only allowed functions. That means that all
+	      functions which are not declared in these files will be the forbidden functions. All the allowed system calls have to be declared in a .h or .c file. No  need  to  declare
+	      the functions properly. You juste have to follow this exemple
+              void function();
+              Note  :  severals  -I  can  be  used  at  the  same  if  you  have  many  include  and  source  folders  with,  for  exemple,  the CSFML CSMFL's includes are in the folder
+              /usr/local/include/SFML.
 
-## RETURN VALUES :
-	If no mistakes are found, the program exit with code 0.
-	If one or many mistakes are found, the program eit with code 1.
+#EXEMPLES
+       norminette
+              Launch a basic test on the current folder
 
-## REPORT A BUG :
-	If you find a bug, first, update  the program  (Use the
-	'update.sh'  in  the  repository or, if  you  used  the
-	installation script, <your alias>-update). If it is not
-	yet patched, run the 'debug.sh' (or <your alias>-debug)
-	with,  as argument, the  file  which caused  the bug to
-	happen. Send me, then, the  scan.log file (you can join
-	the source  file too) at  "andgel.halley@epitech.eu".
-	Explain briefly in the mail what happened and  I'll fix
-	as fast as I can !
-	You  can also send it on discord or
-	open a new issue ticket on github.
+       norminette src test.c
+              Launch a basic test in the folder 'src' and on the file 'test.c'
 
-	Note : No need to launch  in debug mode if  it's just a
-	display problem (spelling mistake, ...).
-	The given scripts (update.sh, debug.sh) will only work
-	if the program is stored in ~/norminette. You can also
-	modify  the scripts  to make them  work with your  own
-	path
-	You can also send me ideas by mail !
+       norminette -vfI include -I /usr -I ../sys.h
+              Launch the program in verbose mode, in french with forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'
 
-## UPDATES :
-	if you want to get notified on new updates, you can join
-	this server https://discord.gg/RgDbJDW
+#RETURN VALUES
+       If no mistakes are found, the prograam exit with code 0.
+       If one or many mistakes are found, the program exit with code 1
 
-## CHANGELOG
+#REPORT A BUG
+       If you find a bug, first, update  the program  (Use the 'update.sh'  in  the  repository or, if  you  used  the installation script,  <your  alias>-update).  If  it  is  not  yet
+       patched,  run  the  'debug.sh'  (or <your alias>-debug) with,  as argument, the  file  which caused  the bug to happen. Send me, then, the  scan.log file (you can join the source
+       file too) at  "andgel.halley@epitech.eu".
+       Explain briefly in the mail what happened and  I'll fix as fast as I can !
+       You  can also send it on discord or open a new issue ticket on github.
+       Note : No need to launch  in debug mode if  it's just a display problem (spelling mistake, ...).
+       The given scripts (update.sh, debug.sh) will only work if the program is stored in ~/norminette. You can also modify  the scripts  to make them  work with your  own path
+       You can also send me ideas by mail !
+
+#UPDATE
+       If you want to get notified on new updates, you can join this discord server :
+       https://discord.gg/RgDbJDW
+
+#CHANGELOG
+	1.2:
+		- Added option -T to control tab size
+		- Added option -i to control indentation size
+		- Added option -A to accept spaces as valid indentation characters
 	1.1.1:
 		- Added French manpage
 	1.1:
 		- Improved trailing spaces detection
 		- Added long versions of arguments
-	1.0: Release
+	1.0:	Release
