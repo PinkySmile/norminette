@@ -436,7 +436,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
         for (int jl = i + 1; jl != -1 && file[jl]; jl++) {
 		if (flags->d)
 			printf("[%i]:Loop start '%c' (%i)\n", col, file[jl] > 31 ? file[jl] : 0, file[jl]);
-		if (file[jl] == ' ') {
+		if (file[jl] == ' ' && flags->only_tab_indent) {
 			if (flags->d)
 				printf("[%i]:Found a space\n", col);
 			mistakes[BAD_INDENTATION]++;
@@ -492,7 +492,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			if (flags->v) {
 				bu = my_malloc(i + 1);
 				sub_strings(file, i + 1, i - jl, bu);
-			        mistake_line((jl - i - 1) * 8, bu, 0, ln, flags, 0, 0, 0, 1);
+			        mistake_line((jl - i - 1) * flags->default_indent, bu, 0, ln, flags, 0, 0, 0, 1);
 				free(bu);
 			}
 			jl = -2;
@@ -840,13 +840,14 @@ float	get_indent_lvl(char *file)
 {
 	float	level = 0;
 	int	i = 0;
+	flag	*flags = get_flags_var();
 
 	addStackTraceEntry("get_indent_lvl", "p", "file", file);
 	for (; file[i] == ' ' || file[i] == '\t'; i++) {
 	        if (file[i] == '\t')
-			level = (int)(level + 1);
+			level = ((int)(level * 8.0 / flags->tab_size) + 1) * flags->tab_size / 8.0;
 		if (file[i] == ' ')
-			level += 1.0 / 8.0;
+			level += 1.0 / flags->default_indent;
 	}
 	if (file[i] == '\n') {
 		delStackTraceEntry();
@@ -885,6 +886,8 @@ bool	checkTrailingSpace(char *file)
 	}
 	return (false);
 }
+
+extern int lines;
 
 void	scan_entire_file(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
@@ -928,6 +931,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	for (int i = 0 ; file[i] ; i++) {
 		cond3 = !q && !s_q && comment == 0;
 		indentBuffer = 0;
+		lines += file[i] == '\n' ? 1 : 0;
 		if (flags->d) {
 			printf("[%i, %i]:Loop start '%c' (%i)\n", ln, col, file[i] > 31 ? file[i] : 0, file[i]);
 			printf("Global conditions :\tcond3        : %s\n", cond3 ? "TRUE" : "FALSE");
@@ -1513,7 +1517,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					for (end = i + 1; file[end] && file[end] != '\n'; end++);
 					bu = my_malloc(end - i + 1);
 					sub_strings(file, i + 1, end, bu);
-                                        mistake_line((int)current_indent_lvl * 8, bu, 0, ln + 1, flags, q, s_q, comment, 1);
+                                        mistake_line((int)current_indent_lvl * flags->default_indent, bu, 0, ln + 1, flags, q, s_q, comment, 1);
 					free(bu);
 				}
 			}
@@ -1705,6 +1709,7 @@ void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags)
 	if (flags->d)
 		printf("File %s scanned !\n\n", path);
         free(file_content);
+	lines += 1;
 	delStackTraceEntry();
 }
 
@@ -1721,5 +1726,6 @@ void	scan_h_file(char *path, int *mistakes, flag *flags)
 	check_header(file_content, flags, mistakes, path);
 	scan_entire_file(file_content, mistakes, path, (char const *[2]){0, 0}, flags);
 	free(file_content);
+	lines += 1;
 	delStackTraceEntry();
 }

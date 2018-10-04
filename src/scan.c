@@ -18,6 +18,8 @@
 #include <string.h>
 #include <unistd.h>
 
+int lines = 0;
+
 char    *find_path(char *path, char *file_name)
 {
 	int     path_len = strlen(path);
@@ -377,5 +379,6 @@ void	display_result(int *mistakes, flag *flags)
 	free_list(flags->fcts);
 	if (flags->cappuccino)
 		print_cappuccino();
+	printf("%i lines scanned\n", lines);
 	exit(style_mark != 0);
 }

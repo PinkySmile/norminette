@@ -191,6 +191,9 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 
 	addStackTraceEntry("get_flags", "ipp", "argc", argc, "args", args, "env", env);
 	memset(&flags, 0, sizeof(flag));
+	flags.default_indent = 8;
+	flags.tab_size = 8;
+	flags.only_tab_indent = true;
 	while (true) {
 		static struct option long_options[] = {
 			{"all",			no_argument,       0, 'a'},
@@ -200,18 +203,21 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			{"french",		no_argument,       0, 'f'},
 			{"large",		no_argument,       0, 'l'},
 			{"help",		no_argument,       0, 'h'},
+			{"indent",		required_argument, 0, 'i'},
 			{"name",		no_argument,       0, 'n'},
 			{"small",		no_argument,       0, 's'},
 			{"traceback",		no_argument,       0, 't'},
 			{"useless-file",	no_argument,       0, 'u'},
 			{"verbose",		no_argument,       0, 'v'},
-			{"include",		required_argument, 0, 'I'},
-			{"update",		no_argument,       0, 'U'},
+			{"accept-space-indent",	no_argument,       0, 'A'},
 			{"cappuccino",		no_argument,       0, 'C'},
+			{"include",		required_argument, 0, 'I'},
+			{"tab_size",		required_argument, 0, 'T'},
+			{"update",		no_argument,       0, 'U'},
 			{0,			0,                 0,  0 }
 		};
 
-		c = getopt_long(argc, args, "abcdflhnstuvI:UC",
+		c = getopt_long(argc, args, "abcdflhnstuvI:UCi:T:A",
 				long_options, &option_index);
 		if (c == -1)
 			break;
@@ -254,6 +260,15 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 		case 'l':
 			flags.big_files = true;
 			break;
+		case 'i':
+			if (atoi(optarg) <= 0) {
+				printf("Invalid argument for flag -i: Expected positive number\n");
+				free_list(flags.fcts);
+				freeStackTrace();
+				exit(EXIT_FAILURE);
+			}
+			flags.default_indent = atoi(optarg);
+			break;
 		case 'h':
 			disp = true;
 			break;
@@ -271,6 +286,18 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			break;
 		case 'v':
 			flags.v = true;
+			break;
+		case 'A':
+			flags.only_tab_indent = false;
+			break;
+		case 'T':
+			if (atoi(optarg) <= 0) {
+				printf("Invalid argument for flag -T: Expected positive number\n");
+				free_list(flags.fcts);
+				freeStackTrace();
+				exit(EXIT_FAILURE);
+			}
+			flags.tab_size = atoi(optarg);
 			break;
 		case 'I':
 			dir = optarg;

@@ -6,7 +6,7 @@
 ** qui est caché au bois jolie tournicoti
 */
 
-#include "stdio.h"
+#include <stdio.h>
 
 void print_cappuccino(void)
 {
