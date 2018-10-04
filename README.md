@@ -1,7 +1,7 @@
-#USAGE
+# USAGE:
        norminette [--update] [-vcfunahd] [-I <path>] [folders/files]
 
-#DESCRIPTION
+# DESCRIPTION:
        -U --update
               Updates from the repository stored in ~/norminette (will ask for sudo password)
 
@@ -60,7 +60,7 @@
               Note  :  severals  -I  can  be  used  at  the  same  if  you  have  many  include  and  source  folders  with,  for  exemple,  the CSFML CSMFL's includes are in the folder
               /usr/local/include/SFML.
 
-#EXEMPLES
+# EXEMPLES:
        norminette
               Launch a basic test on the current folder
 
@@ -70,11 +70,11 @@
        norminette -vfI include -I /usr -I ../sys.h
               Launch the program in verbose mode, in french with forbidden function wich are not found neither in the folders 'include' and '/usr' nor in the file '../sys.h'
 
-#RETURN VALUES
+# RETURN VALUES:
        If no mistakes are found, the prograam exit with code 0.
        If one or many mistakes are found, the program exit with code 1
 
-#REPORT A BUG
+# REPORT A BUG:
        If you find a bug, first, update  the program  (Use the 'update.sh'  in  the  repository or, if  you  used  the installation script,  <your  alias>-update).  If  it  is  not  yet
        patched,  run  the  'debug.sh'  (or <your alias>-debug) with,  as argument, the  file  which caused  the bug to happen. Send me, then, the  scan.log file (you can join the source
        file too) at  "andgel.halley@epitech.eu".
@@ -84,11 +84,11 @@
        The given scripts (update.sh, debug.sh) will only work if the program is stored in ~/norminette. You can also modify  the scripts  to make them  work with your  own path
        You can also send me ideas by mail !
 
-#UPDATE
+# UPDATE:
        If you want to get notified on new updates, you can join this discord server :
        https://discord.gg/RgDbJDW
 
-#CHANGELOG
+# CHANGELOG:
 	1.2:
 		- Added option -T to control tab size
 		- Added option -i to control indentation size
