@@ -5,6 +5,7 @@
 ** Function which will be called if a fatal signal is recieved
 */
 
+#if !defined _WIN32 && !defined __WIN32 && !defined __WIN32__
 #include "functions.h"
 #include "stacktrace.h"
 #include <signal.h>
@@ -41,3 +42,4 @@ void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr)
 		exit(128 + sig_ID);
 	}
 }
+#endif
