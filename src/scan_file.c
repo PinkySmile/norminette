@@ -845,7 +845,7 @@ float	get_indent_lvl(char *file)
 	addStackTraceEntry("get_indent_lvl", "p", "file", file);
 	for (; file[i] == ' ' || file[i] == '\t'; i++) {
 	        if (file[i] == '\t')
-			level = ((int)(level * 8.0 / flags->tab_size) + 1) * flags->tab_size / 8.0;
+			level = ((int)(level * (float)flags->default_indent / flags->tab_size) + 1) * (float)flags->tab_size / flags->default_indent;
 		if (file[i] == ' ')
 			level += 1.0 / flags->default_indent;
 	}
