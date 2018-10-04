@@ -1189,7 +1189,8 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			}
 			if (compare_strings(buffer, words[k]) && (i == 0 || !char_valid(file[i - 1])) &&
 			    (i + strlen(words[k]) > strlen(file) || !char_valid(file[i + strlen(words[k])])) && need_to_indent(&file[i], comment)) {
-				printf("[%i:%i]: Found %s\n", ln, col, buffer);
+				if (flags->d)
+					printf("[%i:%i]: Found %s\n", ln, col, buffer);
 				expected_indentlvl->next = my_malloc(sizeof(*expected_indentlvl->next));
 				expected_indentlvl->next->prev = expected_indentlvl;
 				expected_indentlvl->next->next = 0;
