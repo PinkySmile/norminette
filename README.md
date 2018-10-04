@@ -100,7 +100,7 @@
 
 # CHANGELOG:
 	1.2.1:
-		- Bugs fix
+		- Bugs fixed
 	1.2:
 		- Added option -T to control tab size
 		- Added option -i to control indentation size
