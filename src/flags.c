@@ -214,7 +214,7 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 		case 'U':
 			path = get_env_var(env, "HOME");
 			path = concat(path, "/norminette");
-			printf("Updating from repository in %s\n", arg[1]);
+			printf("Updating from repository in %s\n", path);
 			chdir(path);
 			free(path);
 			if (execve("/bin/bash", arg, env))
