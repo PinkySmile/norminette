@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include "my.h"
 #include "structs.h"
 #include "functions.h"
@@ -889,6 +890,17 @@ bool	checkTrailingSpace(char *file)
 
 extern int lines;
 
+char	*getName(char *str)
+{
+	char	*buffer;
+	int	len = 0;
+
+	for (len = 0; char_valid(str[len]); len++);
+	buffer = my_malloc(len + 1);
+	strncpy(buffer, str, len);
+	return (buffer);
+}
+
 void	scan_entire_file(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -1022,6 +1034,32 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				mistakes[IDENTIFIER_L_O]++;
 			}
 			l_o = 0;
+		}
+		if (strncmp(&file[i], "struct", 6) == 0 && space(file[i + 6])) {
+			bu = getName(&file[i]);
+			for (int j = 0; buffer[j]; j++) {
+				if (isupper(buffer[j])) {
+					if (flags->c) {
+						printf("%s [%i:%i]", path, ln, col - l_o);
+						printf(" %s%s'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration", bu);
+						if (flags->f) {
+							printf(": Nom invalide '%s' ", bu);
+						} else {
+							printf(": invalide name '%s' ", bu);
+						}
+					} else {
+						display_path(path);
+						printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - l_o);
+						printf(" \033[0m%s\033[31;1m%s\033[0m'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration", bu);
+						if (flags->f) {
+							printf(": Nom invalide'\033[31;1m%s\033[0m'\n", bu);
+						} else {
+							printf(": invalid name '\033[31;1m%s\033[0m'\n", bu);
+						}
+					}
+					break;
+				}
+			}
 		}
 		if (cond3 && file[i] == '/' && file[i + 1] == '/') {
 			comment = 1;
