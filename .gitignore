@@ -6,3 +6,5 @@ update.log
 .#*
 .vscode
 norminette
+.idea
+*.exe

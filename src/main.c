@@ -17,13 +17,15 @@
 #include <string.h>
 #include <stdio.h>
 
-int     find_type(mode_t mode)
+char     find_type(mode_t mode)
 {
 	switch ((int)(mode & S_IFMT)) {
+	#if !defined _WIN32 && !defined __WIN32 && !defined __WIN32__
 	case S_IFSOCK:
 		return ('s');
 	case S_IFLNK:
 		return ('l');
+	#endif
 	case S_IFREG:
 		return ('-');
 	case S_IFBLK:
@@ -42,13 +44,14 @@ bool	is_dir(char *path)
 {
 	struct stat	info;
 
-	if (lstat(path, &info) >= 0 && find_type(info.st_mode) == 'd')
+	if (stat(path, &info) >= 0 && find_type(info.st_mode) == 'd')
 		return (true);
 	return (false);
 }
 
 void	set_sigaction(void)
 {
+#if !defined _WIN32 && !defined __WIN32 && !defined __WIN32__
 	struct sigaction	action;
 
 	memset(&action, '\0', sizeof(action));
@@ -64,6 +67,7 @@ void	set_sigaction(void)
 	sigaction(SIGBUS, &action, 0);
 	sigaction(SIGSYS, &action, 0);
 	sigaction(SIGPIPE, &action, 0);
+#endif
 }
 
 int	main(int argc, char **args, char **env)

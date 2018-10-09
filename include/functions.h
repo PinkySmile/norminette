@@ -18,7 +18,9 @@ bool	is_dir(char *path);
 void	scan_c_file(char *path, int *mistakes, char const **key_words, flag *flags);
 void	scan_h_file(char *path, int *mistakes, flag *flags);
 void	display_result(int *mistakes, flag *flags);
+#if !defined _WIN32 && !defined __WIN32 && !defined __WIN32__
 void	catch_sig(int sig_ID, siginfo_t *infos, void *ptr);
+#endif
 void	display_path(char *path);
 void	free_list(list_t *list);
 char	*load_file(char *path);
