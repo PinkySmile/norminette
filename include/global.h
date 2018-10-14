@@ -117,7 +117,7 @@ const style_error	coding_style[] = {
 	//nom de types
 	{
 		"V1",
-		"",
+		"structures and typedef names should be in english and follow the snake_case convention",
 		2
 	},
 	//pointers declaration
@@ -160,7 +160,7 @@ const style_error	coding_style[] = {
 	{
 		"implicit_T007",
 		"semicolon is isolated from other tokens",
-		0			
+		0
 	},
 	/*l and o*/
 	{

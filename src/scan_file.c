@@ -1,5 +1,5 @@
 /*
-1;5200;0c** EPITECH PROJECT, 2017
+** EPITECH PROJECT, 2017
 ** scan_file
 ** File description:
 ** Scan a file to detect styles errors
@@ -69,7 +69,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 		if (buffer > 0)
 			buffer--;
 		if (line[i] == '\t')
-			col_c = (col_c + 8) - (col_c % 8);
+			col_c = (col_c + flags->tab_size) - (col_c % flags->tab_size);
 		else if (line[i] >= 32)
 			col_c++;
 	        if (comment == 0 && !q && line[i] == '\'')
@@ -112,7 +112,7 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 						printf("%s~", !flags->c ? "\033[95;1m" : "");
 				else
 					printf("%s\t", !flags->c ? "\033[0m" : "");
-				col_c = (col_c + 8) - (col_c % 8);
+				col_c = (col_c + flags->tab_size) - (col_c % flags->tab_size);
 			} else if (line[i] >= 32) {
 				if (col_c >= col && col_c < col + size && !arrow_displayed) {
 					arrow_displayed = 1;
@@ -136,8 +136,13 @@ void	mistake_line(int size, char *line, int col, int ln, flag *flags, int q, int
 		if (!flags->c)
 			printf("\033[95;1m");
 		printf("^");
-		for (int i = 0; i < col - 1; i++)
-			printf("~");
+		for (int i = 0; i < col - 1; i++) {
+			if (line[i] == '\t')
+				for (int i = 0; i < 8 - col_c % 8; i++)
+					printf("~");
+			else
+				printf("~");
+		}
 		if (!flags->c)
 			printf("\033[0m");
 		printf("\n");
@@ -385,7 +390,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		if (flags->d)
 			printf("Skipping 1 '%c' (%i : %i)\n", file[start], i, col);
 		if (file[start] == '\t')
-			i += 8 - i % 8;
+			i += flags->tab_size - i % flags->tab_size;
 		else
 			i++;
 	}
@@ -393,7 +398,7 @@ void	verif_fct_used(char *name, flag *flags, char *file_name, int *mistakes, cha
 		if (flags->d)
 			printf("Skipping 2 '%c'\n", file[start]);
 		if (file[start] == '\t')
-			col += 8 - col % 8;
+			col += flags->tab_size - col % flags->tab_size;
 		else
 			col++;
 	}
@@ -502,7 +507,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				printf("[%i]:Found a character\n", col);
 			jl = -2;
 		}
-		col += 8;
+		col += flags->tab_size;
 	}
 	delStackTraceEntry();
 }
@@ -539,7 +544,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 	}
 	for (; file[beg] && file[beg] != '(' && file[beg] != ';' && file[beg] != '\n'; beg++) {
 		if (file[beg] == '\t')
-			col += 8 - col % 8;
+			col += flags->tab_size - col % flags->tab_size;
 		else if (file[beg] >= 32 || (unsigned char)file[beg] == 195)
 			col++;
 		if (flags->d)
@@ -551,7 +556,7 @@ char	*get_function_name(char *file, flag *flags, int *mistakes, int ln, char *pa
 	}
 	for (; file[beg + i] && char_valid(file[beg + i]); i--) {
 		if (file[beg + i] == '\t')
-			col -= 8 + col % 8;
+			col -= flags->tab_size + col % flags->tab_size;
 		else if (file[beg + i] >= 32 || (unsigned char)file[beg + i] == 195)
 			col--;
 	}
@@ -901,6 +906,16 @@ char	*getName(char *str)
 	return (buffer);
 }
 
+bool	isDeclaringStruct(char *file)
+{
+	int i = 0;
+
+	for (; space(file[i]); i++);
+	for (; char_valid(file[i]); i++);
+	for (; space(file[i]); i++);
+	return (file[i] == '{');
+}
+
 void	scan_entire_file(char *file, int *mistakes, char *path, char const **words, flag *flags)
 {
 	int	q = 0;
@@ -909,7 +924,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	int	line = 0;
 	int	ln = 1;
 	int	bracket = 0;
-	int	col = 1;
+	int	col = 0;
 	char	buffer[7] = {0, 0, 0, 0, 0, 0, 0};
 	char	*bu = NULL;
 	char	*fct_name = 0;
@@ -986,7 +1001,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					cond2 = 0;
 					for (char *tmp = &file[i + 1]; tmp < ptr; tmp++) {
 						if (*tmp == '\t')
-							cond2 += 8 - (cond2 % 8);
+							cond2 += flags->tab_size - (cond2 % flags->tab_size);
 						else if (*tmp >= 32 || (unsigned char)*tmp == 195)
 							cond2++;
 					}
@@ -1035,13 +1050,13 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			}
 			l_o = 0;
 		}
-		if (strncmp(&file[i], "struct", 6) == 0 && space(file[i + 6])) {
-			bu = getName(&file[i]);
-			for (int j = 0; buffer[j]; j++) {
-				if (isupper(buffer[j])) {
+		if (strncmp(&file[i], "struct", 6) == 0 && space(file[i + 6]) && isDeclaringStruct(&file[i + 7])) {
+			bu = getName(&file[i + 7]);
+			for (int j = 0; bu[j]; j++) {
+				if (isupper(bu[j])) {
 					if (flags->c) {
 						printf("%s [%i:%i]", path, ln, col - l_o);
-						printf(" %s%s'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration", bu);
+						printf(" %s%s'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration '", bu);
 						if (flags->f) {
 							printf(": Nom invalide '%s' ", bu);
 						} else {
@@ -1050,13 +1065,14 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					} else {
 						display_path(path);
 						printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - l_o);
-						printf(" \033[0m%s\033[31;1m%s\033[0m'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration", bu);
+						printf(" \033[0m%s\033[31;1m%s\033[0m'", flags->f ? "dans la déclaration de la structure '" : "in structure declaration '", bu);
 						if (flags->f) {
-							printf(": Nom invalide'\033[31;1m%s\033[0m'\n", bu);
+							printf(": Nom invalide '\033[31;1m%s\033[0m'\n", bu);
 						} else {
 							printf(": invalid name '\033[31;1m%s\033[0m'\n", bu);
 						}
 					}
+					mistakes[INVALID_TYPE_NAME]++;
 					break;
 				}
 			}
@@ -1276,7 +1292,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				break;
 		}
 		if (cond3 && (file[i] < 32 || file[i] == 127) && !space(file[i])) {
-		        cond = file[i] == '\t' ? 8 - col % 8 : 1;
+		        cond = file[i] == '\t' ? flags->tab_size - col % flags->tab_size : 1;
 			for (int i = 0; i < 7; i++)
 				buffer[i] = 0;
 			switch (file[i]) {
@@ -1565,7 +1581,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				for (end = i + 1; file[end] && file[end] != '\n'; end++);
 				bu = my_malloc(end - i + 1);
 				sub_strings(file, i + 1, end, bu);
-				mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
+				mistake_line((int)(current_indent_lvl * flags->tab_size), bu, 0, ln + 1, flags, q, s_q, comment, 1);
 				free(bu);
 			} else if (fine > 3) {
 				if (flags->c) {
@@ -1589,20 +1605,11 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					for (end = i + 1; file[end] && file[end] != '\n'; end++);
 					bu = my_malloc(end - i + 1);
 					sub_strings(file, i + 1, end, bu);
-					mistake_line((int)(current_indent_lvl * 8), bu, 0, ln + 1, flags, q, s_q, comment, 1);
+					mistake_line((int)(current_indent_lvl * flags->tab_size), bu, 0, ln + 1, flags, q, s_q, comment, 1);
 					free(bu);
 				}
 			}
-			if (col > 300) {
-				printf("%s [line:%i]: ??????? Is this a joke ?\n", path, ln);
-				for (start = i - 1; start > 0 && file[start] != '\n'; start--);
-				bu = my_malloc(i - start + 1);
-				sub_strings(file, start + 1, i, bu);
-				mistake_line(col, bu, -1, ln, flags, q, s_q, comment, 1);
-				free(bu);
-				mistakes[TOO_LONG_LINE]++;
-			        mistakes[ETIENNE]++;
-			} else if (col > 80) {
+			if (col > 80) {
                                 if (flags->d)
                                         printf("Too long line %i\n", col);
 				if (flags->c) {
@@ -1624,8 +1631,9 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					printf("(\033[31;1m%i\033[0m)\n", col);
 				}
 				mistakes[TOO_LONG_LINE]++;
-				if (flags->v) {
-					for (start = i - 1; start > 0 && file[start] != '\n'; start--);
+				mistakes[ETIENNE] += col > 300;
+				if (flags->v || col > 300) {
+					for (start = i - 1; start >= 0 && file[start] != '\n'; start--);
 					bu = my_malloc(i - start + 1);
 					sub_strings(file, start + 1, i, bu);
                                         mistake_line(col - 80, bu, 80, ln, flags, q, s_q, comment, 1);
@@ -1649,7 +1657,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col - cond);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				cond = file[i] == '\t' ? 8 - col % 8 : 1;
+				cond = file[i] == '\t' ? flags->tab_size - col % flags->tab_size : 1;
 				if (flags->f) {
 					bu = file[i] == ' ' ? "Espace" : bu;
 					bu = file[i] == '\t' ? "Tabulation" : bu;
@@ -1664,7 +1672,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				display_path(path);
 				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col - cond);
 				printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				cond = file[i] == '\t' ? 8 - col % 8 : 1;
+				cond = file[i] == '\t' ? flags->tab_size - col % flags->tab_size : 1;
 				if (flags->f) {
 					bu = file[i] == ' ' ? "Espace" : bu;
 					bu = file[i] == '\t' ? "Tabulation" : bu;
@@ -1693,7 +1701,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	        if (file[i] >= 32 || (unsigned char)file[i] == 195)
 			col++;
 		else if (file[i] == '\t')
-			col = (col + 8) - (col % 8);
+			col = (col + flags->tab_size) - (col % flags->tab_size);
 	}
 	if (function > 5) {
 		if (flags->c)

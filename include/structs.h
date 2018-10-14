@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2017
+65;5401;1c** EPITECH PROJECT, 2017
 ** structs header
 ** File description:
 ** Contains all structures
@@ -83,5 +83,11 @@ typedef struct {
 	list_t	*fcts;
 	list_t	*b_fcts;
 } flag;
+
+struct Test {
+
+};
+
+typedef struct Test Machin;
 
 #endif
