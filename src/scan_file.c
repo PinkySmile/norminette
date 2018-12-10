@@ -901,8 +901,11 @@ char	*getName(char *str)
 	int	len = 0;
 
 	for (len = 0; char_valid(str[len]); len++);
+	if (!len)
+		return strdup("<anonyme>");
 	buffer = my_malloc(len + 1);
 	strncpy(buffer, str, len);
+	buffer[len] = 0;
 	return (buffer);
 }
 
