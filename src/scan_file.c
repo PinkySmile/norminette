@@ -471,7 +471,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				free(bu);
 			}
 			jl = -2;
-		} else if (file[jl] == '\t') {
+		} else if (file[jl] == '\t' || file[jl] == ' ') {
 			backslash_t++;
 			if (flags->d)
 				printf("[%i]:New \\t\n", col);
@@ -497,8 +497,8 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 			}
 			if (flags->v) {
 				bu = my_malloc(i + 1);
-				sub_strings(file, i + 1, i - jl, bu);
-			        mistake_line((jl - i - 1) * flags->default_indent, bu, 0, ln, flags, 0, 0, 0, 1);
+				sub_strings(file, i + 1, jl - 1 + 1, bu);
+			        mistake_line(jl - i - 1, bu, 0, ln, flags, 0, 0, 0, 1);
 				free(bu);
 			}
 			jl = -2;
@@ -507,7 +507,7 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				printf("[%i]:Found a character\n", col);
 			jl = -2;
 		}
-		col += flags->tab_size;
+		col += file[jl] == '\t' ? flags->tab_size : 1;
 	}
 	delStackTraceEntry();
 }
@@ -900,7 +900,10 @@ char	*getName(char *str)
 	char	*buffer;
 	int	len = 0;
 
+	for (; space(*str); str++);
 	for (len = 0; char_valid(str[len]); len++);
+	if (!len)
+		return (strdup("<anonyme>"));
 	buffer = my_malloc(len + 1);
 	strncpy(buffer, str, len);
 	return (buffer);
@@ -910,6 +913,9 @@ bool	isDeclaringStruct(char *file)
 {
 	int i = 0;
 
+	for (; space(file[i]); i++);
+	if (strncmp(&file[i], "struct", 6) || char_valid(file[i + 6]))
+		return (false);
 	for (; space(file[i]); i++);
 	for (; char_valid(file[i]); i++);
 	for (; space(file[i]); i++);
@@ -938,7 +944,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 	int	comment = 0;
 	bool	begin_of_line = true;
 	bool	declaring_var = false;
-	char	*ptr = file;
+	char	*ptr;
 	int	l_o = 0;
 	int	fine = 0;
 	int	parenthesis = 0;
@@ -1050,7 +1056,10 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			}
 			l_o = 0;
 		}
-		if (strncmp(&file[i], "struct", 6) == 0 && space(file[i + 6]) && isDeclaringStruct(&file[i + 7])) {
+		if (strncmp(&file[i], "typedef", 7) == 0 && (i == 0 || !char_valid(file[i - 1])) && !char_valid(file[i + 7]) && isDeclaringStruct(&file[i + 7])) {
+
+		}
+		if (strncmp(&file[i], "struct", 6) == 0 && (i == 0 || !char_valid(file[i - 1])) && !char_valid(file[i + 6]) && isDeclaringStruct(&file[i])) {
 			bu = getName(&file[i + 7]);
 			for (int j = 0; bu[j]; j++) {
 				if (isupper(bu[j])) {
@@ -1647,7 +1656,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			col = 0;
 			begin_of_line = 1;
 			comment = comment == 1 ? 0 : comment;
-			if (cond3)
+			if (!q && !s_q && comment == 0)
 				check_ind(file, mistakes, path, ln, i, flags, fct_name, fct, q, s_q, comment);
 		} else if(!space(file[i]))
 			begin_of_line =	false;
