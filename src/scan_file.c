@@ -507,7 +507,8 @@ void	check_ind(char *file, int *mistakes, char *path, int ln, int i, flag *flags
 				printf("[%i]:Found a character\n", col);
 			jl = -2;
 		}
-		col += file[jl] == '\t' ? flags->tab_size : 1;
+		if (jl >= 0)
+			col += file[jl] == '\t' ? flags->tab_size : 1;
 	}
 	delStackTraceEntry();
 }
