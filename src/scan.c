@@ -347,7 +347,7 @@ void	display_result(int *mistakes, flag *flags)
 		} else
 			printf("Re-run with -b to see a detailed list of all forbidden functions found.\n\n");
 	}
-	style_mark = type[0] + type[1] + 5 * type[2];
+	style_mark = type[1] + 5 * type[2];
 	if(flags->c) {
 		printf("info : ");
 		printf("%i  ", type[0]);
