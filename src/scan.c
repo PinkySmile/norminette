@@ -355,10 +355,6 @@ void	display_result(int *mistakes, flag *flags)
 		printf("%i  ", type[1]);
 		printf("major : ");
 		printf("%i", type[2]);
-		if (mistakes[ETIENNE]) {
-			printf("  etienne tier : ");
-			printf("%i", mistakes[ETIENNE]);
-		}
 		printf("\nStyle mark : ");
 		printf("%i\n", -style_mark);
 	} else {
@@ -368,10 +364,6 @@ void	display_result(int *mistakes, flag *flags)
 		printf("\033[%i;1m%i\033[0m  ", type[1] ? 31 : 32, type[1]);
 		printf("\033[31mmajor\033[0m : ");
 		printf("\033[%i;1m%i\033[0m", type[2] ? 31 : 32, type[2]);
-		if (mistakes[ETIENNE]) {
-			printf("  \033[93metienne tier\033[0m : ");
-			printf("\033[31;1m%i\033[0m", mistakes[ETIENNE]);
-		}
 		printf("\033[1m\nStyle mark\033[0m : ");
 		printf("\033[%im%i\033[0m\n", type[0] || type[1] || type[2] ? 31 : 32, -style_mark);
 	}

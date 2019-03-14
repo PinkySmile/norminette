@@ -1133,25 +1133,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 		}
 		if (file[i] == ';' && parenthesis == 0)
 			act++;
-		if (bracket == 1 && parenthesis == 0 && act >= 5 && file[i] == ';' && cond3) {
-			if (flags->c) {
-				printf("%s [%i:%i]", path, ln, col + 1);
-				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-		        } else {
-				display_path(path);
-				printf(" [\033[32;1m%i\033[0m:\033[32;1m%i\033[0m]", ln, col + 1);
-				printf(" \033[0m%s\033[31;1m%s\033[0m%s\033[0m",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-			}
-			printf(": Alors, tu vas rire, mas ça c'est pas à la norme\n");
-			for (start = i; start > 0 && file[start] != '\n'; start--);
-			for (end = start + 1; file[end] != '\n' && file[end]; end++);
-			bu = my_malloc(end - start + 10);
-			sub_strings(file, start + 1, end, bu);
-			mistake_line(1, bu, col, ln, flags, q, s_q, comment, 1);
-			free(bu);
-			mistakes[ETIENNE]++;
-			mistakes[MORE_THAN_ONE_ACT_BY_LINE]++;
-		} else if (bracket == 1 && parenthesis == 0 && act > 1 && file[i] == ';' && cond3) {
+		if (bracket == 1 && parenthesis == 0 && act > 1 && file[i] == ';' && cond3) {
 			if (flags->c) {
 				printf("%s [%i:%i]", path, ln, col + 1);
 				printf(" %s%s%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1577,24 +1559,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					free(bu);
 				}
 			}
-			if (fine > 7) {
-				if (flags->c) {
-					printf("%s [line:%i]", path, ln + 1);
-					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				} else {
-					display_path(path);
-					printf(" [line:\033[32;1m%i\033[0m]", ln + 1);
-					printf(" \033[0m%s\033[31;1m%s\033[0m%s",  fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
-				}
-				printf(": il y a un jour où il faut s'arrêter...\n");
-				mistakes[IF_DEPTH]++;
-				mistakes[ETIENNE]++;
-				for (end = i + 1; file[end] && file[end] != '\n'; end++);
-				bu = my_malloc(end - i + 1);
-				sub_strings(file, i + 1, end, bu);
-				mistake_line((int)(current_indent_lvl * flags->tab_size), bu, 0, ln + 1, flags, q, s_q, comment, 1);
-				free(bu);
-			} else if (fine > 3) {
+			if (fine > 3) {
 				if (flags->c) {
 					printf("%s [line:%i]", path, ln + 1);
 					printf(" %s%s%s", fct_name ? fct : "", fct_name ? fct_name : "", fct_name ? "'" : "");
@@ -1642,7 +1607,6 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 					printf("(\033[31;1m%i\033[0m)\n", col);
 				}
 				mistakes[TOO_LONG_LINE]++;
-				mistakes[ETIENNE] += col > 300;
 				if (flags->v || col > 300) {
 					for (start = i - 1; start >= 0 && file[start] != '\n'; start--);
 					bu = my_malloc(i - start + 1);
