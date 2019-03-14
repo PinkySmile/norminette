@@ -80,6 +80,9 @@ typedef struct {
 	bool	only_tab_indent;
 	int	default_indent;
 	int	tab_size;
+	int	infos_points;
+	int	minor_points;
+	int	major_points;
 	list_t	*fcts;
 	list_t	*b_fcts;
 } flag;

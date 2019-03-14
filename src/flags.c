@@ -15,6 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 
 void	disp_en_help(char **env)
@@ -95,8 +96,11 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 	flags.default_indent = 8;
 	flags.tab_size = 8;
 	flags.only_tab_indent = true;
+	flags.infos_points = 0;
+	flags.minor_points = 1;
+	flags.major_points = 5;
 	while (true) {
-		static struct option long_options[] = {
+		struct option long_options[] = {
 			{"all",			no_argument,       0, 'a'},
 			{"banned-fct-list",	no_argument,       0, 'b'},
 			{"colorless",		no_argument,       0, 'c'},
@@ -115,6 +119,9 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			{"include",		required_argument, 0, 'I'},
 			{"tab_size",		required_argument, 0, 'T'},
 			{"update",		no_argument,       0, 'U'},
+			{"minor",	        required_argument, 0,  2 },
+			{"info",	        required_argument, 0,  1 },
+			{"major",		required_argument, 0,  3 },
 			{0,			0,                 0,  0 }
 		};
 
@@ -123,6 +130,30 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 		if (c == -1)
 			break;
 		switch (c) {
+		case 1:
+			for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)
+				if (!isdigit(optarg[i])) {
+					printf("Invalid argument for flag --major: %s is not a valid number\n", optarg);
+					exit(EXIT_FAILURE);
+				}
+			flags.infos_points = atoi(optarg);
+			break;
+		case 2:
+			for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)
+				if (!isdigit(optarg[i])) {
+					printf("Invalid argument for flag --major: %s is not a valid number\n", optarg);
+					exit(EXIT_FAILURE);
+				}
+			flags.minor_points = atoi(optarg);
+			break;
+		case 3:
+			for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)
+				if (!isdigit(optarg[i])) {
+					printf("Invalid argument for flag --major: %s is not a valid number\n", optarg);
+					exit(EXIT_FAILURE);
+				}
+			flags.major_points = atoi(optarg);
+			break;
 		case 'a':
 			flags.u = true;
 			flags.v = true;
@@ -229,6 +260,11 @@ flag get_flags(int argc, char **args, char **env, char ***dirs)
 			freeStackTrace();
 			exit(EXIT_FAILURE);
 		}
+	}
+	if (flags.d) {
+		printf("Infos: -%ipts\n", flags.infos_points);
+		printf("Minor: -%ipts\n", flags.minor_points);
+		printf("Major: -%ipts\n", flags.major_points);
 	}
 	while (optind < argc) {
 		*dirs = realloc(*dirs, (++nb + 1) * sizeof(**dirs));

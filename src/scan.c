@@ -347,7 +347,7 @@ void	display_result(int *mistakes, flag *flags)
 		} else
 			printf("Re-run with -b to see a detailed list of all forbidden functions found.\n\n");
 	}
-	style_mark = type[0] + type[1] + 5 * type[2];
+	style_mark = flags->infos_points * type[0] + flags->minor_points * type[1] + flags->major_points * type[2];
 	if(flags->c) {
 		printf("info : ");
 		printf("%i  ", type[0]);
@@ -373,12 +373,12 @@ void	display_result(int *mistakes, flag *flags)
 			printf("\033[31;1m%i\033[0m", mistakes[ETIENNE]);
 		}
 		printf("\033[1m\nStyle mark\033[0m : ");
-		printf("\033[%im%i\033[0m\n", style_mark == 0 ? 32 : 31, -style_mark);
+		printf("\033[%im%i\033[0m\n", type[0] || type[1] || type[2] ? 31 : 32, -style_mark);
 	}
 	freeStackTrace();
 	free_list(flags->fcts);
 	if (flags->cappuccino)
 		print_cappuccino();
 	printf("%i lines scanned\n", lines);
-	exit(style_mark != 0);
+	exit(type[0] || type[1] || type[2]);
 }
