@@ -1286,8 +1286,7 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 		}
 		if (cond3 && (file[i] < 32 || file[i] == 127) && !space(file[i])) {
 		        cond = file[i] == '\t' ? flags->tab_size - col % flags->tab_size : 1;
-			for (int i = 0; i < 7; i++)
-				buffer[i] = 0;
+			memset(buffer, 0, sizeof(buffer));
 			switch (file[i]) {
 			case 5:
 				strcpy(buffer, "ENQ");
@@ -1425,11 +1424,11 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 			s_q = !s_q;
 		if (comment == 0 && !s_q && file[i] == '"' && cond)
 			q = !q;
-		if (!s_q && !q && file[i] == '{') {
+		if (comment == 0 && !s_q && !q && file[i] == '{') {
 			bracket++;
 			verif_bracket_pos(file, i, words, mistakes, flags, ln, col, &fct_name, fct, path);
 		}
-		if (!s_q && !q && file[i] == '}') {
+		if (comment == 0 && !s_q && !q && file[i] == '}') {
 			bracket--;
 			if (!bracket && fct_name) {
 				if (flags->d)
@@ -1486,8 +1485,10 @@ void	scan_entire_file(char *file, int *mistakes, char *path, char const **words,
 				free(fct_name);
 				fct_name = 0;
 				line = 0;
-			} else if (!bracket)
+			} else if (!bracket) {
 				function = 0;
+				line = 0;
+			}
 		}
 		if (parenthesis == 0 && (file[i] == ';' || file[i] == '}')) {
 			if (expected_indentlvl->data && flags->d)
