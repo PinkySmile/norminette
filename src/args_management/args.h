@@ -8,8 +8,8 @@
 #include <stdbool.h>
 
 typedef struct args_s {
-	bool hasColors;
-
+	bool has_colors;
+	bool verbose;
 } args_t;
 
 #endif //NORMINETTE_ARGS_H
