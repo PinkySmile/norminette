@@ -26,7 +26,11 @@ add_executable(
 	src/output/error_reporting.h
 	src/output/color.c
 	src/output/color.h
-	src/utils/exceptions.c src/utils/exceptions.h)
+	src/utils/exceptions.c
+	src/utils/exceptions.h
+	src/utils/alloc.c
+	src/utils/alloc.h
+)
 
 target_link_libraries(
 	norminette

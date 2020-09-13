@@ -6,7 +6,9 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "utils/exceptions.h"
+#include "args_management/args.h"
 
 void check_args(int argc, char **argv)
 {
@@ -17,13 +19,18 @@ void check_args(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	args_t args;
+
 	init_exceptions();
 
 	try {
-		check_args(argc, argv);
-	} catch (NotImplementedException) {
-		puts("Not implemented yet");
-		puts(get_last_exception_desc());
+		args = parse_args(argc, argv);
+	} catch (InvalidArgumentException) {
+		fprintf(stderr, "Use %s -h for help.\n", argv[0]);
+		return EXIT_FAILURE;
+	} catch (InvalidArgumentFormatException) {
+		fprintf(stderr, "%s\n", get_last_exception_desc());
+		return EXIT_FAILURE;
 	}
 	end_try;
 
