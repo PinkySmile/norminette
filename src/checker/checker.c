@@ -13,6 +13,8 @@
 #include "../utils/files.h"
 #include "is_file_useless.h"
 #include "../output/error_reporting.h"
+#include "../utils/exceptions.h"
+#include "../utils/regex.h"
 
 void check_paths(const args_t *args, char **paths)
 {
@@ -26,10 +28,15 @@ void check_paths(const args_t *args, char **paths)
 
 void check_path(checker_state_t *state, const char *path)
 {
-	if (is_dir(path))
-		check_folder(state, path);
-	else
-		check_file(state, path, false);
+	try {
+		if (is_dir(path))
+			check_folder(state, path);
+		else
+			check_file(state, path, false);
+	} catch(FileNotFoundException) {
+		fprintf(stderr, "Error: %s\n", get_last_exception_desc());
+		return;
+	}
 }
 
 void check_folder(checker_state_t *state, const char *path)
@@ -39,7 +46,7 @@ void check_folder(checker_state_t *state, const char *path)
 	char          *file_path;
 
 	if (!folder)
-		return perror(path);
+		file_not_found(path);
 
 	for (file = readdir(folder); file; file = readdir(folder)) {
 		file_path = concat(3, path, "/", file->d_name);
@@ -51,11 +58,25 @@ void check_folder(checker_state_t *state, const char *path)
 
 void check_file(checker_state_t *state, const char *path, bool force)
 {
+	FILE *stream;
+
 	if (state->args->useless_files && is_file_useless(path))
 		add_error_no_line(*state, path, USELESS_FILE);
+
+	if (force || match_regex("^.*[.](c|h)$", path)) {
+		fprintf(stderr, "Opening %s\n", path);
+		stream = fopen(path, "rb");
+		if (!stream)
+			file_not_found(path);
+		check_stream(state, stream);
+		fclose(stream);
+	} else {
+		fprintf(stderr, "Skipping non source file %s\n", path);
+	}
 }
 
 void check_stream(checker_state_t *state, FILE *stream)
 {
-
+	(void)state;
+	(void)stream;
 }

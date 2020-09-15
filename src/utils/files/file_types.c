@@ -11,18 +11,13 @@
 
 bool is_type(const char *path, unsigned type)
 {
-	char err[strlen(path) + 51];
 	struct stat info;
 
 #ifndef _WIN32
-	if (lstat(path, &info) < 0) {
+	if (lstat(path, &info) < 0)
 #else
-	if (stat(path, &info) < 0) {
+	if (stat(path, &info) < 0)
 #endif
-		strcpy(err, path);
-		strcat(err, ": ");
-		strcat(err, strerror(errno));
-		throw(FileNotFoundException, err);
-	}
+		file_not_found(path);
 	return (info.st_mode & S_IFMT) == type;
 }

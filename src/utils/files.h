@@ -29,7 +29,9 @@ size_t get_file_size(const char *path);
 #ifdef _WIN32
 const char *get_file_name(const char *path);
 #else
-#define get_file_name(path) strrchr(path, '/')
+#define get_file_name(path) (strrchr(path, '/') ?: path) + 1
 #endif
+
+void file_not_found(const char *path);
 
 #endif //NORMINETTE_FILES_H

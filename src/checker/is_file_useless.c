@@ -12,7 +12,7 @@
 
 bool is_file_useless(const char *path)
 {
-	const char *name = get_file_name(path) ?: path;
+	const char *name = get_file_name(path);
 	bool useless = match_regex("^(.*[.]o|.*[.]a|~.*|#.*#)$", name);
 	size_t size = get_file_size(path);
 
