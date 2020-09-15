@@ -1,6 +1,9 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** args.h
+*/
 
 #ifndef NORMINETTE_ARGS_H
 #define NORMINETTE_ARGS_H
@@ -27,5 +30,20 @@ typedef struct args_s {
 } args_t;
 
 args_t parse_args(int argc, char **argv);
+
+#define ARG_BOOL_TRUE_FCT(name, param, val)\
+static void name(args_t *args) {\
+	args->param = val;\
+}
+#define ARG_INT_FCT(name, param)\
+static void name(args_t *args) {\
+	for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)\
+		if (!isdigit(optarg[i]))\
+			throw(\
+				InvalidArgumentFormatException,\
+				#name" expects a valid integer."\
+			);\
+	args->param = atoi(optarg);\
+}
 
 #endif //NORMINETTE_ARGS_H

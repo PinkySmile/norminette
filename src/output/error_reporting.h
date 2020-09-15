@@ -1,6 +1,9 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** error_reporting.h
+*/
 
 #ifndef NORMINETTE_ERROR_REPORTING_H
 #define NORMINETTE_ERROR_REPORTING_H
@@ -30,5 +33,7 @@ if (opts.verbose)\
 		(made_style_error_t){line_no, column_no, file_name, error}\
 	line, len, opts.has_colors)
 
+#define change_output_properties(color, bg, fg, prop)if (color)\
+set_output_properties(bg, fg, prop)
 
 #endif //NORMINETTE_ERROR_REPORTING_H

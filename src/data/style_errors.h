@@ -1,6 +1,9 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** style_errors.h
+*/
 
 #ifndef NORMINETTE_STYLE_ERRORS_H
 #define NORMINETTE_STYLE_ERRORS_H
@@ -20,7 +23,7 @@ enum mistake_name_e {
 	BAD_INDENTATION,
 	SPACE_MISSING,
 	BRACKET_MISPLACED,
-	MULTPLE_VARS_DECLARED,
+	MULTIPLE_VARS_DECLARED,
 	MISSING_LINE_BREAK_AFTER_VARS,
 	INVALID_TYPE_NAME,
 	POINTER_DECLARATION,
@@ -35,6 +38,8 @@ enum mistake_name_e {
 	TOO_LONG_FILE_NAME,
 	NB_OF_MISTAKES
 };
+
+extern const char *mistake_names[];
 
 typedef struct style_error_s {
 	char *name;

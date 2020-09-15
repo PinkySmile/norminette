@@ -1,6 +1,9 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** debug.h
+*/
 
 #ifndef NORMINETTE_DEBUG_H
 #define NORMINETTE_DEBUG_H

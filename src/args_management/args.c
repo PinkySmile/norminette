@@ -1,32 +1,18 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** args.c
+*/
 
 #include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-#include <limits.h>
 #include "../utils/exceptions.h"
 #include "args.h"
-
-#define ARG_BOOL_TRUE_FCT(name, param, val)\
-static void name(args_t *args) {\
-	args->param = val;\
-}
-#define ARG_INT_FCT(name, param)\
-static void name(args_t *args) {\
-	for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)\
-	if (!isdigit(optarg[i]))\
-		throw(\
-			InvalidArgumentFormatException,\
-			#name" expects a valid integer."\
-		);\
-	args->param = atoi(optarg);\
-}
+#include "help.h"
+#include "update.h"
 
 void all(args_t *args) {
 	args->verbose = true;
@@ -34,25 +20,6 @@ void all(args_t *args) {
 	args->no_big_files = true;
 }
 
-void	disp_help()
-{
-	char	path[PATH_MAX];
-	char	*arg[] = {
-		"man",
-		path,
-		NULL
-	};
-
-	snprintf(
-		path,
-		sizeof(path),
-		"%s/norminette/manpage.1.gz",
-		getenv("HOME")
-	);
-	printf("Searching manpages in %s\n", path);
-	execv("/bin/man", arg);
-	throw(HelpNotFound, strerror(errno));
-}
 ARG_BOOL_TRUE_FCT(verbose, verbose, true)
 ARG_BOOL_TRUE_FCT(name, name, true)
 ARG_BOOL_TRUE_FCT(useless, useless_files, true)
@@ -102,18 +69,17 @@ static void (* const handlers[])(args_t *args) = {
 	only_tabs,
 	cappuccino,
 	tab_size,
-	NULL,
+	(void *)update,
 	minor,
 	info,
 	major
 };
-//static const char *opts = "acdflhnstuvUCi:T:A";
+static const char *opts = "ac:dfi:lhnstuvACT:U";
 
 args_t parse_args(int argc, char **argv)
 {
 	args_t args;
 	int c;
-	int i;
 
 	memset(&args, 0, sizeof(args));
 	args.default_indent = 8;
@@ -122,12 +88,14 @@ args_t parse_args(int argc, char **argv)
 	args.minor_points = 1;
 	args.major_points = 5;
 	while (true) {
-		c = getopt_long(argc, argv, "", long_options, &i);
+		c = getopt_long(argc, argv, opts, long_options, NULL);
 		if (c == '?')
 			throw(InvalidArgumentException, "");
 		else if (c == -1)
 			break;
-		handlers[i](&args);
+		for (int i = 0; long_options[i].name; i++)
+			if (long_options[i].val == c)
+				handlers[i](&args);
 	}
 	return args;
 }

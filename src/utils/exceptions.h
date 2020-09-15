@@ -33,19 +33,19 @@ struct __exceptions_s {
 
 extern struct __exceptions_s __exceptionsStack;
 
-void terminate();
-const char *get_last_exception_name();
-const char *get_last_exception_desc();
+void terminate(void);
+const char *get_last_exception_name(void);
+const char *get_last_exception_desc(void);
 const exception_t *get_last_exception();
 void __throw(const char *name, const char *desc);
-void __rethrow();
-jmp_buf *get_last_buffer();
+void __rethrow(void);
+jmp_buf *get_last_buffer(void);
 
-void __init_exceptions();
-void __free_exceptions();
-void __alloc_exception();
-void __alloc_new_buffer();
-void __endtry();
+void __init_exceptions(void);
+void __free_exceptions(void);
+void __alloc_exception(void);
+void __alloc_new_buffer(void);
+void __endtry(void);
 
 #define try if (__alloc_new_buffer(), !setjmp(*get_last_buffer()))
 #define catchAll else if (true)

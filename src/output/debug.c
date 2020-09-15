@@ -1,5 +1,8 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** debug.c
+*/
 
 #include "debug.h"

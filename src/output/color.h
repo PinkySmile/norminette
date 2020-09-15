@@ -1,6 +1,9 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** color.h
+*/
 
 #ifndef NORMINETTE_COLOR_H
 #define NORMINETTE_COLOR_H

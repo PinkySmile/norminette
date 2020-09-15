@@ -1,12 +1,15 @@
-//
-// Created by andgel on 04/09/2020
-//
+/*
+** EPITECH PROJECT, 2020
+** norminette
+** File description:
+** style_errors.c
+*/
 
 #include <string.h>
 #include <stddef.h>
 #include "style_errors.h"
 
-static const char *mistake_names[] = {
+const char *mistake_names[] = {
 	"GARBAGE",
 	"TOO_MNY_FCT",
 	"INVALID_FILE_NAME",
@@ -21,7 +24,7 @@ static const char *mistake_names[] = {
 	"BAD_INDENTATION",
 	"SPACE_MISSING",
 	"BRACKET_MISPLACED",
-	"MULTPLE_VARS_DECLARED",
+	"MULTIPLE_VARS_DECLARED",
 	"MISSING_LINE_BREAK_AFTER_VARS",
 	"INVALID_TYPE_NAME",
 	"POINTER_DECLARATION",
@@ -56,7 +59,8 @@ const style_error_t coding_style[] = {
 	/*garbage files*/
 	{
 		"O1",
-		"content of the delivery folder should contain only files required for compilation",
+		"content of the delivery folder should contain only files"
+		"required for compilation",
 		2
 	},
 	/*5 fcts*/
@@ -68,25 +72,29 @@ const style_error_t coding_style[] = {
 	/*files names*/
 	{
 		"O4",
-		"your file name must follow the snake_case convention, be clear, precise, explicit, and unambiguous",
+		"your file name must follow the snake_case convention, be"
+		"clear, precise, explicit, and unambiguous",
 		2
 	},
 	/*epi header*/
 	{
 		"G1",
-		"you must start your source code with a correctly formatted Epitech standard header",
+		"you must start your source code with a correctly"
+		"formatted Epitech standard header",
 		2
 	},
 	/*empty lines between fcts*/
 	{
 		"G2",
-		"one and only one empty line should separate the implementations of functions",
+		"one and only one empty line should separate the"
+		"implementations of functions",
 		1
 	},
 	/*function's name invalid*/
 	{
 		"F2",
-		"function should be in english, according to the snake_case convention",
+		"function should be in english, according to the"
+		"snake_case convention",
 		2
 	},
 	/*too long line*/
@@ -104,7 +112,9 @@ const style_error_t coding_style[] = {
 	/*fct > 4 args*/
 	{
 		"F5",
-		"a function should not need more than 4 arguments and taking no parameters should take void as argument in the function declaration.",
+		"a function should not need more than 4 arguments and"
+		"taking no parameters should take void as argument in the"
+		"function declaration.",
 		2
 	},
 	/*comment in fct*/
@@ -152,7 +162,8 @@ const style_error_t coding_style[] = {
 	//nom de types
 	{
 		"V1",
-		"structures and typedef names should be in english and follow the snake_case convention",
+		"structures and typedef names should be in english and"
+		"follow the snake_case convention",
 		2
 	},
 	//pointers declaration
@@ -164,7 +175,9 @@ const style_error_t coding_style[] = {
 	//if depth > 3 or if forest
 	{
 		"C1",
-		"nested conditonal branchings with a depth of 3 or more should be avoided and an if block should not contain more than 3 branchings",
+		"nested conditonal branchings with a depth of 3 or more"
+		"should be avoided and an if block should not contain more than"
+		"3 branchings",
 		1
 	},
 	/*goto*/

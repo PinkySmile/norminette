@@ -1,8 +1,8 @@
 #!/bin/bash
 cd $HOME/norminette
-if [ $(($(git pull | wc -l) * $([ $1t == "--forcet" ]; echo -n $?))) != 1 ]
+if [ $(($(git pull | wc -l) * $([ "$1" == "--force" ]; echo -n $?))) != 1 ]
 then
-    if make re; then
+    if make; then
 	echo "coping nominette to /bin/norminette"
 	sudo cp $HOME/norminette/norminette /bin/
 	echo "adding manpage"
