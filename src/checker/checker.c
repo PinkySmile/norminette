@@ -63,7 +63,7 @@ void check_file(checker_state_t *state, const char *path, bool force)
 	FILE *stream;
 
 	if (state->args->useless_files && is_file_useless(path))
-		add_error_no_line(*state, path, USELESS_FILE);
+		add_error_no_line(state, path, USELESS_FILE, 0);
 
 	if (force || match_regex("^.*[.](c|h)$", path)) {
 		log_debug("Opening %s", path);

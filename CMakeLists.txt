@@ -48,7 +48,7 @@ add_executable(
 	src/utils/regex.h
 	src/utils/files.h
 	src/utils/files/get_file_length.c
-)
+	src/checker/convert_state.c src/checker/convert_state.h)
 
 target_link_libraries(
 	norminette
