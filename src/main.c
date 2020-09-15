@@ -10,11 +10,14 @@
 #include "utils/exceptions.h"
 #include "args_management/args.h"
 #include "checker/checker.h"
+#include "utils/regex.h"
 
 int main(int argc, char **argv)
 {
 	args_t args;
 
+	//printf("%i\n", match_regex(argv[1], argv[2]));
+	//return EXIT_SUCCESS;
 	init_exceptions();
 
 	try {

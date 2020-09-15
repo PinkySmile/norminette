@@ -27,7 +27,7 @@ char *concat(unsigned nbStrings, ...)
 	}
 	va_end(list);
 
-	str = alloc(length);
+	str = alloc(length + 1);
 	strcpy(str, str_list[0]);
 	for (unsigned i = 1; i < nbStrings; i++)
 		strcat(str, str_list[i]);

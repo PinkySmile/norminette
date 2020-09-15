@@ -127,8 +127,9 @@ args_t parse_args(int argc, char **argv)
 	}
 	args.paths = fetch_remaining_args(argc, argv);
 	if (!args.paths) {
-		args.paths = alloc(sizeof(*args.paths));
-		*args.paths = ".";
+		args.paths = alloc(sizeof(*args.paths) * 2);
+		args.paths[0] = ".";
+		args.paths[1] = NULL;
 	}
 	return args;
 }
