@@ -30,6 +30,10 @@ void __init_exceptions(void)
 
 void __free_exceptions(void)
 {
+	if (__exceptionsStack.last_exception) {
+		free(__exceptionsStack.last_exception->name);
+		free(__exceptionsStack.last_exception->desc);
+	}
 	free(__exceptionsStack.last_exception);
 	__exceptionsStack.last_exception = NULL;
 

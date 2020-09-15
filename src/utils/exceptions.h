@@ -22,8 +22,8 @@ struct __jmp_buffers_array_s {
 };
 
 typedef struct __exception_s {
-	const char *name;
-	const char *desc;
+	char *name;
+	char *desc;
 } exception_t;
 
 struct __exceptions_s {

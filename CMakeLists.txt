@@ -36,7 +36,19 @@ add_executable(
 	src/utils/exceptions/alloc.c
 	src/utils/exceptions/terminate.c
 	src/utils/assert.h
-	src/checker/checker.c src/checker/checker.h src/utils/concat.c src/utils/concat.h src/utils/file_types.h src/utils/file_types.c src/checker/is_file_useless.c src/checker/is_file_useless.h src/output/error_reporting/display_error_start.c src/utils/regex.c src/utils/regex.h)
+	src/checker/checker.c
+	src/checker/checker.h
+	src/utils/concat.c
+	src/utils/concat.h
+	src/utils/files/file_types.c
+	src/checker/is_file_useless.c
+	src/checker/is_file_useless.h
+	src/output/error_reporting/display_error_start.c
+	src/utils/regex.c
+	src/utils/regex.h
+	src/utils/files.h
+	src/utils/files/get_file_length.c
+)
 
 target_link_libraries(
 	norminette

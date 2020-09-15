@@ -2,13 +2,14 @@
 ** EPITECH PROJECT, 2020
 ** norminette
 ** File description:
-** file_types.h
+** files.h
 */
 
-#ifndef NORMINETTE_FILE_TYPES_H
-#define NORMINETTE_FILE_TYPES_H
+#ifndef NORMINETTE_FILES_H
+#define NORMINETTE_FILES_H
 
 
+#include <stddef.h>
 #include <sys/stat.h>
 #include <stdbool.h>
 
@@ -24,5 +25,11 @@ bool is_type(const char *path, unsigned type);
 #define is_chr_dev(path) is_type(path, S_IFCHR)
 #define is_fifo(path)    is_type(path, S_IFIFO)
 
+size_t get_file_size(const char *path);
+#ifdef _WIN32
+const char *get_file_name(const char *path);
+#else
+#define get_file_name(path) strrchr(path, '/')
+#endif
 
-#endif //NORMINETTE_FILE_TYPES_H
+#endif //NORMINETTE_FILES_H

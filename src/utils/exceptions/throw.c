@@ -12,8 +12,8 @@
 void __throw(const char *name, const char *desc)
 {
 	__alloc_exception();
-	__exceptionsStack.last_exception->name = name;
-	__exceptionsStack.last_exception->desc = desc;
+	__exceptionsStack.last_exception->name = strdup(name);
+	__exceptionsStack.last_exception->desc = strdup(desc);
 	__rethrow();
 }
 
@@ -23,7 +23,6 @@ void __rethrow(void)
 	unsigned buf = --__exceptionsStack.buffers.current_buffer;
 
 	assert(current_buffer != 0, "Not in a try");
-	__exceptionsStack.buffers.current_buffer--;
 	raise(SIGTRAP);
 	longjmp(__exceptionsStack.buffers.buffers[buf], true);
 }

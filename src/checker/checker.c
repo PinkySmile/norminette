@@ -10,7 +10,7 @@
 #include <malloc.h>
 #include "checker.h"
 #include "../utils/concat.h"
-#include "../utils/file_types.h"
+#include "../utils/files.h"
 #include "is_file_useless.h"
 #include "../output/error_reporting.h"
 
