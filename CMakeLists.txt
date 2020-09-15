@@ -7,9 +7,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
 	if (CMAKE_COMPILER_IS_GNUCC)
 		add_compile_options(-Wall -Wextra -W -Wshadow -g)
 	endif (CMAKE_COMPILER_IS_GNUCC)
-endif ()
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL Release)
+else ()
 	add_compile_definitions(NDEBUG)
 endif ()
 
@@ -30,7 +28,15 @@ add_executable(
 	src/utils/exceptions.h
 	src/utils/alloc.c
 	src/utils/alloc.h
-	src/args_management/update.c src/args_management/update.h src/args_management/help.c src/args_management/help.h src/utils/exceptions/throw.c src/utils/exceptions/alloc.c src/utils/exceptions/terminate.c)
+	src/args_management/update.c
+	src/args_management/update.h
+	src/args_management/help.c
+	src/args_management/help.h
+	src/utils/exceptions/throw.c
+	src/utils/exceptions/alloc.c
+	src/utils/exceptions/terminate.c
+	src/utils/assert.h
+)
 
 target_link_libraries(
 	norminette

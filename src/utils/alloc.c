@@ -11,7 +11,12 @@
 
 void *alloc(size_t size)
 {
-	void *ptr = malloc(size);
+	return alloc_again(NULL, size);
+}
+
+void *alloc_again(void *old, size_t newSize)
+{
+	void *ptr = realloc(old, newSize);
 
 	if (!ptr)
 		throw(OutOfMemoryError, "Out of memory");

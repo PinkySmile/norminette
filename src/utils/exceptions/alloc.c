@@ -6,6 +6,7 @@
 */
 
 #include <malloc.h>
+#include <stdlib.h>
 #include "../exceptions.h"
 
 void __alloc_exception(void)
@@ -13,6 +14,11 @@ void __alloc_exception(void)
 	if (!__exceptionsStack.last_exception)
 		__exceptionsStack.last_exception =\
 		malloc(sizeof(*__exceptionsStack.last_exception));
+
+	if (!__exceptionsStack.last_exception) {
+		puts("Out of memory");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void __init_exceptions(void)
@@ -44,8 +50,10 @@ void __alloc_new_buffer(void)
 			__exceptionsStack.buffers.buffers,
 			__exceptionsStack.buffers.nb_buffers * sizeof(*ptr)
 		);
-		if (!ptr)
-			__throw("bad_alloc", "Cannot grow exception stack");
+		if (!ptr) {
+			puts("Out of memory");
+			exit(EXIT_FAILURE);
+		}
 	}
 	__exceptionsStack.buffers.current_buffer++;
 	__exceptionsStack.buffers.buffers = ptr;

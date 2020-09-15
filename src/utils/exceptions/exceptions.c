@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include "../exceptions.h"
+#include "../assert.h"
 
 struct __exceptions_s __exceptionsStack = {
 	{
@@ -20,21 +21,23 @@ struct __exceptions_s __exceptionsStack = {
 const char *get_last_exception_name(void)
 {
 	if (!__exceptionsStack.last_exception)
-		throw (NoActiveException, "No active exception");
+		throw(NoActiveException, "No active exception");
 	return __exceptionsStack.last_exception->name;
 }
 
 const char *get_last_exception_desc(void)
 {
 	if (!__exceptionsStack.last_exception)
-		throw (NoActiveException, "No active exception");
+		throw(NoActiveException, "No active exception");
 	return __exceptionsStack.last_exception->desc;
 }
 
-jmp_buf *get_last_buffer(void)
+jmp_buf *__get_last_buffer(void)
 {
 	unsigned buf = __exceptionsStack.buffers.current_buffer;
 
+	assert(__exceptionsStack.buffers.buffers, "Not init");
+	assert(buf, "Too many __endtry calls");
 	return &__exceptionsStack.buffers.buffers[buf - 1];
 }
 

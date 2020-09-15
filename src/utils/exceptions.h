@@ -37,9 +37,10 @@ void terminate(void);
 const char *get_last_exception_name(void);
 const char *get_last_exception_desc(void);
 const exception_t *get_last_exception();
+
 void __throw(const char *name, const char *desc);
 void __rethrow(void);
-jmp_buf *get_last_buffer(void);
+jmp_buf *__get_last_buffer(void);
 
 void __init_exceptions(void);
 void __free_exceptions(void);
@@ -47,7 +48,7 @@ void __alloc_exception(void);
 void __alloc_new_buffer(void);
 void __endtry(void);
 
-#define try if (__alloc_new_buffer(), !setjmp(*get_last_buffer()))
+#define try if (__alloc_new_buffer(), !setjmp(*__get_last_buffer()))
 #define catchAll else if (true)
 #define catch(exc) else if (strcmp(get_last_exception_name(), #exc) == 0)
 
@@ -59,7 +60,7 @@ if (__exceptionsStack.buffers.buffers)\
 	throw("AlreadyInitException", "Exceptions are already init");\
 signal(SIGTRAP, SIG_IGN);\
 __init_exceptions();\
-if (!setjmp(*get_last_buffer())) { do {} while (0)
+if (!setjmp(*__get_last_buffer())) { do {} while (0)
 
 #define free_exceptions() \
 } catchAll { terminate(); } __free_exceptions()\
