@@ -15,10 +15,13 @@ bool match_regex(const char *pattern, const char *str)
 	char err_buffer[200];
 	regex_t regex;
 	int err = regcomp(&regex, pattern, REG_NOMATCH);
+	bool result;
 
 	if (err) {
 		regerror(err, &regex, err_buffer, sizeof(err_buffer));
 		throw(InvalidRegexException, err_buffer);
 	}
-	return regexec(&regex, str, 0, NULL, 0) == 0;
+	result = regexec(&regex, str, 0, NULL, 0) == 0;
+	regfree(&regex);
+	return result;
 }

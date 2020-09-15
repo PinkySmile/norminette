@@ -55,6 +55,7 @@ void check_folder(checker_state_t *state, const char *path)
 			check_path(state, file_path);
 		free(file_path);
 	}
+	closedir(folder);
 }
 
 void check_file(checker_state_t *state, const char *path, bool force)
