@@ -9,13 +9,7 @@
 #include <stdlib.h>
 #include "utils/exceptions.h"
 #include "args_management/args.h"
-
-void check_args(int argc, char **argv)
-{
-	if (argc == 1)
-		throw(NoArgumentException, "No argument were provided");
-	throw(NotImplementedException, argv[0]);
-}
+#include "checker/checker.h"
 
 int main(int argc, char **argv)
 {
@@ -25,6 +19,8 @@ int main(int argc, char **argv)
 
 	try {
 		args = parse_args(argc, argv);
+		check_paths(&args, args.paths);
+		free_args(&args);
 	} catch (InvalidArgumentException) {
 		fprintf(stderr, "Use %s -h for help.\n", argv[0]);
 		return EXIT_FAILURE;

@@ -32,6 +32,7 @@ typedef struct args_s {
 } args_t;
 
 args_t parse_args(int argc, char **argv);
+void free_args(args_t *args);
 
 #define ARG_BOOL_TRUE_FCT(name, param, val)\
 static void name(args_t *args) {\

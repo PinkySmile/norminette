@@ -18,7 +18,11 @@ void set_output_properties(unsigned bg, unsigned fg, unsigned properties)
 	for (unsigned i = 0; i < 9; i++)
 		if ((1U << i) & properties)
 			printf("%i;", i + 1);
-	printf("%i;%im", bg + 10, fg);
+	if (bg && fg)
+		printf("%i;%i", bg + 10, fg);
+	else if (bg || fg)
+		printf("%i", bg ? bg + 10 : fg);
+	printf("m");
 }
 
 #endif

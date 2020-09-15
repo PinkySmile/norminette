@@ -150,7 +150,7 @@ const style_error_t coding_style[] = {
 	/*x vars declared on 1 line or in prog*/
 	{
 		"L5",
-		"severals variables declared on the same line",
+		"several variables declared on the same line",
 		1
 	},
 	//line break after vars declarations

@@ -31,7 +31,8 @@ enum color_e {
 };
 #else
 enum color_e {
-	BLACK = 30,
+	RESET = 0,
+	WHITE = 30,
 	RED,
 	GREEN,
 	BROWN,
@@ -46,7 +47,7 @@ enum color_e {
 	LIGHTBLUE,
 	LIGHTMAGENTA,
 	LIGHTCYAN,
-	WHITE,
+	BLACK,
 };
 #endif
 

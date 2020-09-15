@@ -18,7 +18,7 @@ if (!(expr)) {\
 	fprintf(stderr, __assert_fmt, #expr, __FUNCTION__, __FILE__, __LINE__);\
 	fprintf(stderr, fmt, ##__VA_ARGS__);\
 	abort();\
-}
+} else{}
 #else
 #define assert(expr, ...) (void)(expr)
 #endif

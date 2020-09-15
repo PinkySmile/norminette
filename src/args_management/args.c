@@ -5,14 +5,15 @@
 ** args.c
 */
 
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <unistd.h>
 #include "../utils/exceptions.h"
 #include "args.h"
 #include "help.h"
 #include "update.h"
+#include "../utils/alloc.h"
 
 void all(args_t *args) {
 	args->verbose = true;
@@ -76,17 +77,44 @@ static void (* const handlers[])(args_t *args) = {
 };
 static const char *opts = "ac:dfi:lhnstuvACT:U";
 
+void init_args(args_t *args)
+{
+	memset(args, 0, sizeof(*args));
+	args->default_indent = 8;
+	args->tab_size = 8;
+	args->only_tab_indent = true;
+	args->minor_points = 1;
+	args->major_points = 5;
+	args->has_colors = isatty(0);
+	args->excluded = alloc(sizeof(*args->excluded));
+	memset(args->excluded, 0, sizeof(*args->excluded));
+}
+
+char **fetch_remaining_args(int argc, char **argv)
+{
+	int nb = 0;
+	char **dirs = NULL;
+
+	while (optind < argc) {
+		dirs = alloc_again(dirs, (++nb + 1) * sizeof(*dirs));
+		dirs[nb - 1] = argv[optind++];
+		dirs[nb] = NULL;
+	}
+	return dirs;
+}
+
+void free_args(args_t *args)
+{
+	free(args->excluded);
+	free(args->paths);
+}
+
 args_t parse_args(int argc, char **argv)
 {
 	args_t args;
 	int c;
 
-	memset(&args, 0, sizeof(args));
-	args.default_indent = 8;
-	args.tab_size = 8;
-	args.only_tab_indent = true;
-	args.minor_points = 1;
-	args.major_points = 5;
+	init_args(&args);
 	while (true) {
 		c = getopt_long(argc, argv, opts, long_options, NULL);
 		if (c == '?')
@@ -96,6 +124,11 @@ args_t parse_args(int argc, char **argv)
 		for (int i = 0; long_options[i].name; i++)
 			if (long_options[i].val == c)
 				handlers[i](&args);
+	}
+	args.paths = fetch_remaining_args(argc, argv);
+	if (!args.paths) {
+		args.paths = alloc(sizeof(*args.paths));
+		*args.paths = ".";
 	}
 	return args;
 }
