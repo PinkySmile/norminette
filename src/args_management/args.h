@@ -8,6 +8,8 @@
 #ifndef NORMINETTE_ARGS_H
 #define NORMINETTE_ARGS_H
 
+#include <stdint.h>
+#include <errno.h>
 #include <stdbool.h>
 
 typedef struct args_s {
@@ -37,13 +39,19 @@ static void name(args_t *args) {\
 }
 #define ARG_INT_FCT(name, param)\
 static void name(args_t *args) {\
-	for (int i = optarg[0] == '+' || optarg[0] == '-'; optarg[i]; i++)\
-		if (!isdigit(optarg[i]))\
-			throw(\
-				InvalidArgumentFormatException,\
-				#name" expects a valid integer."\
-			);\
-	args->param = atoi(optarg);\
+	char *endptr;\
+	long val = strtol(optarg, &endptr, 0);\
+\
+	if (\
+		(val < 0 || val > INT32_MAX) ||\
+		(errno != 0 && val == 0) ||\
+		endptr == optarg\
+	)\
+		throw(\
+			InvalidArgumentFormatException,\
+			"--"#name" expects a valid integer."\
+		);\
+	args->param = val;\
 }
 
 #endif //NORMINETTE_ARGS_H
