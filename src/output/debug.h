@@ -9,7 +9,7 @@
 #define NORMINETTE_DEBUG_H
 
 #ifndef NDEBUG
-#define log_debug(format, ...) fprintf(stderr, format, ##__VA_ARGS__)
+#define log_debug(format, ...) fprintf(stderr, format"\n", ##__VA_ARGS__)
 #else
 #define log_debug(...) (void)(0)
 #endif

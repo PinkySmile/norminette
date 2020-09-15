@@ -17,7 +17,6 @@ typedef struct args_s {
 	bool verbose;
 	bool name;
 	bool useless_files;
-	bool debug;
 	bool big_files;
 	bool no_big_files;
 	bool cappuccino;

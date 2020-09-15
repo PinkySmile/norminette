@@ -65,7 +65,7 @@ if (!setjmp(*__get_last_buffer())) { do {} while (0)
 #define free_exceptions() \
 } catchAll { terminate(); } __free_exceptions()\
 
-#define end_try else { rethrow; } __endtry()
-#define end_try_return return end_try,
+#define end_try else { rethrow; } __endtry();
+#define end_try_return(...) return __endtry(), ##__VA_ARGS__
 
 #endif //NORMINETTE_EXCEPTIONS_H

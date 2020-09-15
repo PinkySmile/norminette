@@ -9,12 +9,13 @@
 #include <dirent.h>
 #include <malloc.h>
 #include "checker.h"
+#include "is_file_useless.h"
 #include "../utils/concat.h"
 #include "../utils/files.h"
-#include "is_file_useless.h"
-#include "../output/error_reporting.h"
 #include "../utils/exceptions.h"
 #include "../utils/regex.h"
+#include "../output/error_reporting.h"
+#include "../output/debug.h"
 
 void check_paths(const args_t *args, char **paths)
 {
@@ -36,7 +37,7 @@ void check_path(checker_state_t *state, const char *path)
 	} catch(FileNotFoundException) {
 		fprintf(stderr, "Error: %s\n", get_last_exception_desc());
 		return;
-	}
+	} end_try
 }
 
 void check_folder(checker_state_t *state, const char *path)
@@ -64,15 +65,14 @@ void check_file(checker_state_t *state, const char *path, bool force)
 		add_error_no_line(*state, path, USELESS_FILE);
 
 	if (force || match_regex("^.*[.](c|h)$", path)) {
-		fprintf(stderr, "Opening %s\n", path);
+		log_debug("Opening %s", path);
 		stream = fopen(path, "rb");
 		if (!stream)
 			file_not_found(path);
 		check_stream(state, stream);
 		fclose(stream);
-	} else {
-		fprintf(stderr, "Skipping non source file %s\n", path);
-	}
+	} else
+		log_debug("Skipping non source file %s", path);
 }
 
 void check_stream(checker_state_t *state, FILE *stream)

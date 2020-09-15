@@ -24,7 +24,6 @@ void all(args_t *args) {
 ARG_BOOL_TRUE_FCT(verbose, verbose, true)
 ARG_BOOL_TRUE_FCT(name, name, true)
 ARG_BOOL_TRUE_FCT(useless, useless_files, true)
-ARG_BOOL_TRUE_FCT(debug, debug, true)
 ARG_BOOL_TRUE_FCT(big, big_files, true)
 ARG_BOOL_TRUE_FCT(no_big, no_big_files, true)
 ARG_BOOL_TRUE_FCT(cappuccino, cappuccino, true)
@@ -39,7 +38,6 @@ ARG_INT_FCT(major, major_points)
 static const struct option long_options[] = {
 	{"all",                  no_argument,       0, 'a'},
 	{"color",                required_argument, 0, 'c'},
-	{"debug",                no_argument,       0, 'd'},
 	{"large",                no_argument,       0, 'l'},
 	{"help",                 no_argument,       0, 'h'},
 	{"indent",               required_argument, 0, 'i'},
@@ -59,7 +57,6 @@ static const struct option long_options[] = {
 static void (* const handlers[])(args_t *args) = {
 	all,
 	NULL,
-	debug,
 	big,
 	disp_help,
 	indent,

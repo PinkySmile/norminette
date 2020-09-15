@@ -68,5 +68,5 @@
 all:
 	rm -rf build
 	mkdir build
-	cd build && cmake .. && make norminette && cp norminette ..
+	cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make norminette && cp norminette ..
 	rm -rf build
