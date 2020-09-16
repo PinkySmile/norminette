@@ -156,10 +156,10 @@ const style_error_t coding_style[] = {
 	//line break after vars declarations
 	{
 		"L6",
-		"",
+		"variable declaration should be followed by a line break",
 		1
 	},
-	//nom de types
+	//type names
 	{
 		"V1",
 		"structures and typedef names should be in english and"
@@ -169,15 +169,16 @@ const style_error_t coding_style[] = {
 	//pointers declaration
 	{
 		"V3",
-		"",
+		"the pointer symbol should be attached to the"
+		"associated variable, with no spaces",
 		1
 	},
 	//if depth > 3 or if forest
 	{
 		"C1",
-		"nested conditonal branchings with a depth of 3 or more"
+		"nested conditional branching with a depth of 3 or more"
 		"should be avoided and an if block should not contain more than"
-		"3 branchings",
+		"3 branching",
 		1
 	},
 	/*goto*/

@@ -22,7 +22,8 @@ typedef struct made_style_error_s {
 	long specialValue;
 } made_style_error_t;
 
-void display_start(made_style_error_t error, bool color, bool has_line_no);
+void display_style_error(const made_style_error_t *error, bool color);
+void display_start(const made_style_error_t *error, bool color, bool has_line_no);
 void display_path(const char *path, bool color);
 void show_made_style_error_no_line(made_style_error_t error, bool color);
 void show_made_style_error(made_style_error_t error, bool color);

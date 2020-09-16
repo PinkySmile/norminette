@@ -12,16 +12,14 @@
 
 void set_output_properties(unsigned bg, unsigned fg, unsigned properties)
 {
-	printf("\033[");
-	if (!properties)
-		printf("0;");
+	printf("\033[0");
 	for (unsigned i = 0; i < 9; i++)
 		if ((1U << i) & properties)
-			printf("%i;", i + 1);
+			printf(";%i", i + 1);
 	if (bg && fg)
-		printf("%i;%i", bg + 10, fg);
+		printf(";%i;%i", bg + 10, fg);
 	else if (bg || fg)
-		printf("%i", bg ? bg + 10 : fg);
+		printf(";%i", bg ? bg + 10 : fg);
 	printf("m");
 }
 

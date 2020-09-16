@@ -47,16 +47,16 @@ void show_line_nb(bool color, unsigned line, unsigned column)
 	printf("]");
 }
 
-void display_start(made_style_error_t error, bool color, bool has_line_no)
+void display_start(const made_style_error_t *error, bool color, bool has_line_no)
 {
-	display_path(error.file, color);
+	display_path(error->file, color);
 	change_output_properties(color, RESET, RESET, BOLD);
 	if (has_line_no)
-		show_line_nb(color, error.line, error.column);
-	if (error.decl_type) {
-		printf(" in %s '", error.decl_type);
+		show_line_nb(color, error->line, error->column);
+	if (error->decl_type) {
+		printf(" in %s '", error->decl_type);
 		change_output_properties(color, RESET, RED, BOLD);
-		printf("%s", error.decl_name);
+		printf("%s", error->decl_name);
 		change_output_properties(color, RESET, RESET, BOLD);
 		printf("'");
 	}

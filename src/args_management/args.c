@@ -82,7 +82,7 @@ void init_args(args_t *args)
 	args->only_tab_indent = true;
 	args->minor_points = 1;
 	args->major_points = 5;
-	args->has_colors = isatty(0);
+	args->has_colors = isatty(1);
 	args->excluded = alloc(sizeof(*args->excluded));
 	memset(args->excluded, 0, sizeof(*args->excluded));
 }

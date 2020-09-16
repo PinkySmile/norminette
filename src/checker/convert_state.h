@@ -13,7 +13,7 @@
 
 struct checker_state_s;
 made_style_error_t convert_state(const struct checker_state_s *state,
-const char *file, enum mistake_name_e error, long specialValue);
+const char *file, enum mistake_name_e error, long special_value);
 
 
 #endif //NORMINETTE_CONVERT_STATE_H
