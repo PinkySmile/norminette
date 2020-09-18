@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "convert_state.h"
+#include "../utils/is_in_list.h"
 #include "../args_management/args.h"
 #include "../data/style_errors.h"
 #include "../output/error_reporting.h"
@@ -32,10 +33,12 @@ void check_file(checker_state_t *state, const char *path, bool force);
 void check_stream(checker_state_t *state, FILE *stream);
 
 #define add_error(state, file, err, line, len, val)\
+if (!is_mistake_ignored(state->args->ignored_mistakes, err))\
 (state)->mistakes_counts[err]++, show_error(\
 convert_state(state, file, err, val), (state)->args->has_colors, line, len)
 
 #define add_error_no_line(state_ptr, file, err, val)\
+if (!is_mistake_ignored(state->args->ignored_mistakes, err))\
 (state_ptr)->mistakes_counts[err]++, show_made_style_error_no_line(\
 convert_state(state_ptr, file, err, val), (state_ptr)->args->has_colors)
 

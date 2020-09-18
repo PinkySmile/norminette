@@ -29,6 +29,12 @@ void check_paths(const args_t *args, char **paths)
 
 void check_path(checker_state_t *state, const char *path)
 {
+	const char *name = get_file_name(path);
+
+	for (int i = 0; state->args->excluded && state->args->excluded[i]; i++)
+		if (match_regex(state->args->excluded[i], name))
+			return;
+
 	try {
 		if (is_dir(path))
 			check_folder(state, path);
@@ -62,7 +68,7 @@ void check_file(checker_state_t *state, const char *path, bool force)
 {
 	FILE *stream;
 
-	if (state->args->useless_files && is_file_useless(path))
+	if (is_file_useless(path))
 		add_error_no_line(state, path, USELESS_FILE, 0);
 
 	if (force || match_regex("^.*[.](c|h)$", path)) {

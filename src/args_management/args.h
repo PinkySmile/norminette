@@ -16,7 +16,6 @@ typedef struct args_s {
 	bool has_colors;
 	bool verbose;
 	bool name;
-	bool useless_files;
 	bool big_files;
 	bool no_big_files;
 	bool cappuccino;
@@ -28,30 +27,10 @@ typedef struct args_s {
 	int  major_points;
 	char **paths;
 	char **excluded;
+	enum mistake_name_e *ignored_mistakes;
 } args_t;
 
 args_t parse_args(int argc, char **argv);
 void free_args(args_t *args);
-
-#define ARG_BOOL_TRUE_FCT(name, param, val)\
-static void name(args_t *args) {\
-	args->param = val;\
-}
-#define ARG_INT_FCT(name, param)\
-static void name(args_t *args) {\
-	char *endptr;\
-	long val = strtol(optarg, &endptr, 0);\
-\
-	if (\
-		(val < 0 || val > INT32_MAX) ||\
-		(errno != 0 && val == 0) ||\
-		endptr == optarg\
-	)\
-		throw(\
-			InvalidArgumentFormatException,\
-			"--"#name" expects a valid integer."\
-		);\
-	args->param = val;\
-}
 
 #endif //NORMINETTE_ARGS_H
