@@ -90,6 +90,10 @@ void free_args(args_t *args)
 
 void execute_flag(int c, args_t *args)
 {
+	if (c == '?')
+		throw(InvalidArgumentException, "");
+	else if (c == -1)
+		return;
 	for (int i = 0; long_options[i].name; i++)
 		if (long_options[i].val == c)
 			handlers[i](args);
@@ -98,15 +102,11 @@ void execute_flag(int c, args_t *args)
 args_t parse_args(int argc, char **argv)
 {
 	args_t args;
-	int c;
+	int c = 0;
 
 	init_args(&args);
-	while (true) {
+	while (c != -1) {
 		c = getopt_long(argc, argv, opts, long_options, NULL);
-		if (c == '?')
-			throw(InvalidArgumentException, "");
-		else if (c == -1)
-			break;
 		try {
 			execute_flag(c, &args);
 		} catchAll {
