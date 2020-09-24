@@ -33,6 +33,10 @@ void __endtry(void)
 
 	assert(current_buffer != 0, "Not in a try");
 	__exceptionsStack.buffers.current_buffer--;
+	if (__exceptionsStack.last_exception) {
+		free(__exceptionsStack.last_exception->name);
+		free(__exceptionsStack.last_exception->desc);
+	}
 	free(__exceptionsStack.last_exception);
 	__exceptionsStack.last_exception = NULL;
 }

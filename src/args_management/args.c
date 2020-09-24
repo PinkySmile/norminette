@@ -88,6 +88,13 @@ void free_args(args_t *args)
 	free(args->paths);
 }
 
+void execute_flag(int c, args_t *args)
+{
+	for (int i = 0; long_options[i].name; i++)
+		if (long_options[i].val == c)
+			handlers[i](args);
+}
+
 args_t parse_args(int argc, char **argv)
 {
 	args_t args;
@@ -100,9 +107,12 @@ args_t parse_args(int argc, char **argv)
 			throw(InvalidArgumentException, "");
 		else if (c == -1)
 			break;
-		for (int i = 0; long_options[i].name; i++)
-			if (long_options[i].val == c)
-				handlers[i](&args);
+		try {
+			execute_flag(c, &args);
+		} catchAll {
+			free_args(&args);
+			rethrow;
+		} end_try
 	}
 	args.paths = fetch_remaining_args(argc, argv);
 	if (!args.paths) {
