@@ -58,7 +58,7 @@ add_executable(
 	src/utils/is_in_list.h
 	src/checker/get_source_type.c
 	src/checker/get_source_type.h
-)
+	src/codes.h)
 
 target_link_libraries(
 	norminette

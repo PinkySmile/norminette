@@ -33,11 +33,11 @@ typedef struct checker_state_s {
 	unsigned mistakes_counts[NB_OF_MISTAKES];
 } checker_state_t;
 
-void check_paths(const args_t *args, char **paths);
-void check_path(checker_state_t *state, const char *path);
-void check_folder(checker_state_t *state, const char *path);
-void check_file(checker_state_t *state, const char *path, bool force);
-void check_stream(checker_state_t *state, FILE *stream, const char *path,\
+int check_paths(const args_t *args, char **paths);
+bool check_path(checker_state_t *state, const char *path);
+bool check_folder(checker_state_t *state, const char *path);
+bool check_file(checker_state_t *state, const char *path, bool force);
+bool check_stream(checker_state_t *state, FILE *stream, const char *path,\
 enum source_type_e type);
 void check_common_header_source(checker_state_t *state, FILE *stream,\
 const char *path);
