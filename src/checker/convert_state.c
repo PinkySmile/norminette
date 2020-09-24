@@ -9,7 +9,7 @@
 #include "checker.h"
 
 made_style_error_t convert_state(const checker_state_t *state,\
-const char *file, enum mistake_name_e error, long special_value)
+const char *file, enum mistake_name_e error, long long special_value)
 {
 	made_style_error_t err;
 

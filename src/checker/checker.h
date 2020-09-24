@@ -16,6 +16,13 @@
 #include "../data/style_errors.h"
 #include "../output/error_reporting.h"
 
+enum source_type_e {
+	UNKNOWN_FILE,
+	MAKEFILE,
+	HEADER_FILE,
+	SOURCE_FILE,
+};
+
 typedef struct checker_state_s {
 	const args_t *args;
 	unsigned line;
@@ -30,7 +37,10 @@ void check_paths(const args_t *args, char **paths);
 void check_path(checker_state_t *state, const char *path);
 void check_folder(checker_state_t *state, const char *path);
 void check_file(checker_state_t *state, const char *path, bool force);
-void check_stream(checker_state_t *state, FILE *stream);
+void check_stream(checker_state_t *state, FILE *stream, const char *path,\
+enum source_type_e type);
+void check_common_header_source(checker_state_t *state, FILE *stream,\
+const char *path);
 
 #define add_error(state, file, err, line, len, val)\
 if (!is_mistake_ignored(state->args->ignored_mistakes, err))\

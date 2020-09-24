@@ -18,6 +18,6 @@ bool is_type(const char *path, unsigned type)
 #else
 	if (stat(path, &info) < 0)
 #endif
-		file_not_found(path);
+		throw_file_not_found(path);
 	return (info.st_mode & S_IFMT) == type;
 }

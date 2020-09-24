@@ -12,7 +12,9 @@
 #include "../error_reporting.h"
 
 static const style_error_part_t useless_file[] = {
-	{"Useless file found", RESET, RESET, BOLD},
+	{"Useless file found (", RESET, RESET, BOLD},
+	{"%s", RESET, RED, BOLD},
+	{")", RESET, RESET, BOLD},
 	{NULL, RESET, RESET, NORMAL}
 };
 

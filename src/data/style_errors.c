@@ -10,7 +10,7 @@
 #include "style_errors.h"
 
 const char *mistake_names[] = {
-	"GARBAGE",
+	"USELESS_FILE",
 	"TOO_MNY_FCT",
 	"INVALID_FILE_NAME",
 	"INVALID_HEADER",

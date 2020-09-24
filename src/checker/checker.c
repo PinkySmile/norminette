@@ -14,8 +14,8 @@
 #include "../utils/files.h"
 #include "../utils/exceptions.h"
 #include "../utils/regex.h"
-#include "../output/error_reporting.h"
 #include "../output/debug.h"
+#include "get_source_type.h"
 
 void check_paths(const args_t *args, char **paths)
 {
@@ -53,7 +53,7 @@ void check_folder(checker_state_t *state, const char *path)
 	char          *file_path;
 
 	if (!folder)
-		file_not_found(path);
+		throw_file_not_found(path);
 
 	for (file = readdir(folder); file; file = readdir(folder)) {
 		file_path = concat(3, path, "/", file->d_name);
@@ -67,23 +67,31 @@ void check_folder(checker_state_t *state, const char *path)
 void check_file(checker_state_t *state, const char *path, bool force)
 {
 	FILE *stream;
+	const char *reason;
+	enum source_type_e type = get_source_type(path);
 
-	if (is_file_useless(path))
-		add_error_no_line(state, path, USELESS_FILE, 0);
+	if (is_file_useless(path, &reason))
+		add_error_no_line(state, path, USELESS_FILE, (long)reason);
 
-	if (force || match_regex("^.*[.](c|h)$", path)) {
+	if (force || type) {
 		log_debug("Opening %s", path);
 		stream = fopen(path, "rb");
 		if (!stream)
-			file_not_found(path);
-		check_stream(state, stream);
+			throw_file_not_found(path);
+		check_stream(state, stream, path, type);
 		fclose(stream);
 	} else
 		log_debug("Skipping non source file %s", path);
 }
 
-void check_stream(checker_state_t *state, FILE *stream)
+void check_stream(checker_state_t *state, FILE *stream, const char *path,\
+enum source_type_e type)
 {
+	rewind(stream);
+	//check_common_header_source(state, stream, path);
+	rewind(stream);
 	(void)state;
 	(void)stream;
+	(void)type;
+	(void)path;
 }

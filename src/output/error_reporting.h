@@ -19,7 +19,7 @@ typedef struct made_style_error_s {
 	const char *decl_type;
 	const char *file;
 	enum mistake_name_e error;
-	long specialValue;
+	long long specialValue;
 } made_style_error_t;
 
 void display_style_error(const made_style_error_t *error, bool color);

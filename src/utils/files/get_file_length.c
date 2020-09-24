@@ -19,7 +19,7 @@ const char *get_file_name(const char *path)
 }
 #endif
 
-void file_not_found(const char *path)
+void throw_file_not_found(const char *path)
 {
 	char err[strlen(path) + 51];
 
@@ -38,6 +38,6 @@ size_t get_file_size(const char *path)
 #else
 	if (stat(path, &info) < 0)
 #endif
-		file_not_found(path);
+		throw_file_not_found(path);
 	return info.st_size;
 }
