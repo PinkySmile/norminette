@@ -58,7 +58,7 @@ add_executable(
 	src/utils/is_in_list.h
 	src/checker/get_source_type.c
 	src/checker/get_source_type.h
-	src/codes.h)
+	src/codes.h src/checker/check_makefile/check_makefile.c src/checker/check_makefile/check_makefile.h src/checker/check_sources/check_header.c src/checker/check_sources/check_header.h src/checker/check_sources/check_source.c src/checker/check_sources/check_source.c src/checker/check_sources/check_source.h)
 
 target_link_libraries(
 	norminette

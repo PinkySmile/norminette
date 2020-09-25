@@ -10,6 +10,7 @@
 #include "regex.h"
 #include "exceptions.h"
 
+//TODO: Optimize by caching compiled regex
 bool match_regex(const char *pattern, const char *str)
 {
 	char err_buffer[200];

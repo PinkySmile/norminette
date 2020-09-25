@@ -17,6 +17,9 @@
 #include "../output/debug.h"
 #include "get_source_type.h"
 #include "../codes.h"
+#include "check_makefile/check_makefile.h"
+#include "check_sources/check_header.h"
+#include "check_sources/check_source.h"
 
 int check_paths(const args_t *args, char **paths)
 {
@@ -27,7 +30,7 @@ int check_paths(const args_t *args, char **paths)
 	state.args = args;
 	for (int i = 0; paths[i]; i++)
 		if (!check_path(&state, paths[i]))
-			result =  RETURN_ERRORS_FOUND;
+			result = RETURN_ERRORS_FOUND;
 	return result;
 }
 
@@ -98,14 +101,14 @@ bool check_file(checker_state_t *state, const char *path, bool force)
 bool check_stream(checker_state_t *state, FILE *stream, const char *path,\
 enum source_type_e type)
 {
-	bool result = true;
-
-	rewind(stream);
-	//check_common_header_source(state, stream, path);
-	rewind(stream);
-	(void)state;
-	(void)stream;
-	(void)type;
-	(void)path;
-	return result;
+	switch (type) {
+	case MAKEFILE:
+		return check_makefile(state, stream, path);
+	case SOURCE_FILE:
+		return check_source(state, stream, path);
+	case HEADER_FILE:
+		return check_header(state, stream, path);
+	default:
+		return true;
+	}
 }
