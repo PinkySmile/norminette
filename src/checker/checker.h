@@ -43,16 +43,18 @@ void check_common_header_source(checker_state_t *state, FILE *stream,\
 const char *path);
 
 #define add_error(state, file, err, line, len, val)\
-(state)->mistakes_counts[err]++;\
+{(state)->mistakes_counts[err]++;\
 if (!is_mistake_ignored(state->args->ignored_mistakes, err))\
 show_error(\
-convert_state(state, file, err, val), (state)->args->has_colors, line, len)
+convert_state(state, file, err, val), (state)->args->has_colors, line, len);}do\
+{while(0)
 
 #define add_error_no_line(state_ptr, file, err, val)\
-(state_ptr)->mistakes_counts[err]++;\
+{(state_ptr)->mistakes_counts[err]++;\
 if (!is_mistake_ignored(state->args->ignored_mistakes, err))\
 show_made_style_error_no_line(\
-convert_state(state_ptr, file, err, val), (state_ptr)->args->has_colors)
+convert_state(state_ptr, file, err, val), (state_ptr)->args->has_colors);}do{}\
+while(0)
 
 
 #endif //NORMINETTE_CHECKER_H

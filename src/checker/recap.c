@@ -89,9 +89,9 @@ int make_scan_recap(const checker_state_t *state)
 		score += err[i] * pts[i];
 
 	print_recap(score, err);
+	set_output_properties(RESET, RESET, NORMAL);
 	if (state->args->easter)
 		puts EASTER_EGG_1;
-	set_output_properties(RESET, RESET, NORMAL);
 	printf("%i lines scanned\n", state->lines_scanned);
 	return score ? RETURN_SUCCESS : RETURN_ERRORS_FOUND;
 }

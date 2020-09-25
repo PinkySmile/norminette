@@ -58,7 +58,18 @@ add_executable(
 	src/utils/is_in_list.h
 	src/checker/get_source_type.c
 	src/checker/get_source_type.h
-	src/codes.h src/checker/check_makefile/check_makefile.c src/checker/check_makefile/check_makefile.h src/checker/check_sources/check_header.c src/checker/check_sources/check_header.h src/checker/check_sources/check_source.c src/checker/check_sources/check_source.c src/checker/check_sources/check_source.h src/checker/recap.c src/checker/recap.h src/output/easter_eggs.h)
+	src/codes.h
+	src/checker/check_makefile/check_makefile.c
+	src/checker/check_makefile/check_makefile.h
+	src/checker/check_sources/check_header.c
+	src/checker/check_sources/check_header.h
+	src/checker/check_sources/check_source.c
+	src/checker/check_sources/check_source.c
+	src/checker/check_sources/check_source.h
+	src/checker/recap.c
+	src/checker/recap.h
+	src/output/easter_eggs.h
+)
 
 target_link_libraries(
 	norminette

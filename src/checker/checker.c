@@ -71,7 +71,7 @@ void check_folder(checker_state_t *state, const char *path)
 void check_file(checker_state_t *state, const char *path, bool force)
 {
 	FILE *stream;
-	const char *reason;
+	const char *reason = NULL;
 	enum source_type_e type = get_source_type(path);
 
 	if (is_file_useless(path, &reason))
