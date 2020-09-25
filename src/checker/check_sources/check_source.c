@@ -7,9 +7,6 @@
 
 #include "check_source.h"
 
-bool check_source(checker_state_t *state, FILE *stream, const char *path)
+void check_source(checker_state_t *state, FILE *stream, const char *path)
 {
-	bool result = true;
-
-	return result;
 }

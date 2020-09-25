@@ -11,7 +11,7 @@
 
 #include "../checker.h"
 
-bool check_source(checker_state_t *state, FILE *stream, const char *path);
+void check_source(checker_state_t *state, FILE *stream, const char *path);
 
 
 #endif //NORMINETTE_CHECK_SOURCE_H

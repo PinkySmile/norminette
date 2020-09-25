@@ -18,7 +18,7 @@ typedef struct args_s {
 	bool name;
 	bool big_files;
 	bool no_big_files;
-	bool cappuccino;
+	bool easter;
 	bool only_tab_indent;
 	int  default_indent;
 	int  tab_size;

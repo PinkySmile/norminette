@@ -55,7 +55,7 @@ ARG_BOOL_TRUE_FCT(verbose, verbose, true)
 ARG_BOOL_TRUE_FCT(name, name, true)
 ARG_BOOL_TRUE_FCT(big, big_files, true)
 ARG_BOOL_TRUE_FCT(no_big, no_big_files, true)
-ARG_BOOL_TRUE_FCT(cappuccino, cappuccino, true)
+ARG_BOOL_TRUE_FCT(easter, easter, true)
 ARG_BOOL_TRUE_FCT(only_tabs, only_tab_indent, false)
 
 ARG_INT_FCT(indent, default_indent)

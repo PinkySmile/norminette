@@ -7,9 +7,6 @@
 
 #include "check_header.h"
 
-bool check_header(checker_state_t *state, FILE *stream, const char *path)
+void check_header(checker_state_t *state, FILE *stream, const char *path)
 {
-	bool result = true;
-
-	return result;
 }

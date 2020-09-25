@@ -43,7 +43,7 @@ void verbose(args_t *args);
 void name(args_t *args);
 void big(args_t *args);
 void no_big(args_t *args);
-void cappuccino(args_t *args);
+void easter(args_t *args);
 void only_tabs(args_t *args);
 void indent(args_t *args);
 void tab_size(args_t *args);

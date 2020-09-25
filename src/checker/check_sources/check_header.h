@@ -11,7 +11,7 @@
 
 #include "../checker.h"
 
-bool check_header(checker_state_t *state, FILE *stream, const char *path);
+void check_header(checker_state_t *state, FILE *stream, const char *path);
 
 
 #endif //NORMINETTE_CHECK_HEADER_H
