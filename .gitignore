@@ -9,4 +9,4 @@ update.log
 norminette
 .idea
 *.exe
-vgcore-*
+vgcore.*
