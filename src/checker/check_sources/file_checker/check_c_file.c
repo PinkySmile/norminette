@@ -24,7 +24,7 @@ const char *path)
 void check_code(checker_state_t *state, FILE *stream, const char *path,\
 bool is_header)
 {
-
+	fgetc(stream);
 }
 
 void check_c_file(checker_state_t *state, FILE *stream, const char *path,\
