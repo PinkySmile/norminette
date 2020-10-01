@@ -69,6 +69,11 @@ add_executable(
 	src/checker/recap.c
 	src/checker/recap.h
 	src/output/easter_eggs.h
+	src/checker/check_sources/file_checker/check_c_file.c
+	src/checker/check_sources/file_checker/check_c_file.h
+	src/checker/check_sources/file_checker/checkers/check_function_declaration.c
+	src/checker/check_sources/file_checker/checkers/check_function_declaration.h
+	src/checker/check_sources/file_checker/checkers/state.h
 )
 
 target_link_libraries(

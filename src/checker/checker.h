@@ -15,6 +15,7 @@
 #include "../args_management/args.h"
 #include "../data/style_errors.h"
 #include "../output/error_reporting.h"
+#include "check_sources/file_checker/checkers/state.h"
 
 enum source_type_e {
 	UNKNOWN_FILE,
@@ -25,10 +26,7 @@ enum source_type_e {
 
 typedef struct checker_state_s {
 	const args_t *args;
-	unsigned line;
-	unsigned column;
-	char *decl_name;
-	const char *decl_type;
+	source_checker_state_t src_state;
 	unsigned lines_scanned;
 	unsigned mistakes_counts[NB_OF_MISTAKES];
 } checker_state_t;
@@ -39,8 +37,6 @@ void check_folder(checker_state_t *state, const char *path);
 void check_file(checker_state_t *state, const char *path, bool force);
 void check_stream(checker_state_t *state, FILE *stream, const char *path,\
 enum source_type_e type);
-void check_common_header_source(checker_state_t *state, FILE *stream,\
-const char *path);
 
 #define add_error(state, file, err, line, len, val)\
 {(state)->mistakes_counts[err]++;\

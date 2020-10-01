@@ -13,10 +13,10 @@ const char *file, enum mistake_name_e error, long long special_value)
 {
 	made_style_error_t err;
 
-	err.line = state->line;
-	err.column = state->column;
-	err.decl_name = state->decl_name;
-	err.decl_type = state->decl_type;
+	err.line = state->src_state.line;
+	err.column = state->src_state.column;
+	err.decl_name = state->src_state.decl_name;
+	err.decl_type = state->src_state.decl_type;
 	err.file = file;
 	err.error = error;
 	err.specialValue = special_value;
